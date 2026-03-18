@@ -1,0 +1,11 @@
+{
+  "name": "eskill-intelligence",
+  "version": "0.1.0",
+  "description": "Codebase cartography, knowledge graph construction, research workflows, decision frameworks, context export, and learning navigation.",
+  "author": {
+    "name": "Eptesicus Laboratories"
+  },
+  "repository": "https://github.com/eptesicuslabs/eSkill",
+  "license": "MIT",
+  "keywords": ["research", "knowledge", "exploration", "decisions", "learning", "context"]
+}

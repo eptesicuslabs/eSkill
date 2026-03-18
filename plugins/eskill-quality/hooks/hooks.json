@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "^(Write|Edit)$",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Check if the code just written contains any obvious security issues: hardcoded secrets (API keys, passwords, tokens), SQL injection (string concatenation in queries), command injection (unsanitized input in shell commands), or path traversal (unsanitized input in file paths). If you find a clear security issue, respond with a JSON object: {\"continue\": true, \"systemMessage\": \"Security warning: [brief description of the issue and which line]\"}. If the code looks safe, respond with {\"continue\": true}.",
+            "model": "haiku"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "eskill-meta",
+  "version": "0.1.0",
+  "description": "Project scaffolding, changelog maintenance, session recaps, project health dashboards, and issue decomposition.",
+  "author": {
+    "name": "Eptesicus Laboratories"
+  },
+  "repository": "https://github.com/eptesicuslabs/eSkill",
+  "license": "MIT",
+  "keywords": ["project", "changelog", "session", "health", "issues", "scaffolding"]
+}
