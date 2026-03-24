@@ -1,6 +1,6 @@
 ---
 name: api-surface-map
-description: "Extracts and documents the public API surface of a codebase using LSP symbols and AST analysis. Use when documenting APIs, planning breaking changes, onboarding new developers, or reviewing module boundaries."
+description: "Extracts the public API surface including exports and HTTP routes. Use when documenting a library's interface, checking for breaking changes, or mapping module boundaries. Also applies when: 'map the API', 'list all exported functions', 'what endpoints does this expose', 'show public interface'."
 ---
 
 # API Surface Map
@@ -236,3 +236,8 @@ Retrieves a list of users.
 - This skill produces a snapshot of the current API surface. It does not track changes over time. Use the changelog-generation skill for change tracking.
 - For large codebases, the user may request a map of a specific module or directory rather than the entire project.
 - The output format can be adapted: markdown (default), JSON (for tooling consumption), or OpenAPI spec (for HTTP APIs).
+
+## Related Skills
+
+- **api-docs-generator** (eskill-office): Follow up with api-docs-generator after this skill to produce documentation from the mapped API surface.
+- **openapi-validator** (eskill-api): Follow up with openapi-validator after this skill to validate that the mapped endpoints conform to their OpenAPI spec.

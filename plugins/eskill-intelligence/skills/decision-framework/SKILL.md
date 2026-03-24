@@ -1,6 +1,6 @@
 ---
 name: decision-framework
-description: "Guides structured technical decision-making with options analysis, trade-off evaluation, and documented rationale using reasoning chains. Use when making architectural decisions, choosing between libraries, selecting implementation approaches, or any decision that benefits from explicit reasoning."
+description: "Guides structured technical decisions with trade-off analysis and produces an architecture decision record. Use when choosing between libraries, picking an implementation approach, or making any architectural choice. Also applies when: help me decide, which option should I pick, write an ADR, compare trade-offs."
 ---
 
 # Decision Framework
@@ -259,3 +259,8 @@ Where:
 - When the team has strong prior experience with one option, weight that experience appropriately but guard against familiarity bias.
 - The ADR is a living document. Update its status if the decision is later superseded or deprecated, and link to the new decision.
 - Involve stakeholders in criteria definition and weighting. The evaluation itself can be done by the technical team, but the criteria reflect business priorities.
+
+## Related Skills
+
+- **adr-generator** (eskill-office): Follow up with adr-generator after this skill to record the decision outcome as an architectural decision record.
+- **research-workflow** (eskill-intelligence): Run research-workflow before this skill to gather the data and evidence that inform the decision.

@@ -1,6 +1,6 @@
 ---
 name: monitoring-config
-description: "Generates monitoring and alerting configurations based on application endpoints and infrastructure. Produces configurations for Prometheus, health check endpoints, and log-based alerting. Use when setting up observability, adding monitoring to new services, or reviewing existing monitoring coverage."
+description: "Generates monitoring and alerting configs for Prometheus, health checks, and log-based alerts. Use when setting up observability, adding monitoring to a service, or reviewing coverage gaps. Also applies when: 'set up monitoring', 'add Prometheus metrics', 'create alerting rules', 'health check'."
 ---
 
 # Monitoring Configuration
@@ -428,6 +428,14 @@ Produce a report that summarizes what is monitored, what is not, and what should
 
 Present this report to the user. Highlight any critical gaps where important components lack monitoring entirely.
 
+## Safety Protocol
+
+1. Before writing any configuration file, validate the generated YAML syntax by parsing it.
+2. For Prometheus alerting rules, verify that all PromQL expressions are syntactically valid.
+3. Present all generated configurations to the user for review before writing to disk.
+4. If existing monitoring configuration files are present, show a diff and ask for confirmation before overwriting.
+5. For health check endpoint code, present the code for review before writing to the source directory.
+
 ## Notes
 
 - Metric names should follow Prometheus naming conventions: snake_case, with a unit suffix (e.g., `_seconds`, `_bytes`, `_total`).
@@ -438,3 +446,8 @@ Present this report to the user. Highlight any critical gaps where important com
 - Always include both a `summary` and `description` annotation on alerts. The summary should be short enough for a pager notification. The description should include the current metric value.
 - Health check endpoints should not require authentication, as they are called by infrastructure components (load balancers, orchestrators) that may not have credentials.
 - Deep health checks should be rate-limited or cached to prevent them from overwhelming downstream dependencies when called frequently.
+
+## Related Skills
+
+- **deployment-checklist** (eskill-devops): Run deployment-checklist before this skill to ensure monitoring is configured as part of the deployment process.
+- **log-investigation** (eskill-system): Follow up with log-investigation after this skill to verify that configured monitors capture the expected log patterns.

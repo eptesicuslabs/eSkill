@@ -1,6 +1,6 @@
 ---
 name: deployment-checklist
-description: "Runs pre-deployment verification including tests, build validation, dependency checks, and configuration review. Use before deploying to staging or production environments, or as a final gate before releases."
+description: "Runs pre-deployment verification covering tests, build, git state, deps, and config. Use before deploying to staging or production, as a final gate before a release. Also applies when: 'ready to deploy?', 'pre-deploy checks', 'can I ship this', 'deployment checklist', 'validate before release'."
 ---
 
 # Deployment Checklist
@@ -237,3 +237,9 @@ Provide the following markdown checklist that can be copied for manual tracking 
 - The checklist report should be saved or shared with the team for audit purposes.
 - For automated deployments, integrate these checks into the CI/CD pipeline as a required gate.
 - Never skip checks to meet a deployment deadline. If checks fail, fix the issues first.
+
+## Related Skills
+
+- **security-scan** (eskill-quality): Run security-scan before this skill to include security verification steps in the deployment checklist.
+- **dependency-audit** (eskill-coding): Run dependency-audit before this skill to ensure dependency health checks are part of the deploy process.
+- **configuration-audit** (eskill-quality): Run configuration-audit before this skill to verify environment configurations are correct before deploying.

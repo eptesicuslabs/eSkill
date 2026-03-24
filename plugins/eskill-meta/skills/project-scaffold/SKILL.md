@@ -1,6 +1,6 @@
 ---
 name: project-scaffold
-description: "Initializes new projects with opinionated directory structure, configuration files, license, git setup, and development toolchain based on the chosen language and framework. Use when starting new projects, creating standardized project templates, or bootstrapping repositories."
+description: "Initializes new projects with directory structure, configs, license, git setup, and toolchain for Node.js, Python, Rust, or Go. Use when starting a new project or bootstrapping a repository from scratch. Also applies when: scaffold a project, create a new repo, init a new app, set up project boilerplate."
 ---
 
 # Project Scaffold
@@ -197,14 +197,14 @@ Generate a README.md with the following sections:
 
 Populate each section with concrete instructions based on the language and framework. For example, Node.js projects should reference `npm install` and `npm test`.
 
-## Step 6: Create CLAUDE.md
+## Step 6: Create Project Convention File
 
-Generate a CLAUDE.md file with project conventions for Claude Code:
+Generate a project convention file (e.g., `PROJECT.md` or `CONVENTIONS.md`) documenting the tech stack and development commands:
 
 ```markdown
-# CLAUDE.md
+# Project Conventions
 
-## Project Overview
+## Overview
 
 <project_name>: <description>
 
@@ -282,6 +282,14 @@ When generating source files, always include:
 - A main function (for CLI/webapp/api) or a public function (for library)
 - An associated test that exercises the basic functionality
 
+## Safety Protocol
+
+1. Before creating any files, present the complete directory structure and file list to the user for confirmation.
+2. Maintain a manifest of all created files and directories during scaffolding.
+3. If the user wants to undo the scaffold, present the manifest and ask for confirmation before deleting.
+4. Never overwrite existing files without explicit user approval. If a target file already exists, report the conflict and ask whether to skip, overwrite, or merge.
+5. After scaffolding, report the complete list of files created so the user has a record.
+
 ## Error Handling
 
 If any step fails:
@@ -289,3 +297,8 @@ If any step fails:
 - Do not leave a partially-created scaffold without informing the user
 - Offer to clean up partial artifacts or continue from the point of failure
 - Never silently skip a step
+
+## Related Skills
+
+- **ci-config-generator** (eskill-devops): Follow up with ci-config-generator after this skill to set up CI/CD pipelines for the new project.
+- **project-health** (eskill-meta): Follow up with project-health after this skill to establish baseline health metrics for the new project.

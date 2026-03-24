@@ -1,6 +1,6 @@
 ---
 name: process-analysis
-description: "Analyzes running processes for resource consumption patterns and identifies potential issues like memory leaks, runaway processes, or resource contention. Use when investigating high CPU or memory usage, diagnosing slow systems, or monitoring long-running processes."
+description: "Analyzes running processes to find resource hogs, memory leaks, zombies, and port conflicts. Use when investigating high CPU or memory usage, diagnosing a slow machine, or hunting a runaway process. Also applies when: 'what's using my CPU', 'slow machine', 'which process is hogging resources', 'high memory usage', 'kill the runaway process'."
 ---
 
 # Process Analysis
@@ -252,3 +252,8 @@ Include a section at the end with platform-specific observations:
 - **Linux**: Note if any kernel threads (kworker, kswapd) are consuming unusual resources. Note if OOM killer has been active recently (check `dmesg` for OOM messages). Mention `htop` and `btop` for interactive monitoring.
 
 Tailor recommendations to the specific platform and the user's context. If the analysis was triggered by a specific complaint (e.g., "my build is slow"), ensure the recommendations directly address that complaint.
+
+## Related Skills
+
+- **port-conflict-resolver** (eskill-system): Follow up with port-conflict-resolver after this skill to resolve port conflicts detected during process analysis.
+- **system-snapshot** (eskill-system): Run system-snapshot before this skill to capture baseline system state before analyzing processes.

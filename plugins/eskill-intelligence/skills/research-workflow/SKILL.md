@@ -1,6 +1,6 @@
 ---
 name: research-workflow
-description: "Conducts structured research by fetching documentation, extracting key information, and synthesizing findings into actionable summaries. Use when evaluating libraries, learning new APIs, gathering technical information, or comparing implementation approaches."
+description: "Conducts structured technical research by gathering sources, analyzing findings, and producing cited summaries. Use when evaluating libraries, comparing approaches, or investigating an unfamiliar API. Also applies when: research this topic, compare these options, what library should I use, evaluate alternatives."
 ---
 
 # Research Workflow
@@ -199,3 +199,8 @@ When evaluating a library or tool, ensure the following are assessed:
 - When web sources are unavailable or rate-limited, note this in the report and suggest the user follow up manually.
 - Be explicit about what was not investigated. Unknown unknowns are a risk; naming the boundaries of the research helps the user understand what they still need to verify.
 - For rapidly evolving topics, include the research date prominently so readers know the findings may become outdated.
+
+## Related Skills
+
+- **decision-framework** (eskill-intelligence): Follow up with decision-framework after this skill to structure research findings into a decision analysis.
+- **tech-debt-tracker** (eskill-intelligence): Follow up with tech-debt-tracker after this skill to log technical debt items discovered during research.

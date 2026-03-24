@@ -1,6 +1,6 @@
 ---
 name: license-check
-description: "Verifies license compatibility across all project dependencies and flags potential conflicts or compliance issues. Use when preparing for open-source release, during compliance audits, or when adding new dependencies to verify license compatibility."
+description: "Checks dependency licenses for compatibility conflicts and compliance issues. Use when preparing for open-source release, adding new dependencies, or running a compliance audit. Also applies when: 'check licenses', 'can I use this library', 'license conflict', 'are we GPL compatible', 'dependency compliance'."
 ---
 
 # License Compliance Checker
@@ -192,3 +192,8 @@ Notes:
 - This matrix applies to dependencies included in the distributed work.
 - DevDependencies are not distributed and are generally exempt from copyleft requirements.
 - When in doubt, consult a legal professional for authoritative guidance on license compatibility.
+
+## Related Skills
+
+- **dependency-audit** (eskill-coding): Run dependency-audit alongside this skill to combine license and vulnerability analysis of project dependencies.
+- **sbom-generator** (eskill-quality): Follow up with sbom-generator after this skill to include license data in the software bill of materials.

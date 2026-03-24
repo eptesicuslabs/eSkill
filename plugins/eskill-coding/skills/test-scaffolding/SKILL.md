@@ -1,6 +1,6 @@
 ---
 name: test-scaffolding
-description: "Generates test file scaffolds by analyzing code structure through LSP symbols and AST patterns. Use when adding tests to untested code, bootstrapping test suites for new projects, or expanding test coverage."
+description: "Generates test file skeletons by inspecting source code via LSP and AST. Use when adding tests to untested files, bootstrapping a test suite, or expanding coverage. Also applies when: 'scaffold tests for this file', 'generate test stubs', 'create unit tests', 'need tests for this code'."
 ---
 
 # Test Scaffolding
@@ -171,3 +171,8 @@ If no existing test files are found, default to a `__tests__/` directory for Jav
 - The generated scaffold is a starting point. Developers must fill in the actual test logic.
 - For complex functions with many dependencies, the scaffold includes mock setup boilerplate but does not guess mock return values.
 - If the source file has no exports, report this to the user and suggest testing through the module's public entry point instead.
+
+## Related Skills
+
+- **integration-test-generation** (eskill-coding): Follow up with integration-test-generation after this skill to extend unit test scaffolds into integration tests.
+- **coverage-threshold-check** (eskill-coding): Follow up with coverage-threshold-check after this skill to verify the new tests meet project coverage targets.

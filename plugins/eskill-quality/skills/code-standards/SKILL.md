@@ -1,6 +1,6 @@
 ---
 name: code-standards
-description: "Enforces coding standards by analyzing code against configurable rule sets using AST patterns and LSP diagnostics. Use when establishing code quality standards for a project, reviewing code for convention compliance, or onboarding a team to consistent coding practices."
+description: "Analyzes code against linter configs and convention rules to produce a quality report. Use when enforcing project standards, reviewing code for style violations, or onboarding to consistent practices. Also applies when: 'check lint rules', 'are we following conventions', 'style check', 'formatting issues', 'code quality'."
 ---
 
 # Code Standards Enforcement
@@ -204,6 +204,14 @@ Based on the findings, recommend additions to existing linter/formatter configur
 4. Present suggestions as specific configuration snippets that can be added to existing config files.
 5. Note any rule conflicts between suggestions and existing configuration.
 
+## Safety Protocol
+
+1. This skill produces a report. It does not auto-fix code by default.
+2. If the user asks to apply fixes, present each proposed change in diff format before modifying any file.
+3. Group fixes by category (formatting, imports, naming) and apply one category at a time with user confirmation between each.
+4. Never apply fixes that change program behavior (e.g., removing "dead code" that may be used via reflection). Only auto-fix purely cosmetic issues (whitespace, import ordering, formatting).
+5. After applying fixes, re-run the relevant linter to confirm the fixes resolved the findings without introducing new ones.
+
 ## Reference: Common Rule Thresholds
 
 These are sensible defaults. Adjust based on project conventions.
@@ -217,3 +225,8 @@ These are sensible defaults. Adjust based on project conventions.
 | Max function parameters  | 5                 | Consider using an options object          |
 | Max nesting depth        | 4                 | Deep nesting harms readability           |
 | Max line length          | 120               | Defer to formatter if configured         |
+
+## Related Skills
+
+- **code-review-prep** (eskill-coding): Run code-review-prep after this skill to verify that standards violations are addressed before review.
+- **refactoring-workflow** (eskill-coding): Follow up with refactoring-workflow after this skill to systematically fix code standards violations across the codebase.

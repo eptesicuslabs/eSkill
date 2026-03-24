@@ -1,6 +1,6 @@
 ---
 name: report-builder
-description: "Compiles structured reports from multiple data sources with embedded diagrams, tables, and cross-references. Use when creating status reports, analysis summaries, project documentation, or any structured document that combines narrative with data."
+description: "Compiles structured markdown reports from multiple data sources with diagrams, tables, and cross-references. Use when assembling a status report, analysis summary, or document that combines narrative with data. Also applies when: build a report, create project summary, write status update."
 ---
 
 # Report Builder
@@ -306,3 +306,8 @@ The following template serves as a starting point. Adapt it to the specific repo
   with more than 50 rows in the main report body.
 - **Conflicting data**: If different sources provide contradictory numbers for the same
   metric, flag the discrepancy in the report and note which source was used.
+
+## Related Skills
+
+- **diagram-from-code** (eskill-office): Run diagram-from-code before this skill to generate diagrams that can be embedded in the report.
+- **data-pipeline** (eskill-office): Run data-pipeline before this skill to prepare the data that the report will present.

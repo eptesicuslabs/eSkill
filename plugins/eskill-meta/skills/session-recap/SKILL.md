@@ -1,6 +1,6 @@
 ---
 name: session-recap
-description: "Summarizes work completed in the current session including code changes, decisions made, and items remaining. Use at the end of work sessions, when creating handoff notes, or when the user wants a summary of progress."
+description: "Summarizes work completed in the current session including code changes, decisions, and remaining items. Use at the end of a work session or when creating a progress summary. Also applies when: what did I do today, recap this session, summarize my changes, end of day summary."
 ---
 
 # Session Recap
@@ -244,3 +244,8 @@ Before presenting the recap, verify:
 3. No sensitive information (credentials, tokens) appears in the recap
 4. The recap is readable by someone who was not present during the session
 5. Remaining items are actionable (specific enough to act on)
+
+## Related Skills
+
+- **context-export** (eskill-intelligence): Follow up with context-export after this skill to package the session recap for use in future sessions.
+- **retrospective-report** (eskill-meta): Follow up with retrospective-report after this skill to analyze patterns across multiple session recaps.

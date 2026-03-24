@@ -1,6 +1,6 @@
 ---
 name: learning-navigator
-description: "Guides systematic exploration of unfamiliar codebases or technologies with progressive depth and structured learning paths. Use when onboarding to new projects, learning new frameworks, understanding complex systems, or studying open-source codebases."
+description: "Guides systematic exploration of unfamiliar codebases with progressive depth levels and structured learning paths. Use when joining a project, studying a new framework, or navigating complex code. Also applies when: I'm new to this codebase, onboarding, help me understand this project, explore unfamiliar code."
 ---
 
 # Learning Navigator
@@ -228,3 +228,8 @@ These are effective strategies for understanding code. Apply them during explora
 - Resist the urge to understand everything. Focus on understanding enough to achieve the learning goal. Complete understanding of a large codebase is neither necessary nor practical.
 - Take notes continuously. Insights that seem obvious during exploration are easily forgotten. The learning journal serves as persistent memory.
 - When encountering unfamiliar technologies or patterns, note them for separate study rather than derailing the current exploration. The research-workflow skill can be used for deep dives into specific technologies.
+
+## Related Skills
+
+- **codebase-cartography** (eskill-intelligence): Run codebase-cartography before this skill to map the codebase structure that learning paths will traverse.
+- **knowledge-graph-build** (eskill-intelligence): Run knowledge-graph-build before this skill to provide the concept relationships that inform learning sequences.

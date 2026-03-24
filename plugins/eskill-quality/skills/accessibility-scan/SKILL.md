@@ -1,6 +1,6 @@
 ---
 name: accessibility-scan
-description: "Scans frontend code for accessibility issues against WCAG guidelines using AST pattern matching on HTML, JSX, and template files. Use when auditing web accessibility, preparing for accessibility reviews, or checking components for common a11y violations."
+description: "Scans HTML, JSX, Vue, and Svelte files for WCAG accessibility violations. Use when auditing web accessibility, preparing for a11y reviews, or checking new components for issues. Also applies when: 'check accessibility', 'missing alt tags', 'a11y audit', 'WCAG compliance', 'screen reader support'."
 ---
 
 # Accessibility Scanner
@@ -278,3 +278,8 @@ Provide an actionable overview at the top of the report.
 | 3.1.1     | A     | Language of Page                               | Missing lang attribute                  |
 | 3.3.2     | A     | Labels or Instructions                         | Unlabeled form controls                 |
 | 4.1.2     | A     | Name, Role, Value                              | Custom widgets without ARIA             |
+
+## Related Skills
+
+- **design-system-audit** (eskill-frontend): Run design-system-audit alongside this skill to check that design system components meet accessibility standards.
+- **code-standards** (eskill-quality): Run code-standards alongside this skill to enforce accessibility-related coding conventions.

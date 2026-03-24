@@ -1,6 +1,6 @@
 ---
 name: dependency-audit
-description: "Audits project dependencies for outdated versions, security advisories, unused packages, and license conflicts. Use when reviewing dependency health, before major upgrades, or during periodic maintenance."
+description: "Audits dependencies for vulnerabilities, outdated versions, unused packages, and license issues. Use when checking security advisories, planning a major upgrade, or cleaning unused deps. Also applies when: 'audit dependencies', 'vulnerable packages', 'which deps are outdated', 'find unused deps'."
 ---
 
 # Dependency Audit
@@ -181,3 +181,9 @@ For outdated packages that are not vulnerable, prioritize based on:
 2. Bug fixes relevant to the project.
 3. New features the project could benefit from.
 4. Major version upgrades (suggest these as separate tasks due to potential breaking changes).
+
+## Related Skills
+
+- **security-scan** (eskill-quality): Run security-scan alongside this skill to cover both dependency and source code vulnerabilities.
+- **license-check** (eskill-quality): Run license-check alongside this skill to verify dependency licenses comply with project requirements.
+- **sbom-generator** (eskill-quality): Follow up with sbom-generator after this skill to produce a formal software bill of materials from the audit results.

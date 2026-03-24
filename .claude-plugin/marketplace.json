@@ -5,7 +5,7 @@
     "email": "contact@eptesicus.dev"
   },
   "metadata": {
-    "description": "Claude Code skills, subagents, and hooks for coding, office, system, intelligence, devops, quality, and workflow automation. Designed to complement eMCP local MCP servers.",
+    "description": "Skills and hooks for the eAgent platform covering coding, office, system, intelligence, devops, quality, frontend, API, testing, and workflow automation. Designed to complement eMCP local MCP servers.",
     "version": "0.1.0",
     "pluginRoot": "./plugins"
   },
@@ -72,6 +72,33 @@
       "license": "MIT",
       "category": "workflow",
       "keywords": ["project", "changelog", "session", "health", "issues", "scaffolding"]
+    },
+    {
+      "name": "eskill-frontend",
+      "source": "./eskill-frontend",
+      "description": "Frontend auditing for performance, accessibility, design system compliance, responsive design, CSS quality, and component architecture.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "frontend",
+      "keywords": ["frontend", "accessibility", "performance", "css", "responsive", "design-system"]
+    },
+    {
+      "name": "eskill-api",
+      "source": "./eskill-api",
+      "description": "API compatibility checking, versioning strategy, schema validation, documentation generation, endpoint testing, and contract verification.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "development",
+      "keywords": ["api", "compatibility", "versioning", "schema", "documentation", "contracts"]
+    },
+    {
+      "name": "eskill-testing",
+      "source": "./eskill-testing",
+      "description": "Test strategy design, coverage analysis, test generation, mutation testing, quality gates, and test infrastructure management.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "testing",
+      "keywords": ["testing", "coverage", "test-generation", "mutation", "quality", "strategy"]
     }
   ]
 }

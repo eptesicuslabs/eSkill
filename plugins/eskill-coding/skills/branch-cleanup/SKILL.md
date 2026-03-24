@@ -1,6 +1,6 @@
 ---
 name: branch-cleanup
-description: "Identifies and manages stale git branches by analyzing merge status, last activity, and remote tracking state. Use during repository maintenance, before releases, or when the branch list becomes unwieldy."
+description: "Identifies stale and merged git branches and produces a prioritized cleanup plan. Use when the branch list is cluttered, during repo maintenance, or before a release. Also applies when: 'too many branches', 'clean up old branches', 'which branches can I delete', 'remove merged branches'."
 ---
 
 # Branch Cleanup
@@ -182,3 +182,8 @@ git remote prune origin
 - **Never delete protected branches.** These include main, master, develop, and release branches.
 - **Preserve unmerged work.** Stale unmerged branches may contain valuable work. Always flag them for review rather than suggesting immediate deletion.
 - **Prefer -d over -D.** Use `git branch -d` (lowercase) which refuses to delete unmerged branches, as an additional safety net. Only suggest `-D` (uppercase, force delete) when the user has explicitly confirmed the branch should be deleted despite being unmerged.
+
+## Related Skills
+
+- **release-workflow** (eskill-devops): Run release-workflow before this skill to finalize releases before cleaning up stale branches.
+- **changelog-generation** (eskill-coding): Run changelog-generation before this skill to capture branch history before branches are removed.

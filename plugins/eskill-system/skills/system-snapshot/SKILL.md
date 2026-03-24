@@ -1,6 +1,6 @@
 ---
 name: system-snapshot
-description: "Captures a comprehensive snapshot of system state including OS info, running processes, disk usage, and environment configuration. Use when documenting system configurations, creating diagnostic reports, preparing bug reports, or establishing baselines before changes."
+description: "Captures a timestamped record of OS, processes, disk, Docker state, and tool versions. Use when documenting a machine before upgrades, preparing a detailed bug report, or establishing a performance baseline. Also applies when: 'snapshot my system', 'what is running on this machine', 'system report', 'capture environment state', 'diagnostic dump'."
 ---
 
 # System Snapshot
@@ -239,3 +239,8 @@ Adjust column widths and content based on actual data. Omit sections that have n
 - Execution time depends on the number of tools to check and containers to inspect. Expect 10-30 seconds for a typical developer workstation.
 - If a particular data collection step fails (e.g., a command hangs or returns an error), log the failure within the snapshot rather than aborting. A partial snapshot is more useful than no snapshot.
 - Snapshots can be compared over time. Two snapshots taken before and after a change can be diffed to identify exactly what changed.
+
+## Related Skills
+
+- **environment-validate** (eskill-system): Run environment-validate alongside this skill to combine system state capture with requirements validation.
+- **process-analysis** (eskill-system): Follow up with process-analysis after this skill to investigate any anomalies found in the system snapshot.

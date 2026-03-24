@@ -1,6 +1,6 @@
 ---
 name: security-scan
-description: "Scans code for common security vulnerabilities using AST pattern matching against OWASP Top 10 categories and language-specific security anti-patterns. Use when auditing code security, preparing for security reviews, or checking new code for vulnerability patterns."
+description: "Scans source code for security vulnerabilities against OWASP Top 10 patterns. Use when auditing code before release, reviewing PRs for security holes, or checking for credential leaks. Also applies when: 'find security issues', 'check for vulnerabilities', 'any hardcoded secrets', 'scan for injection flaws', 'security review'."
 ---
 
 # Security Vulnerability Scanner
@@ -219,3 +219,9 @@ Deserialization detection:
 - Pattern: `yaml.load` without `Loader=SafeLoader` keyword argument.
 
 These patterns serve as starting points. Adapt and extend them based on the specific frameworks and libraries used in the target project.
+
+## Related Skills
+
+- **code-review-prep** (eskill-coding): Follow up with code-review-prep after this skill to include security findings in the code review summary.
+- **dependency-audit** (eskill-coding): Run dependency-audit alongside this skill to cover both source code and dependency vulnerabilities.
+- **secrets-remediation** (eskill-quality): Follow up with secrets-remediation after this skill to rotate and remove any hardcoded secrets that were detected.

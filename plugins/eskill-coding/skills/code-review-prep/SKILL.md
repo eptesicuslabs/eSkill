@@ -1,6 +1,6 @@
 ---
 name: code-review-prep
-description: "Prepares comprehensive code review summaries by analyzing git diffs with LSP and AST context. Use before code review sessions, when submitting pull requests, or when reviewing others' changes."
+description: "Builds a structured code review summary from git diffs with LSP and AST context. Use when preparing a PR for review, analyzing impact of a branch's changes, or identifying high-risk areas before merging. Also applies when: 'review my changes', 'summarize this diff', 'what did this branch change'."
 ---
 
 # Code Review Preparation
@@ -156,3 +156,9 @@ The review summary format can be adapted based on the project's review culture:
 - **PR descriptions**: Format as a pull request body with markdown.
 
 When the user specifies a preference, adjust the verbosity and format accordingly.
+
+## Related Skills
+
+- **test-scaffolding** (eskill-coding): Run test-scaffolding before this skill to ensure new code has test coverage for reviewers to evaluate.
+- **security-scan** (eskill-quality): Run security-scan before this skill to include vulnerability findings in the review summary.
+- **code-standards** (eskill-quality): Run code-standards before this skill to catch style violations before the review begins.

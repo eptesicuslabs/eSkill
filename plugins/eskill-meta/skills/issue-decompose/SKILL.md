@@ -1,6 +1,6 @@
 ---
 name: issue-decompose
-description: "Breaks down complex issues or feature requests into actionable subtasks with dependencies, effort estimates, and priority assignments. Use when planning work on large features, decomposing complex bug fixes, or creating sprint backlogs from high-level requirements."
+description: "Breaks down complex issues into actionable subtasks with dependencies, effort estimates, and priorities. Use when planning a large feature, preparing a sprint backlog, or scoping a complex bug fix. Also applies when: break this down, split into subtasks, decompose this ticket, estimate effort."
 ---
 
 # Issue Decompose
@@ -327,3 +327,8 @@ Present the work breakdown to the user and ask if they want to:
 - If the codebase exploration reveals that the issue is fundamentally different from what was described, report the findings and propose an updated scope
 - If dependencies create unavoidable complexity, suggest a phased approach (Phase 1: minimum viable, Phase 2: full implementation)
 - If the estimated effort exceeds what the user expected, present the breakdown transparently and discuss which subtasks could be deferred
+
+## Related Skills
+
+- **codebase-cartography** (eskill-intelligence): Run codebase-cartography before this skill to understand the codebase areas affected by the issue.
+- **tech-debt-tracker** (eskill-intelligence): Follow up with tech-debt-tracker after this skill to log any technical debt discovered during issue analysis.

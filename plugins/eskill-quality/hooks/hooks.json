@@ -10,6 +10,16 @@
             "model": "haiku"
           }
         ]
+      },
+      {
+        "matcher": "^Write$",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Check if the Write tool is creating a file matching sensitive patterns: .env, *.pem, *.key, *credentials*, *secret*. Also check if the file content exceeds 10KB which may indicate accidental binary or data dump writes. If the file matches a sensitive pattern, respond BLOCK with a warning explaining that sensitive files should not be written to the repository. If the file is oversized, respond BLOCK with a note about the file size. If safe, respond ALLOW.",
+            "model": "haiku"
+          }
+        ]
       }
     ]
   }

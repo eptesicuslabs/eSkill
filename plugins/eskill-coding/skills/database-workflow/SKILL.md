@@ -1,6 +1,6 @@
 ---
 name: database-workflow
-description: "Plans and validates database schema changes with migration scripts and rollback strategies. Use when modifying database schemas, planning migrations, creating new tables, or reviewing existing schema structure."
+description: "Plans and validates database schema changes with migration and rollback scripts. Use when writing a schema migration, altering a table, or adding columns to an existing database. Also applies when: 'schema migration', 'alter table', 'add column', 'database change', 'create a migration for this'."
 ---
 
 # Database Workflow
@@ -194,6 +194,20 @@ Read existing migration files to detect the project's naming convention and numb
 
 If the project uses an ORM with model definitions (Prisma, Django, Sequelize), generate the model change in addition to or instead of raw SQL, as appropriate.
 
+## Safety Protocol
+
+Before executing any SQL statement via `sql_execute`:
+1. Present the complete SQL to the user and wait for explicit confirmation.
+2. Never execute destructive statements (DROP TABLE, DROP COLUMN, DELETE FROM, TRUNCATE) without the user explicitly approving the specific statement.
+3. After each migration step, verify the result with `sql_describe_table` before proceeding to the next step.
+4. If any validation fails, stop and report the failure. Do not proceed with dependent steps.
+5. Keep the "before" schema snapshot from Step 1 available throughout the workflow so the user can compare at any point.
+
 ## Note on Database Compatibility
 
 This skill works directly with SQLite via the eMCP sql tools. For PostgreSQL, MySQL, SQL Server, and other databases, it generates SQL scripts for manual review and execution. The generated SQL follows ANSI SQL where possible, with database-specific notes where syntax differs (e.g., `AUTOINCREMENT` vs `SERIAL`, `CONCURRENTLY` index creation).
+
+## Related Skills
+
+- **deployment-checklist** (eskill-devops): Follow up with deployment-checklist after this skill to verify migration steps are included in the deploy plan.
+- **code-review-prep** (eskill-coding): Follow up with code-review-prep after this skill to summarize schema and query changes for reviewers.

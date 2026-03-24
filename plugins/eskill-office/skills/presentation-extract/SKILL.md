@@ -1,6 +1,6 @@
 ---
 name: presentation-extract
-description: "Extracts content, speaker notes, and structure from PowerPoint files into organized markdown documents. Use when converting presentations to readable documents, extracting speaker notes as scripts, or archiving presentation content in text format."
+description: "Extracts slide content, speaker notes, and metadata from PPTX files into organized markdown. Use when converting a presentation to a readable document or pulling out speaker notes. Also applies when: extract slides from PowerPoint, get speaker notes, read this pptx file."
 ---
 
 # Presentation Extraction
@@ -263,3 +263,8 @@ After writing:
 - **Master slide and layout text**: Text from slide masters (e.g., footer text, company
   name) may repeat on every slide. Detect repeated text that appears identically on
   multiple slides and either deduplicate or note it once in the document header.
+
+## Related Skills
+
+- **document-to-markdown** (eskill-office): Follow up with document-to-markdown after this skill to convert extracted presentation content into structured markdown.
+- **report-builder** (eskill-office): Follow up with report-builder after this skill to reorganize extracted slides into a written report.

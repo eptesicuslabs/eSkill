@@ -1,6 +1,6 @@
 ---
 name: project-health
-description: "Generates a project health dashboard covering test results, code quality signals, dependency freshness, documentation completeness, and repository hygiene. Use for periodic health checks, sprint reviews, or when assessing overall project quality."
+description: "Generates a scored project health dashboard covering tests, code quality, dependencies, docs, and repo hygiene. Use for periodic checkups, sprint reviews, or before a major release. Also applies when: how healthy is this project, project status, code quality dashboard, run a health check."
 ---
 
 # Project Health Dashboard
@@ -321,3 +321,8 @@ The user may customize the health check:
 - LSP diagnostics require a running language server
 - The scoring formulas are heuristics, not industry-standard metrics
 - Historical trends require previous reports to be saved
+
+## Related Skills
+
+- **deployment-checklist** (eskill-devops): Follow up with deployment-checklist after this skill to address any health issues before the next deployment.
+- **shipping-readiness** (eskill-meta): Follow up with shipping-readiness after this skill to evaluate whether health metrics meet release criteria.

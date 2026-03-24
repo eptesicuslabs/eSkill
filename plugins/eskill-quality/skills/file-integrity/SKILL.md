@@ -1,6 +1,6 @@
 ---
 name: file-integrity
-description: "Creates and verifies checksum manifests for project files to detect unauthorized or accidental changes. Use when validating release artifacts, monitoring sensitive configuration files, or establishing baselines for change detection."
+description: "Creates and verifies SHA-256 checksum manifests to detect unauthorized or accidental file changes. Use when validating release artifacts, monitoring sensitive files, or establishing change-detection baselines. Also applies when: 'verify checksums', 'detect tampering', 'create manifest', 'file verification', 'integrity check'."
 ---
 
 # File Integrity Verification
@@ -213,3 +213,8 @@ Scope: `src/**/*`, `lib/**/*`, excluding test files if desired.
 Create a manifest of vendored dependencies (when using vendoring instead of a package manager). Verify to detect accidental or malicious modifications to vendored code.
 
 Scope: `vendor/**/*` or `third_party/**/*`.
+
+## Related Skills
+
+- **backup-workflow** (eskill-system): Run backup-workflow before this skill to establish baseline checksums that file-integrity can verify against.
+- **release-workflow** (eskill-devops): Run this skill before release-workflow to confirm file integrity before cutting a release.

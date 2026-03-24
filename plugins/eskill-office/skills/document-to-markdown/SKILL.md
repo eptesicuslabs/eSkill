@@ -1,6 +1,6 @@
 ---
 name: document-to-markdown
-description: "Converts documents in PDF, DOCX, and PPTX formats to clean, well-structured markdown. Use when migrating content to markdown-based systems, extracting text from documents for processing, or converting legacy documents to modern formats."
+description: "Converts PDF, DOCX, and PPTX files to clean structured markdown. Use when migrating documents to a markdown-based system or extracting text for processing. Also applies when: convert this PDF to markdown, extract text from Word doc, turn slides into a document."
 ---
 
 # Document to Markdown Conversion
@@ -202,3 +202,8 @@ Documents often contain embedded images that cannot be directly represented in m
   viewers.
 - **Empty documents**: If no content is extracted, write a minimal markdown file with the
   title and a note that the document appeared to be empty.
+
+## Related Skills
+
+- **report-builder** (eskill-office): Follow up with report-builder after this skill to restructure the converted markdown into a formatted report.
+- **knowledge-graph-build** (eskill-intelligence): Follow up with knowledge-graph-build after this skill to extract entities and relationships from the converted documents.

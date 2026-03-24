@@ -1,0 +1,11 @@
+{
+  "name": "eskill-api",
+  "version": "0.1.0",
+  "description": "OpenAPI validation, contract testing, GraphQL schema review, API versioning, load test scaffolding, and mock server generation.",
+  "author": {
+    "name": "Eptesicus Laboratories"
+  },
+  "repository": "https://github.com/eptesicuslabs/eSkill",
+  "license": "MIT",
+  "keywords": ["api", "openapi", "graphql", "contract-testing", "load-testing", "mock-server", "rest"]
+}

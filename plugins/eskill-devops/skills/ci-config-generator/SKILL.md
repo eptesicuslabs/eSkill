@@ -1,6 +1,6 @@
 ---
 name: ci-config-generator
-description: "Generates CI/CD pipeline configurations for GitHub Actions, GitLab CI, or similar platforms based on project structure and detected toolchain. Use when setting up continuous integration for a new project, adding pipeline stages, or migrating between CI platforms."
+description: "Generates CI/CD pipeline configs for GitHub Actions, GitLab CI, and other platforms. Use when setting up CI for a new project, adding pipeline stages, or migrating between CI platforms. Also applies when: 'create a GitHub Actions workflow', 'set up CI', 'add a build pipeline', 'generate CI config'."
 ---
 
 # CI/CD Configuration Generator
@@ -225,6 +225,13 @@ build:
 
 Adjust this template based on detected tooling and project structure.
 
+## Safety Protocol
+
+1. Before writing any CI configuration file, validate the generated YAML/Groovy syntax. Parse the output to confirm it is well-formed.
+2. Present the complete generated configuration to the user for review before writing to disk.
+3. If an existing CI configuration file is present, show a diff between the current file and the proposed changes. Do not overwrite without explicit user approval.
+4. After writing, run any available syntax validation tool (actionlint, gitlab-ci-lint) and report the result.
+
 ## Notes
 
 - Always prefer lock file-based installs (npm ci, yarn --frozen-lockfile) over regular installs in CI to ensure reproducible builds.
@@ -232,3 +239,8 @@ Adjust this template based on detected tooling and project structure.
 - Include timeout limits on jobs to prevent runaway builds.
 - Set `fail-fast: false` on matrix builds so that a failure in one combination does not cancel the others.
 - Add concurrency groups to cancel redundant runs on the same branch.
+
+## Related Skills
+
+- **project-scaffold** (eskill-meta): Run project-scaffold before this skill to establish the project structure that CI pipelines will build and test.
+- **deployment-checklist** (eskill-devops): Follow up with deployment-checklist after this skill to define the deployment steps the CI pipeline will execute.

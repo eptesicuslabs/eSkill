@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^Read$",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "This is a context budget check. If the conversation has been reading many large files (more than 20 file reads in this session), suggest that the user export context or summarize findings before continuing to prevent context window exhaustion. Respond ALLOW but include a brief note if the budget is getting high.",
+            "model": "haiku"
+          }
+        ]
+      }
+    ]
+  }
+}

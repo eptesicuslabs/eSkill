@@ -1,6 +1,6 @@
 ---
 name: knowledge-graph-build
-description: "Builds a local knowledge graph from project documentation, code comments, configuration files, and README content. Use when organizing scattered project knowledge, creating searchable project context, or preparing comprehensive onboarding materials."
+description: "Builds a knowledge graph in memory from project docs, code comments, configs, and READMEs. Use when organizing scattered project knowledge into a searchable structure or preparing onboarding context. Also applies when: index project knowledge, build a knowledge base, catalog project documentation."
 ---
 
 # Knowledge Graph Build
@@ -194,3 +194,8 @@ The summary document should contain:
 - Entity names should be normalized: use consistent casing and naming to avoid near-duplicates like "UserAuth" and "user-authentication".
 - For very large projects with extensive documentation, prioritize depth over breadth. Focus on the most referenced and most connected concepts first.
 - The knowledge graph is additive. Running this skill again on the same project should update existing entities rather than create duplicates. Use `search_nodes` to find existing entities before creating new ones.
+
+## Related Skills
+
+- **codebase-cartography** (eskill-intelligence): Run codebase-cartography before this skill to provide the structural data that feeds into the knowledge graph.
+- **context-export** (eskill-intelligence): Follow up with context-export after this skill to package the knowledge graph for sharing across sessions.

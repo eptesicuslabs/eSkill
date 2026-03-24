@@ -1,0 +1,11 @@
+{
+  "name": "eskill-frontend",
+  "version": "0.1.0",
+  "description": "Component scaffolding, design system auditing, responsive layout checking, bundle analysis, Storybook generation, and CSS optimization.",
+  "author": {
+    "name": "Eptesicus Laboratories"
+  },
+  "repository": "https://github.com/eptesicuslabs/eSkill",
+  "license": "MIT",
+  "keywords": ["frontend", "components", "design-system", "responsive", "bundle", "storybook", "css"]
+}

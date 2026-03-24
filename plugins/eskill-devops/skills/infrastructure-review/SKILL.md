@@ -1,6 +1,6 @@
 ---
 name: infrastructure-review
-description: "Reviews infrastructure-as-code files for best practices, security issues, and potential misconfigurations. Supports Terraform, Docker Compose, Kubernetes manifests, and CloudFormation. Use when auditing infrastructure configurations, reviewing IaC changes, or establishing infrastructure standards."
+description: "Reviews IaC files for security issues and misconfigurations across Terraform, Docker Compose, K8s, and CloudFormation. Use when auditing infra configs or reviewing IaC changes. Also applies when: 'review my Terraform', 'check docker-compose', 'audit K8s manifests', 'is my infra secure'."
 ---
 
 # Infrastructure Review
@@ -244,3 +244,9 @@ Present the report to the user. For each finding, include:
 - Findings marked SUGGESTION are improvements that enhance maintainability and reliability.
 - When in doubt about a finding's severity, err on the side of caution and assign a higher severity.
 - Cross-environment comparisons are especially important before production deployments.
+
+## Related Skills
+
+- **configuration-audit** (eskill-quality): Run configuration-audit alongside this skill to verify application-level configs match infrastructure expectations.
+- **security-scan** (eskill-quality): Run security-scan alongside this skill to identify security misconfigurations in infrastructure code.
+- **terraform-module-review** (eskill-devops): Run terraform-module-review alongside this skill when the infrastructure uses Terraform modules.

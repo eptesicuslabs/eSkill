@@ -1,6 +1,6 @@
 ---
 name: diagram-from-code
-description: "Generates architecture and dependency diagrams from codebase structure using LSP and AST analysis, rendered as Mermaid or Graphviz via the diagram server. Use when documenting system architecture, visualizing module dependencies, or creating component relationship diagrams."
+description: "Generates architecture and dependency diagrams from codebase structure using AST and LSP analysis. Use when documenting system design or mapping how modules relate. Also applies when: visualize architecture, generate diagram, show dependencies, draw class diagram."
 ---
 
 # Diagram from Code
@@ -290,3 +290,8 @@ classDiagram
   useful. In such cases, focus on a specific subsystem or use higher-level grouping.
 - Generated diagrams represent a static snapshot. They do not capture runtime behavior,
   async flows, or event-driven interactions unless those patterns are explicitly modeled.
+
+## Related Skills
+
+- **codebase-cartography** (eskill-intelligence): Run codebase-cartography before this skill to map the codebase structure that diagrams will visualize.
+- **api-surface-map** (eskill-coding): Run api-surface-map before this skill to identify the API endpoints and data flows to include in diagrams.

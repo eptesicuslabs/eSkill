@@ -1,6 +1,6 @@
 # eSkill
 
-eSkill is a Claude Code plugin marketplace of skills, subagents, and hooks that compose [eMCP](https://github.com/eptesicuslabs/eMCP) server tools into higher-level workflows. Where eMCP provides the primitives (`git_log`, `ast_search`, `sql_query`), eSkill provides the orchestration (changelog generation, codebase cartography, deployment checklists).
+eSkill is the skill and workflow layer of the [eAgent](https://github.com/eptesicuslabs/eAgent) platform by Eptesicus Laboratories. It composes [eMCP](https://github.com/eptesicuslabs/eMCP) server tools into higher-level workflows. Where eMCP provides the primitives (`git_log`, `ast_search`, `sql_query`), eSkill provides the orchestration (changelog generation, codebase cartography, deployment checklists). The collection includes 10 plugins with 82 skills and 3 hooks covering development, operations, quality, and workflow automation.
 
 Both projects are local-only, MIT-licensed, and maintained by [Eptesicus Laboratories](https://github.com/eptesicuslabs).
 
@@ -20,35 +20,28 @@ crypto_hash_file + archive_create  -> backup-workflow
 ast_search + lsp_diagnostics       -> security-scan
 ```
 
-eMCP exposes 33 servers with ~130 tools. eSkill skills call sequences of those tools in deliberate order, handle edge cases, and produce structured output. A skill that wraps eMCP tools into a workflow is the intended use. A skill that reimplements what an eMCP server already does is waste.
+eMCP exposes 33 servers with ~130 tools. eSkill's 82 skills call sequences of those tools in deliberate order, handle edge cases, and produce structured output. A skill that wraps eMCP tools into a workflow is the intended use. A skill that reimplements what an eMCP server already does is waste.
 
 ## Installation
 
-Install the full marketplace:
-
-```
-claude plugin install --marketplace https://github.com/eptesicuslabs/eSkill
-```
-
-Install a single plugin:
-
-```
-claude plugin install https://github.com/eptesicuslabs/eSkill --plugin eskill-coding
-```
+eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` directory structure. See the [eAgent documentation](https://github.com/eptesicuslabs/eAgent) for integration details.
 
 ## Plugins
 
-| Plugin | Domain | Skills | Agents |
-|--------|--------|--------|--------|
-| [eskill-coding](plugins/eskill-coding) | Git workflows, code review, testing, refactoring, API design, database, performance | 10 | 2 |
-| [eskill-office](plugins/eskill-office) | Document conversion, data pipelines, diagrams, reports, presentations | 6 | - |
-| [eskill-system](plugins/eskill-system) | Environment setup, Docker, log analysis, system diagnostics, backups | 6 | 1 |
-| [eskill-intelligence](plugins/eskill-intelligence) | Codebase exploration, knowledge graphs, research, decisions, learning | 6 | 1 |
-| [eskill-devops](plugins/eskill-devops) | CI/CD, infrastructure review, deployment, releases, monitoring | 5 | 1 |
-| [eskill-quality](plugins/eskill-quality) | Security scanning, license compliance, code standards, accessibility | 6 | 1 |
-| [eskill-meta](plugins/eskill-meta) | Project scaffolding, changelogs, session recaps, health dashboards | 5 | - |
+| Plugin | Domain | Skills |
+|--------|--------|--------|
+| [eskill-coding](plugins/eskill-coding) | Git workflows, code review, testing, refactoring, API design, database, performance | 14 |
+| [eskill-office](plugins/eskill-office) | Document conversion, data pipelines, diagrams, reports, presentations | 9 |
+| [eskill-system](plugins/eskill-system) | Environment setup, Docker, log analysis, system diagnostics, backups | 8 |
+| [eskill-intelligence](plugins/eskill-intelligence) | Codebase exploration, knowledge graphs, research, decisions, learning | 8 |
+| [eskill-devops](plugins/eskill-devops) | CI/CD, infrastructure review, deployment, releases, monitoring | 9 |
+| [eskill-quality](plugins/eskill-quality) | Security scanning, license compliance, code standards, accessibility | 9 |
+| [eskill-meta](plugins/eskill-meta) | Project scaffolding, changelogs, session recaps, health dashboards | 7 |
+| [eskill-frontend](plugins/eskill-frontend) | Component scaffolding, design system, responsive layout, bundle analysis, CSS | 6 |
+| [eskill-api](plugins/eskill-api) | OpenAPI validation, contract testing, GraphQL, versioning, load testing, mocks | 6 |
+| [eskill-testing](plugins/eskill-testing) | E2E orchestration, mutation testing, test data, flaky tests, coverage, visual regression | 6 |
 
-**44 skills, 6 agents, 1 hook across 7 plugins.**
+**82 skills and 3 hooks across 10 plugins.**
 
 ## Skill Reference
 

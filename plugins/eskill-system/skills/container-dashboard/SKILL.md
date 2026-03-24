@@ -1,6 +1,6 @@
 ---
 name: container-dashboard
-description: "Generates a health overview of Docker containers including status, resource indicators, and recent log entries. Use when monitoring containerized applications, debugging container issues, or getting a quick status overview of running services."
+description: "Builds a health dashboard of all Docker containers with status, ports, restarts, and log excerpts. Use when monitoring containers, debugging a failing service, or checking system state. Also applies when: 'Docker status', 'are my containers healthy', 'container overview', 'which containers are running', 'why did my container crash'."
 ---
 
 # Container Dashboard
@@ -159,3 +159,8 @@ This ensures that critical container problems are surfaced even if the user is n
 - For containers managed by Docker Compose, include the service name from the `com.docker.compose.service` label alongside the container name.
 - If the system has a large number of containers (more than 20), provide a summary table first and only expand details for containers with issues. Offer to show full details for specific containers on request.
 - Respect container log verbosity. If a container produces extremely high log volume, note this as a finding (it may indicate debug logging left enabled in production).
+
+## Related Skills
+
+- **log-investigation** (eskill-system): Follow up with log-investigation after this skill to diagnose issues detected in container status.
+- **monitoring-config** (eskill-devops): Run monitoring-config alongside this skill to correlate container health with configured monitoring rules.

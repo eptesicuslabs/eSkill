@@ -1,6 +1,6 @@
 ---
 name: codebase-cartography
-description: "Maps codebase architecture by analyzing file structure, module dependencies, and component relationships into a navigable overview. Use when onboarding to a new codebase, documenting architecture, or understanding how modules connect."
+description: "Maps codebase architecture by analyzing file structure, dependencies, and component relationships into a navigable document. Use when documenting architecture or understanding how a project is organized. Also applies when: map this codebase, show me the architecture, how is this project structured."
 ---
 
 # Codebase Cartography
@@ -185,3 +185,8 @@ The document should include the following sections:
 - When the project uses a well-known framework, leverage knowledge of that framework's conventional structure to accelerate classification.
 - If the codebase lacks clear architectural boundaries, note this as an observation and classify based on the best available evidence.
 - Always present findings with confidence levels when classification is uncertain.
+
+## Related Skills
+
+- **diagram-from-code** (eskill-office): Follow up with diagram-from-code after this skill to visualize the mapped codebase structure as diagrams.
+- **learning-navigator** (eskill-intelligence): Follow up with learning-navigator after this skill to create a guided learning path through the mapped codebase.

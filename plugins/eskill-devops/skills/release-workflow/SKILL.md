@@ -1,6 +1,6 @@
 ---
 name: release-workflow
-description: "Manages the release process including version bumping, changelog generation, tag creation, and release notes compilation. Use when cutting releases, publishing new versions, or managing version numbers across project files."
+description: "Manages the release process: version bump, version file updates, tag creation, and release commit. Use when cutting a new release, bumping the version number, or tagging a release candidate. Also applies when: 'bump the version', 'cut a release', 'prepare a new version', 'tag a release'."
 ---
 
 # Release Workflow
@@ -253,3 +253,9 @@ Present the release notes to the user. These can be used when creating a release
 - If the project does not use conventional commits, fall back to listing all commit subjects without categorization.
 - For monorepos with multiple packages, the release process may need to be run per-package with independent version numbers.
 - Pre-release versions (alpha, beta, rc) follow semver pre-release rules and should not appear in the main CHANGELOG.md section.
+
+## Related Skills
+
+- **changelog-generation** (eskill-coding): Run changelog-generation before this skill to prepare release notes from commit history.
+- **deployment-checklist** (eskill-devops): Follow up with deployment-checklist after this skill to execute the deployment steps for the new release.
+- **branch-cleanup** (eskill-coding): Follow up with branch-cleanup after this skill to remove release branches that are no longer needed.

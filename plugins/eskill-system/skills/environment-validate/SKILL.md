@@ -1,6 +1,6 @@
 ---
 name: environment-validate
-description: "Validates development environment setup by checking tool versions, configurations, and dependencies against project requirements. Use when setting up new machines, onboarding developers, troubleshooting build failures, or verifying environment consistency across team members."
+description: "Validates tool versions and configs against project requirements and reports PASS/FAIL with fixes. Use when setting up a new machine, onboarding a developer, or troubleshooting build failures. Also applies when: 'check my setup', 'why won't it build', 'wrong node version', 'verify environment', 'dev setup broken'."
 ---
 
 # Environment Validate
@@ -164,3 +164,8 @@ For each FAIL result, provide specific remediation instructions:
 - **Stale lock files**: Suggest running the appropriate install command (`npm install`, `yarn install`, `pip install`, etc.) to regenerate the lock file.
 
 Present the report in a clear, scannable format. Use PASS, WARN, and FAIL markers consistently so the output is easy to parse both visually and programmatically.
+
+## Related Skills
+
+- **project-scaffold** (eskill-meta): Run project-scaffold before this skill to define the project requirements that environment validation will check.
+- **container-dashboard** (eskill-system): Follow up with container-dashboard after this skill to verify containerized services are running correctly.

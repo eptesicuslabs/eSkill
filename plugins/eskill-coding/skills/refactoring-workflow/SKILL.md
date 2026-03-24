@@ -1,6 +1,6 @@
 ---
 name: refactoring-workflow
-description: "Guides safe code refactoring with AST-based search and replace, reference tracking, and test verification loops. Use when renaming symbols, extracting functions or modules, inlining code, or restructuring project layout."
+description: "Guides safe refactoring with reference tracking and test verification loops. Use when renaming a symbol across files, extracting a function or module, or restructuring layout. Also applies when: 'refactor this', 'rename across all files', 'extract into its own module', 'move this function'."
 ---
 
 # Refactoring Workflow
@@ -132,3 +132,9 @@ Present the diff summary to the user for confirmation before committing.
 - **Preserve behavior.** A refactoring changes structure, not behavior. If behavior must change, that is a separate task.
 - **Watch for side effects.** Some refactorings (especially moves) can change module initialization order, which may have runtime effects even if tests pass.
 - **Communicate scope.** If the refactoring touches more files than expected, pause and confirm with the user before proceeding.
+
+## Related Skills
+
+- **test-scaffolding** (eskill-coding): Run test-scaffolding before this skill to establish a safety net for refactoring changes.
+- **dead-code-finder** (eskill-coding): Run dead-code-finder before this skill to identify removal candidates as part of the refactoring plan.
+- **code-review-prep** (eskill-coding): Follow up with code-review-prep after completing this skill to summarize refactoring changes for reviewers.

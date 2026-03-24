@@ -1,6 +1,6 @@
 ---
 name: changelog-generation
-description: "Generates structured changelogs from git commit history between refs or date ranges. Use when producing release notes, writing changelogs, or summarizing work done between versions or over a time period."
+description: "Generates a changelog from git history between two refs or date ranges. Use when producing release notes for a tag, summarizing commits between versions, or diffing work across sprints. Also applies when: 'generate changelog', 'what changed since last release', 'release notes from commits'."
 ---
 
 # Changelog Generation
@@ -149,3 +149,8 @@ Common footers include:
 - `Reviewed-by: <name>` -- review attribution
 
 This skill relies on authors following this convention. When commits do not follow it, the fallback grouping-by-file-area strategy ensures useful output regardless.
+
+## Related Skills
+
+- **release-workflow** (eskill-devops): Follow up with release-workflow after this skill to include the generated changelog in the release process.
+- **changelog-maintain** (eskill-meta): Follow up with changelog-maintain after this skill to integrate generated entries into the project changelog file.

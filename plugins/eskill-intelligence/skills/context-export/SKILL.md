@@ -1,6 +1,6 @@
 ---
 name: context-export
-description: "Exports project context and knowledge from memory into portable markdown summaries for session handoffs, onboarding documents, or project briefs. Use when switching between work sessions, handing off work to another developer, or creating project overview documents."
+description: "Exports project context from memory into a portable markdown document for handoffs or onboarding. Use when ending a session, transferring work to another developer, or creating a project brief. Also applies when: save context for later, hand off to another developer, export project knowledge, create handoff document."
 ---
 
 # Context Export
@@ -220,3 +220,8 @@ Review the exported document for completeness and usability.
 - For status reports, focus on "what was decided, what changed, and what is blocked." The reader needs to understand progress and risks.
 - If the memory graph is sparse, supplement with direct filesystem and git analysis. A useful context export can be produced even without prior knowledge graph construction, though it will be less rich.
 - Avoid including sensitive information (credentials, internal URLs, personal data) in the export. Scan the output for common patterns (.env values, API keys, passwords) before finalizing.
+
+## Related Skills
+
+- **session-recap** (eskill-meta): Run session-recap before this skill to summarize the session context that will be exported.
+- **knowledge-transfer-guide** (eskill-intelligence): Follow up with knowledge-transfer-guide after this skill to build a comprehensive handoff package from exported context.

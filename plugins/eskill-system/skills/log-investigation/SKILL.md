@@ -1,6 +1,6 @@
 ---
 name: log-investigation
-description: "Investigates issues by parsing log files, correlating errors with timestamps, and building incident timelines. Use when diagnosing production issues, analyzing application behavior, debugging intermittent failures, or performing post-incident analysis."
+description: "Parses log files, correlates errors across sources, and builds incident timelines with root-cause hypotheses. Use when diagnosing production outages, debugging intermittent failures, or running post-incident analysis. Also applies when: 'check the logs', 'what went wrong', 'find the error', 'debug production issue', 'why is it failing'."
 ---
 
 # Log Investigation
@@ -249,3 +249,8 @@ For reference during analysis, these are common patterns and what they typically
 - Errors immediately after deployment markers: the deployment introduced a bug.
 
 Always present findings with confidence levels. Distinguish between confirmed facts (directly observed in logs) and hypotheses (inferred from patterns). Recommend specific next steps for confirming or refuting each hypothesis.
+
+## Related Skills
+
+- **container-dashboard** (eskill-system): Run container-dashboard before this skill to identify which containers are producing error logs.
+- **monitoring-config** (eskill-devops): Follow up with monitoring-config after this skill to add alerting rules for the log patterns discovered.

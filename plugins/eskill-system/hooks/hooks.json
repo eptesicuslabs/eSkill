@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Check if the Bash command contains destructive patterns: rm -rf, DROP TABLE, DROP DATABASE, git push --force, git reset --hard, docker system prune, kubectl delete. If destructive, respond BLOCK with a warning explaining the risk. If safe, respond ALLOW.",
+            "model": "haiku"
+          }
+        ]
+      }
+    ]
+  }
+}

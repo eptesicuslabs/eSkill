@@ -1,6 +1,6 @@
 ---
 name: configuration-audit
-description: "Compares configuration files across environments to detect drift, inconsistencies, and potential issues. Use when debugging environment-specific issues, auditing infrastructure consistency, or verifying configuration after changes."
+description: "Compares config files across environments to detect drift and missing values. Use when debugging environment-specific failures, verifying configs after changes, or auditing infra consistency. Also applies when: 'config drift', 'environment mismatch', 'why does staging differ from production', 'compare env files', 'missing config key'."
 ---
 
 # Configuration Audit
@@ -201,3 +201,8 @@ Include the generated diffs from Step 6 as an appendix for reviewers who want to
 | Cache settings           | Appropriate TTLs per environment               | Stale data, performance issues         |
 | Rate limiting            | Configured in production                       | Denial of service                      |
 | Session configuration    | Secure settings in production                  | Session hijacking                      |
+
+## Related Skills
+
+- **deployment-checklist** (eskill-devops): Follow up with deployment-checklist after this skill to include configuration verification in the deploy process.
+- **infrastructure-review** (eskill-devops): Run infrastructure-review alongside this skill to audit both application and infrastructure configurations.

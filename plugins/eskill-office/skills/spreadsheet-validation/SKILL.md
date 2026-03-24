@@ -1,6 +1,6 @@
 ---
 name: spreadsheet-validation
-description: "Validates spreadsheet data against configurable rules and generates data quality reports with specific cell-level findings. Use when auditing data quality, verifying spreadsheet contents before import, or checking data consistency."
+description: "Validates spreadsheet and CSV data against configurable rules and produces cell-level quality reports. Use when auditing data before import, checking for missing or malformed values, or verifying consistency. Also applies when: check this spreadsheet for errors, validate CSV data, audit data quality."
 ---
 
 # Spreadsheet Validation
@@ -329,3 +329,8 @@ The complete report structure:
 - **Merged cells**: Merged cells may appear as a value in the first cell and blanks
   in the merged range. If a required-field rule flags blanks in a merged range, note
   this as a potential false positive.
+
+## Related Skills
+
+- **data-pipeline** (eskill-office): Follow up with data-pipeline after this skill to process the validated spreadsheet data.
+- **report-builder** (eskill-office): Follow up with report-builder after this skill to summarize validation results in a formatted report.

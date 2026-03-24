@@ -1,6 +1,6 @@
 ---
 name: data-pipeline
-description: "Imports spreadsheet and CSV data into SQLite for querying, transformation, and export. Use when analyzing tabular data, performing data transformations, joining data from multiple sources, or when SQL queries are more appropriate than spreadsheet formulas."
+description: "Imports spreadsheet and CSV data into SQLite for querying, transformation, and export. Use when loading tabular data for SQL analysis or joining multiple sources. Also applies when: import CSV, analyze spreadsheet data, ETL, convert Excel to database, load data into SQLite."
 ---
 
 # Data Pipeline: Spreadsheet to SQLite
@@ -236,3 +236,8 @@ for reproducibility.
   suffix (e.g., `amount`, `amount_2`, `amount_3`).
 - **Extremely wide tables** (50+ columns): These are valid but may be difficult to work
   with. Suggest the user select specific columns rather than using `SELECT *`.
+
+## Related Skills
+
+- **spreadsheet-validation** (eskill-office): Run spreadsheet-validation before this skill to ensure input data quality before pipeline processing.
+- **report-builder** (eskill-office): Follow up with report-builder after this skill to present pipeline output in a formatted report.

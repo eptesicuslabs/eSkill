@@ -1,6 +1,6 @@
 ---
 name: changelog-maintain
-description: "Maintains CHANGELOG.md files following the Keep a Changelog format with automated entry generation from git history and manual entry support. Use when updating changelogs for releases, adding notable changes, or initializing a changelog for an existing project."
+description: "Maintains an existing CHANGELOG.md by adding entries, cutting releases, and validating format per Keep a Changelog. Use when appending a new change entry, preparing a release section, or initializing a changelog. Also applies when: update the changelog, add to changelog, cut a release, create CHANGELOG.md."
 ---
 
 # Changelog Maintain
@@ -237,3 +237,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Pre-existing non-standard changelog**: Attempt to parse it, but warn the user about deviations from the standard format and offer to reformat
 - **Monorepo changelogs**: If the project is a monorepo, each package may have its own CHANGELOG.md. Ask the user which package they are targeting
 - **Amending a released version**: Do not modify released version sections. If the user needs to correct a released entry, add a note under the next Unreleased or advise them to use a patch release instead
+
+## Related Skills
+
+- **changelog-generation** (eskill-coding): Run changelog-generation before this skill to produce the entries that will be integrated into the changelog file.
+- **release-workflow** (eskill-devops): Follow up with release-workflow after this skill to include the updated changelog in the next release.

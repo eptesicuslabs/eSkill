@@ -1,6 +1,6 @@
 ---
 name: backup-workflow
-description: "Creates verified backups of project files and databases with checksums, integrity verification, and rotation management. Use when backing up project files before risky changes, creating release archives, or establishing periodic backup routines."
+description: "Creates timestamped, checksummed backups of project files and databases with manifest tracking. Use when backing up before risky changes, creating release archives, or managing backup rotation. Also applies when: 'back up my project', 'save a snapshot before refactor', 'archive this release', 'create a backup', 'safe copy before deploy'."
 ---
 
 # Backup Workflow
@@ -258,3 +258,8 @@ If the backup contains sensitive data, recommend encrypting the archive. Note th
 ### Remote Storage
 
 After creating a local backup, the user may want to copy it to remote storage (cloud storage, NAS, etc.). This skill does not handle remote transfers, but the archive and manifest are designed to be portable. Suggest appropriate transfer methods based on the platform.
+
+## Related Skills
+
+- **file-integrity** (eskill-quality): Follow up with file-integrity after this skill to verify backup checksums and confirm data integrity.
+- **disaster-recovery-plan** (eskill-devops): Follow up with disaster-recovery-plan after this skill to document the backup procedures in the recovery plan.

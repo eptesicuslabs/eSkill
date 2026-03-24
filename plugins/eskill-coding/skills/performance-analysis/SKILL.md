@@ -1,6 +1,6 @@
 ---
 name: performance-analysis
-description: "Guides performance analysis through profiling, benchmarking, and bottleneck identification workflows. Use when investigating slow code, optimizing critical paths, or establishing performance baselines."
+description: "Guides performance investigation via profiling, benchmarking, and bottleneck identification. Use when an endpoint is slow, memory usage is high, or you need a baseline. Also applies when: 'why is this slow', 'profile this code', 'find the bottleneck', 'optimize performance', 'benchmark this'."
 ---
 
 # Performance Analysis
@@ -258,3 +258,8 @@ If the improvement is insufficient, return to Step 5 and look for the next bottl
 - Optimize the biggest bottleneck first. Do not micro-optimize code that accounts for 1% of execution time.
 - Consider the tradeoffs: caching uses memory, batching adds complexity, parallelism adds concurrency concerns.
 - Document the performance baseline and improvements for future reference.
+
+## Related Skills
+
+- **n-plus-one-detector** (eskill-coding): Run n-plus-one-detector before this skill to identify database query bottlenecks contributing to performance issues.
+- **bundle-analysis** (eskill-frontend): Run bundle-analysis alongside this skill to assess frontend asset sizes as part of the performance review.
