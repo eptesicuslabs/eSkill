@@ -1,26 +1,26 @@
 # eSkill
 
-eSkill is the skill and workflow layer of the [eAgent](https://github.com/eptesicuslabs/eAgent) platform by Eptesicus Laboratories. It composes [eMCP](https://github.com/eptesicuslabs/eMCP) server tools into higher-level workflows. Where eMCP provides the primitives (`git_log`, `ast_search`, `sql_query`), eSkill provides the orchestration (changelog generation, codebase cartography, deployment checklists). The collection includes 10 plugins with 82 skills and 3 hooks covering development, operations, quality, and workflow automation.
+eSkill is the skill and workflow layer of the [eAgent](https://github.com/eptesicuslabs/eAgent) platform. It composes [eMCP](https://github.com/eptesicuslabs/eMCP) server tools into higher-level workflows — where eMCP provides primitives (`git_log`, `ast_search`, `sql_query`), eSkill provides orchestration (changelog generation, codebase cartography, deployment checklists).
 
-Both projects are local-only, MIT-licensed, and maintained by [Eptesicus Laboratories](https://github.com/eptesicuslabs).
+10 plugins. 83 skills. 3 hooks. Local-only, MIT-licensed.
 
-## How eMCP and eSkill Relate
+## Architecture
 
 ```
-eMCP (tools)                          eSkill (workflows)
-─────────────────────────             ─────────────────────────
-git_log + git_show                 -> changelog-generation
-git_diff + lsp_references + ast    -> code-review-prep
-ast_search + ast_rewrite + test    -> refactoring-workflow
-pdf_read + docx_read + pptx_read   -> document-to-markdown
-lsp_symbols + ast_search + diagram -> diagram-from-code
-docker_ps + docker_logs + log_*    -> container-dashboard
-memory + docs + fetch + reasoning  -> research-workflow
-crypto_hash_file + archive_create  -> backup-workflow
-ast_search + lsp_diagnostics       -> security-scan
+eMCP (primitives)                       eSkill (orchestration)
+────────────────────────────────        ────────────────────────────────
+git_log + git_show                   -> changelog-generation
+git_diff + lsp_references + ast      -> code-review-prep
+ast_search + ast_rewrite + test      -> refactoring-workflow
+pdf_read + docx_read + pptx_read     -> document-to-markdown
+lsp_symbols + ast_search + diagram   -> diagram-from-code
+docker_ps + docker_logs + log_*      -> container-dashboard
+memory + docs + fetch + reasoning    -> research-workflow
+crypto_hash_file + archive_create    -> backup-workflow
+ast_search + lsp_diagnostics         -> security-scan
 ```
 
-eMCP exposes 33 servers with ~130 tools. eSkill's 82 skills call sequences of those tools in deliberate order, handle edge cases, and produce structured output. A skill that wraps eMCP tools into a workflow is the intended use. A skill that reimplements what an eMCP server already does is waste.
+eMCP exposes 33 servers with approximately 130 tools. eSkill's 83 skills call sequences of those tools in deliberate order, handle edge cases, and produce structured output. A skill that composes eMCP tools into a workflow is the intended design. A skill that reimplements what an eMCP server already provides is waste.
 
 ## Installation
 
@@ -29,19 +29,17 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 ## Plugins
 
 | Plugin | Domain | Skills |
-|--------|--------|--------|
-| [eskill-coding](plugins/eskill-coding) | Git workflows, code review, testing, refactoring, API design, database, performance | 14 |
-| [eskill-office](plugins/eskill-office) | Document conversion, data pipelines, diagrams, reports, presentations | 9 |
+|--------|--------|-------:|
+| [eskill-coding](plugins/eskill-coding) | Git workflows, code review, refactoring, database, performance | 14 |
+| [eskill-office](plugins/eskill-office) | Document conversion, data pipelines, diagrams, reports | 9 |
 | [eskill-system](plugins/eskill-system) | Environment setup, Docker, log analysis, system diagnostics, backups | 8 |
-| [eskill-intelligence](plugins/eskill-intelligence) | Codebase exploration, knowledge graphs, research, decisions, learning | 8 |
+| [eskill-intelligence](plugins/eskill-intelligence) | Codebase exploration, knowledge graphs, research, decisions | 8 |
 | [eskill-devops](plugins/eskill-devops) | CI/CD, infrastructure review, deployment, releases, monitoring | 9 |
 | [eskill-quality](plugins/eskill-quality) | Security scanning, license compliance, code standards, accessibility | 9 |
+| [eskill-frontend](plugins/eskill-frontend) | Frontend design, component scaffolding, design system, responsive layout, CSS | 7 |
 | [eskill-meta](plugins/eskill-meta) | Project scaffolding, changelogs, session recaps, health dashboards | 7 |
-| [eskill-frontend](plugins/eskill-frontend) | Component scaffolding, design system, responsive layout, bundle analysis, CSS | 6 |
-| [eskill-api](plugins/eskill-api) | OpenAPI validation, contract testing, GraphQL, versioning, load testing, mocks | 6 |
-| [eskill-testing](plugins/eskill-testing) | E2E orchestration, mutation testing, test data, flaky tests, coverage, visual regression | 6 |
-
-**82 skills and 3 hooks across 10 plugins.**
+| [eskill-api](plugins/eskill-api) | OpenAPI validation, contract testing, GraphQL, versioning, mocks | 6 |
+| [eskill-testing](plugins/eskill-testing) | E2E orchestration, mutation testing, test data, flaky tests, coverage | 6 |
 
 ## Skill Reference
 
@@ -49,7 +47,7 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 
 | Skill | eMCP Servers | Description |
 |-------|-------------|-------------|
-| changelog-generation | git, markdown | Generate changelogs from git commit history between refs |
+| changelog-generation | git, markdown | Generate changelogs from commit history between refs |
 | code-review-prep | git, lsp, ast, diff | Prepare code review summaries from diffs with semantic context |
 | test-scaffolding | lsp, ast, filesystem, data-file | Generate test file scaffolds from code structure analysis |
 | refactoring-workflow | ast, lsp, test-runner, diff, filesystem | Safe refactoring with AST rewriting and test verification loops |
@@ -65,10 +63,10 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 | Skill | eMCP Servers | Description |
 |-------|-------------|-------------|
 | document-to-markdown | pdf, docx, pptx, ocr, filesystem | Convert PDF, DOCX, PPTX to clean markdown |
-| data-pipeline | spreadsheet, sqlite, filesystem | Import spreadsheet/CSV data into SQLite for querying and export |
+| data-pipeline | spreadsheet, sqlite, filesystem | Import spreadsheet and CSV data into SQLite for querying and export |
 | diagram-from-code | lsp, ast, diagram, filesystem | Generate architecture diagrams from codebase structure |
 | report-builder | spreadsheet, sqlite, log, git, diagram, markdown | Compile structured reports from multiple data sources |
-| presentation-extract | pptx, filesystem | Extract content and speaker notes from PowerPoint files |
+| presentation-extract | pptx, filesystem | Extract content and speaker notes from presentations |
 | spreadsheet-validation | spreadsheet, filesystem | Validate spreadsheet data against configurable rules |
 
 ### System
@@ -97,8 +95,8 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 
 | Skill | eMCP Servers | Description |
 |-------|-------------|-------------|
-| ci-config-generator | data-file, filesystem, shell | Generate CI/CD pipeline configs from project structure |
-| infrastructure-review | filesystem, data-file, diff | Review IaC files for best practices and security |
+| ci-config-generator | data-file, filesystem, shell | Generate CI/CD pipeline configurations from project structure |
+| infrastructure-review | filesystem, data-file, diff | Review infrastructure-as-code for best practices and security |
 | deployment-checklist | test-runner, shell, git, data-file, notify | Pre-deployment verification workflow |
 | release-workflow | git, data-file, diff, markdown | Version bumping, tagging, changelog, and release notes |
 | monitoring-config | ast, filesystem, data-file, log | Generate monitoring and alerting configurations |
@@ -110,9 +108,43 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 | security-scan | ast, filesystem, lsp | Scan code for OWASP Top 10 vulnerabilities using AST patterns |
 | license-check | data-file, filesystem, shell | Verify license compatibility across dependencies |
 | code-standards | ast, lsp, shell, filesystem | Enforce coding standards with AST and LSP analysis |
-| configuration-audit | data-file, filesystem, diff | Compare configs across environments to detect drift |
+| configuration-audit | data-file, filesystem, diff | Compare configurations across environments to detect drift |
 | file-integrity | crypto, filesystem | Create and verify checksum manifests for change detection |
 | accessibility-scan | ast, filesystem | Scan frontend code for WCAG accessibility violations |
+
+### Frontend
+
+| Skill | eMCP Servers | Description |
+|-------|-------------|-------------|
+| frontend-design | filesystem, ast, lsp, image, browser, fetch | Create production-grade frontend interfaces with high visual craft |
+| component-scaffold | filesystem, ast | Generate UI component scaffolds following project patterns |
+| design-system-audit | ast, filesystem | Audit UI code for design system consistency and token compliance |
+| responsive-layout-check | ast, filesystem | Analyze CSS and components for responsive design issues |
+| css-optimization | ast, filesystem | Identify CSS optimization opportunities and specificity conflicts |
+| bundle-analysis | data-file, filesystem, shell | Analyze bundle composition and dependency weight |
+| storybook-scaffold | ast, filesystem | Generate Storybook story files from component analysis |
+
+### API
+
+| Skill | eMCP Servers | Description |
+|-------|-------------|-------------|
+| openapi-validate | data-file, filesystem | Validate OpenAPI specifications against standards |
+| contract-testing | data-file, test-runner, filesystem | Generate and verify API contract tests |
+| graphql-audit | ast, filesystem, data-file | Audit GraphQL schemas and resolvers for best practices |
+| api-versioning | ast, filesystem, diff, git | Manage API version strategy and breaking change detection |
+| load-test-scaffold | filesystem, shell | Generate load testing configurations from API specifications |
+| mock-server-generate | data-file, filesystem | Generate mock API servers from OpenAPI or GraphQL schemas |
+
+### Testing
+
+| Skill | eMCP Servers | Description |
+|-------|-------------|-------------|
+| e2e-orchestration | test-runner, filesystem, shell, browser | Orchestrate end-to-end test suites with environment management |
+| mutation-testing | test-runner, ast, filesystem | Configure and analyze mutation testing for test quality |
+| test-data-factory | filesystem, ast, data-file | Generate test data factories from schema definitions |
+| flaky-test-detective | test-runner, git, log, filesystem | Identify and diagnose flaky tests from history and logs |
+| coverage-gap-analysis | test-runner, ast, lsp, filesystem | Identify untested code paths and generate targeted test suggestions |
+| visual-regression-setup | filesystem, shell, browser | Configure visual regression testing for UI components |
 
 ### Meta
 
@@ -126,10 +158,10 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 
 ## eMCP Server Coverage
 
-Every eMCP server is used by at least one eSkill skill. The following table shows full coverage:
+Every eMCP server is used by at least one skill.
 
-| eMCP Server | Tools Used | eSkill Plugins |
-|-------------|-----------|----------------|
+| eMCP Server | Tools | Plugins |
+|-------------|-------|---------|
 | `@emcp/server-filesystem` | `read_text`, `list_dir`, `tree`, `search_text`, `search_files`, `write_text`, `edit_text` | all |
 | `@emcp/server-git` | `git_status`, `git_log`, `git_diff`, `git_show`, `git_branches`, `git_tags` | coding, devops, meta, intelligence |
 | `@emcp/server-ast` | `ast_search`, `ast_rewrite` | coding, office, quality, intelligence |
@@ -154,11 +186,11 @@ Every eMCP server is used by at least one eSkill skill. The following table show
 | `@emcp/server-system` | `system_info`, `system_processes`, `system_disk`, `system_env` | system |
 | `@emcp/server-notify` | `notify_send` | system, devops |
 | `@emcp/server-docs` | `docs_index`, `docs_clone`, `docs_search` | intelligence |
-| `@emcp/server-fetch` | `fetch_url`, `extract_text` | intelligence |
+| `@emcp/server-fetch` | `fetch_url`, `extract_text` | intelligence, frontend |
 | `@emcp/server-task` | `task_create`, `task_list`, `task_tree` | meta |
 | `@emcp/server-ocr` | `ocr_image` | office |
-| `@emcp/server-browser` | `browser_search`, `browser_navigate` | intelligence |
-| `@emcp/server-image` | `image_info`, `image_resize` | office |
+| `@emcp/server-browser` | `browser_search`, `browser_navigate` | intelligence, frontend |
+| `@emcp/server-image` | `image_info`, `image_resize` | office, frontend |
 | `@emcp/server-media` | `media_info`, `media_convert` | office |
 | `@emcp/server-clipboard` | `clipboard_read`, `clipboard_write` | system |
 | `@emcp/server-computer-use` | `screen_screenshot`, `screen_click` | system |
@@ -166,11 +198,11 @@ Every eMCP server is used by at least one eSkill skill. The following table show
 
 ## Design Principles
 
-- **eMCP-complementary**: Skills compose eMCP server tools into workflows. A skill that wraps an MCP tool into a workflow is valuable. A skill that reimplements what an MCP server already does is waste.
-- **Local-only**: No SaaS dependencies or API keys. Everything runs on your machine.
-- **Cross-platform**: Windows, macOS, Linux. Forward slashes in all paths.
-- **Professional**: No decorative language. Minimalist and focused.
+- **eMCP-complementary.** Skills compose eMCP server tools into workflows. They do not reimplement what eMCP already provides.
+- **Local-only.** No SaaS dependencies or API keys. Everything runs on the local machine.
+- **Cross-platform.** Windows, macOS, Linux. Forward slashes in all paths.
+- **Minimal.** No decorative language, no unnecessary abstraction.
 
 ## License
 
-MIT -- Copyright (c) 2026 Eptesicus Laboratories
+MIT. Copyright (c) 2026 Eptesicus Laboratories.
