@@ -1,0 +1,137 @@
+# eARA Ultra Loop: eSkill adaptation from awesome-agent-skills
+# Composite metric: coverage (40%) + quality (60%)
+# The agent adapts skills from the reference corpus, measures improvement, keeps or discards.
+
+eara_version: "2.0"
+project: "eSkill skill adaptation"
+description: "Adapt patterns from awesome-agent-skills into eSkill format with coverage and quality scoring"
+
+strictness: ultra
+mode: loop
+
+metric:
+  name: "adaptation_score"
+  direction: higher
+  collect_command: "python scripts/measure_score.py"
+  baseline: null
+  target: null
+
+gates:
+  build:
+    command: "python scripts/validate_skills.py"
+    required: true
+  test:
+    command: "python scripts/validate_skills.py --strict"
+    required: true
+  lint:
+    command: "python scripts/validate_skills.py --lint"
+    required: true
+  spec_compliance:
+    type: subagent
+    required: true
+  no_regression:
+    command: "python scripts/validate_skills.py --no-regression"
+    required: true
+  test_before_ship:
+    enabled: true
+    required: true
+  post_merge_verification:
+    enabled: true
+    required: true
+  custom_gates:
+    - name: size_limit
+      command: "python scripts/validate_skills.py --max-lines 500"
+      required: true
+      description: "No skill file exceeds 500 lines"
+    - name: no_duplicates
+      command: "python scripts/validate_skills.py --no-duplicates"
+      required: true
+      description: "No duplicate skill names across plugins"
+    - name: has_workflow
+      command: "python scripts/validate_skills.py --require-workflow"
+      required: true
+      description: "Every skill must contain workflow steps, not just reference text"
+
+review:
+  default_policy: full
+  reviewers:
+    spec_compliance:
+      enabled: true
+    code_quality:
+      enabled: true
+    calibration:
+      enabled: true
+      sample_size: 3
+  evidence_requirements:
+    require_quotes: true
+    require_line_numbers: true
+    require_file_sizes: true
+  iterative_refinement:
+    enabled: true
+    max_iterations: 5
+  scored_criteria:
+    - name: coverage_breadth
+      weight: 0.4
+      threshold: 3
+      description: "How well the skill covers its domain. 1-3: narrow single-task. 4-6: covers common workflows. 7-10: comprehensive with edge cases."
+    - name: workflow_quality
+      weight: 0.35
+      threshold: 4
+      description: "Quality of workflow steps, decision trees, and tool orchestration. 1-3: flat checklist. 4-6: branching logic. 7-10: adaptive multi-path with safety loops."
+    - name: portability
+      weight: 0.25
+      threshold: 5
+      description: "Platform-agnostic design. 1-3: hardcoded to one platform. 4-6: mostly portable with minor assumptions. 7-10: clean SKILL.md, no platform lock-in."
+
+logging:
+  results_file: "results.tsv"
+  auto_log: true
+  log_dispatches: true
+  log_review_findings: true
+
+boundaries:
+  projects:
+    - name: "eSkill"
+      root: "/Projects/eSkill"
+      allowed_file_patterns:
+        - "plugins/**/*.md"
+        - "plugins/**/*.yaml"
+        - "plugins/**/plugin.json"
+        - "scripts/**/*.py"
+      forbidden_file_patterns:
+        - "**/CLAUDE.md"
+        - "**/.claude/**"
+        - "**/agents/**"
+      architectural_role: "skills"
+  scope_gate: true
+  cross_project_verification: true
+
+framing:
+  project_identity: "Platform-agnostic skill and workflow library"
+  project_is_not:
+    - "Claude Code plugin"
+    - "Claude Code marketplace"
+    - "Anthropic product"
+  correction_protocol: halt_and_audit
+  verify_framing_on_commit: true
+
+loop:
+  termination:
+    metric_target: null
+    max_iterations: null
+    time_budget_minutes: null
+  behavior:
+    auto_commit_on_keep: true
+    auto_revert_on_discard: true
+    pause_on_gate_failure: false
+    never_stop: true
+  resumable:
+    state_file: ".eara-state.json"
+  context_reset:
+    enabled: true
+    interval_iterations: 15
+
+source_files:
+  - "plugins/**/*.md"
+  - "plugins/**/*.yaml"
+  - "plugins/**/plugin.json"
