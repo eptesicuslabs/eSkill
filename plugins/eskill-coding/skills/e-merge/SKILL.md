@@ -146,7 +146,7 @@ For each conflict, edit the file to produce the resolved version:
 - Ensure the resolved code is syntactically correct.
 - Ensure imports and dependencies are consistent.
 
-Use `fs_edit` from the eMCP filesystem server to make the changes.
+Use `fs_edit` from the eMCP filesystem server for targeted edits, or `diff_apply` from the eMCP diff server to apply conflict resolutions as unified patches when the resolved content can be expressed as a diff against the conflicted file.
 
 After resolving all conflicts in a file, mark it as resolved:
 - This is typically done by staging the file (`git add <filepath>`).

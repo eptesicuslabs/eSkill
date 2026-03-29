@@ -31,7 +31,12 @@ Determine which log files and sources are relevant to the investigation. Check f
 - System logs: `/var/log/syslog`, `/var/log/messages`, `/var/log/kern.log` on Linux; Event Log on Windows.
 - Web server logs: `/var/log/nginx/`, `/var/log/apache2/`, or custom paths.
 
-Use the filesystem tool (`fs_list`) to scan likely log directories. Identify files with `.log`, `.log.1`, `.log.gz` extensions and note their sizes and modification times.
+Use the filesystem tool (`fs_list`) to scan likely log directories. For each discovered log file, use `fs_info` to retrieve its size, modification time, and permissions before attempting to read it. This serves two purposes:
+
+1. **Size triage**: Log files can range from kilobytes to gigabytes. Knowing the size upfront determines the parsing strategy -- small files can be read in full, while large files (over 50 MB) should be tailed or filtered by time range to avoid memory exhaustion.
+2. **Freshness check**: The modification timestamp from `fs_info` immediately reveals whether a log file is actively written to or stale. Stale log files from rotated or archived logs may not be relevant to the current investigation.
+
+Identify files with `.log`, `.log.1`, `.log.gz` extensions and record their sizes and modification times from the `fs_info` metadata.
 
 ### Container Logs
 
@@ -41,7 +46,7 @@ If Docker is available and the investigation involves containerized services, id
 
 If the user has specified particular log files or paths, prioritize those. Always start with user-specified sources before broadening the search.
 
-Record all identified sources with their type (file, container, system) and estimated size.
+Record all identified sources with their type (file, container, system) and size from `fs_info`. Sort sources by size descending so the largest log files are visible upfront -- these are often the most informative but also the ones requiring careful handling.
 
 ## Step 2: Parse Log Files
 
@@ -262,7 +267,7 @@ Always present findings with confidence levels. Distinguish between confirmed fa
 - **Multi-line stack traces**: Stack traces span multiple lines and break line-by-line parsing. Detect continuation patterns (leading whitespace, "at" prefixes, "Caused by:") and group them with the originating error line.
 - **Log rotation mid-investigation**: Active log files may rotate during analysis, causing the current file to be renamed and a new file to start. Check both the current and rotated files to avoid missing recent entries.
 - **Timezone mismatches across log sources**: Application logs may use UTC while system logs use local time. Normalize all timestamps to a single timezone before building the incident timeline.
-- **High-volume logs**: Production services can generate gigabytes of logs per hour. Use time-range filters and error-level filters before attempting full file reads to avoid memory exhaustion.
+- **High-volume logs**: Production services can generate gigabytes of logs per hour. Use `fs_info` to check file size before reading -- if a log file exceeds 50 MB, apply time-range filters and error-level filters before attempting full file reads to avoid memory exhaustion.
 
 ## Related Skills
 

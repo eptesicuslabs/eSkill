@@ -11,9 +11,14 @@ This skill generates operational runbooks by analyzing infrastructure configurat
 
 Confirm the scope of the runbook with the user. Determine whether the runbook covers a single service, a group of services, or the entire platform. Identify the target audience (on-call engineer, SRE team, developer on rotation) as this affects the level of detail.
 
+The following eMCP tools support runbook content extraction:
+
+- `markdown_front_matter` -- parse YAML frontmatter from existing runbook or documentation files to extract metadata (service name, owner, last updated, severity levels) without reading the full document
+- `markdown_read_section` -- extract content under a specific heading from existing runbooks or operational docs (e.g., pull just the "Escalation" or "Diagnostic Steps" section for reuse)
+
 ## Step 1: Inventory Operational Infrastructure
 
-Use `filesystem` to scan the project for operational configuration files and `data_file_read` to read them.
+Use `filesystem` to scan the project for operational configuration files and `data_file_read` to read them. If existing runbooks or operational documentation exist, use `markdown_front_matter` to read their metadata (service, owner, last-updated) and `markdown_read_section` to extract specific sections for reuse or reference rather than re-reading entire documents.
 
 Locate and read:
 

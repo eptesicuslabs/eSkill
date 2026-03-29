@@ -16,7 +16,7 @@ This skill complements code-level security scanning (injection, XSS) by focusing
 ## Prerequisites
 
 - A codebase with configuration files (.env, application.yml, appsettings.json, or equivalent).
-- The eMCP filesystem, data_file_read, ast_search, and fs_search servers available.
+- The eMCP filesystem, data_file_read, ast_search, fs_search, and egrep_search servers available.
 - Access to deployment configs (Dockerfiles, CI/CD configs, K8s manifests) for production override verification.
 
 ## When to Use
@@ -59,7 +59,7 @@ Determine the project's language, framework, and configuration approach.
 
 ### Step 2: Search for Insecure Default Patterns
 
-Use `fs_search` from the eMCP search server with these pattern categories. Tailor the exact patterns to the language identified in Step 1.
+Use `egrep_search` as the primary search tool for these pattern categories. Its trigram-indexed instant search is faster than `fs_search` for finding default value patterns across large codebases. Fall back to `fs_search` only if `egrep_search` is unavailable. Tailor the exact patterns to the language identified in Step 1.
 
 **Fallback secrets** (app runs with a weak default when env var is missing):
 

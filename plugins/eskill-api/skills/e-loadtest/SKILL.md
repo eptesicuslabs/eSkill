@@ -17,7 +17,7 @@ This skill generates load testing scripts by analyzing API routes, their charact
 
 ### Step 1: Detect API Routes
 
-Identify all API endpoints in the project. Use `ast_search` and `lsp_symbols` to find route definitions based on the framework:
+Identify all API endpoints in the project. Use `egrep_search` for fast pattern matching of route registration calls across the codebase, then `ast_search` and `lsp_symbols` for structured extraction of route definitions based on the framework:
 
 | Framework    | Search Pattern                                           |
 |--------------|----------------------------------------------------------|

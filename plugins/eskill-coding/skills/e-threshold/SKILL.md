@@ -115,6 +115,8 @@ Output goes to `build/reports/jacoco/test/jacocoTestReport.xml`.
 
 If the test suite fails, report the failures and stop. Coverage data from a partially-run test suite is unreliable.
 
+Use `egrep_search_files` from the eMCP egrep server to quickly enumerate all test files in the project (matching patterns like `*.test.*`, `*_test.*`, `test_*.*`). This helps verify that the coverage run included all relevant test files.
+
 ### Step 4: Parse Coverage Data
 
 Read the coverage output using `fs_read` and `data_file_read`:

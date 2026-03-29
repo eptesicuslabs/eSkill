@@ -51,7 +51,7 @@ Use `ast_search` from the eMCP AST server on two or three existing component fil
 
 ### Step 3: Analyze Existing Component Patterns
 
-Find existing components to use as templates. Use `filesystem` tools to locate component directories (commonly `src/components/`, `src/app/`, `app/components/`, or `lib/components/`).
+Find existing components to use as templates. Use `egrep_search_files` to locate component files by naming patterns (e.g., `*.tsx`, `*.vue`, `*.svelte`) and `filesystem` tools to identify component directories (commonly `src/components/`, `src/app/`, `app/components/`, or `lib/components/`).
 
 Read two or three representative component files using `filesystem` tools (fs_read) and extract these conventions:
 

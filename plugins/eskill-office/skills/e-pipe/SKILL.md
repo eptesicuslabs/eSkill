@@ -15,7 +15,11 @@ operations.
 The following eMCP tools are required:
 
 - `spreadsheet_read` -- read data from XLSX and XLS files
+- `spreadsheet_read_range` -- read a specific cell range in A1 notation (e.g., "B2:D10")
 - `spreadsheet_read_csv` -- read data from CSV and TSV files
+- `pdf_extract_tables` -- extract tabular data from PDF files for import
+- `docx_read_tables` -- extract tables from DOCX files as structured arrays
+- `pptx_extract_tables` -- extract tables embedded in PPTX slides
 - `sql_execute` -- execute DDL and DML statements against a SQLite database
 - `sql_query` -- execute SELECT queries and return results
 - `fs_write` -- write exported results to files
@@ -28,10 +32,19 @@ Determine the file type from the extension and read accordingly:
 
 - For `.xlsx` or `.xls` files: use `spreadsheet_read` with the file path. If the workbook
   contains multiple sheets, ask the user which sheet to import or import all sheets as
-  separate tables.
+  separate tables. When the user needs only a specific region of data (e.g., a named range
+  or a known cell block), use `spreadsheet_read_range` with A1 notation like "B2:D10" to
+  read just that range. This is more efficient for large spreadsheets where only a subset
+  of data is relevant.
 - For `.csv` files: use `spreadsheet_read_csv` with the file path. Assume comma delimiter
   unless the user specifies otherwise.
 - For `.tsv` files: use `spreadsheet_read_csv` with the file path and tab delimiter.
+- For `.pdf` files containing tables: use `pdf_extract_tables` to extract tabular data.
+  PDF tables are converted to structured arrays suitable for direct import into SQLite.
+- For `.docx` files containing tables: use `docx_read_tables` to extract tables as
+  structured arrays. Each table in the document becomes a separate importable dataset.
+- For `.pptx` files containing tables: use `pptx_extract_tables` to extract tables
+  embedded in slides. Each slide table becomes a separate importable dataset.
 
 When reading the data:
 

@@ -16,7 +16,7 @@ This skill validates OpenAPI 3.x and Swagger 2.0 specifications against structur
 
 ### Step 1: Detect Specification Files
 
-Search the project for OpenAPI/Swagger specification files. Use `filesystem` tools to scan for common file names and locations:
+Search the project for OpenAPI/Swagger specification files. Use `egrep_search_files` to locate files matching common spec names and `filesystem` tools to scan directories:
 
 | File Pattern             | Format  |
 |--------------------------|---------|
@@ -111,7 +111,7 @@ For every path that contains parameters (e.g., `/users/{id}/orders/{orderId}`):
 - Parameter types are appropriate: path parameters should not be objects or arrays.
 - Parameters defined at the path level are not redundantly redefined at the operation level.
 
-Use `ast_search` to cross-reference parameter names in the spec with any corresponding route handler code, verifying that the spec matches the implementation.
+Use `egrep_search` to cross-reference parameter names in the spec with corresponding route handler code, verifying that the spec matches the implementation.
 
 ### Step 7: Check Naming and Style Conventions
 

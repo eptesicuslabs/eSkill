@@ -15,17 +15,19 @@ Before starting, confirm the project root directory with the user. All paths in 
 
 ### Step 1: Scan Project Structure
 
-Use the eMCP filesystem server to obtain the full directory tree.
+Use the eMCP filesystem server and trigram-indexed search to obtain the full directory tree and quickly locate key files.
 
 - Call `fs_list` on the project root with a depth limit of 4 to get a manageable overview.
 - Call `fs_list` on each top-level directory to enumerate its immediate children.
+- Use `egrep_search_files` to locate configuration files by name pattern (e.g., `package.json`, `Cargo.toml`, `docker-compose*`) across the entire tree without manual traversal.
+- Use `egrep_search` to scan for monorepo indicators (workspace declarations, lerna references, pnpm-workspace entries) across all config files instantly.
 - Record the total file count, directory count, and notable file extensions present.
 - Identify directories that are likely generated or vendored (node_modules, vendor, dist, build, __pycache__, .git) and exclude them from further deep analysis.
 - Note any monorepo indicators: multiple package.json files, workspace configuration, lerna.json, pnpm-workspace.yaml, or Cargo workspace members.
 
 ### Step 2: Identify Project Type
 
-Read configuration files to determine the language, framework, and build system.
+Read configuration files to determine the language, framework, and build system. Use `markdown_front_matter` to parse any YAML frontmatter in documentation or configuration markdown files that describe the project setup.
 
 - Use `data_file_read` on the following files if they exist:
   - package.json (Node.js/JavaScript/TypeScript)
@@ -56,9 +58,10 @@ Locate the files where execution begins or where the public API surface is defin
 
 ### Step 4: Trace Import and Dependency Graphs
 
-Use AST analysis to understand how modules depend on each other.
+Use AST analysis and trigram-indexed code search to understand how modules depend on each other.
 
-- Use `ast_search` to find all import statements in the primary language:
+- Use `egrep_search` for fast initial sweeps: find all import/require/use statements across the codebase in seconds rather than walking files individually. This is especially effective for large codebases where `ast_search` on every file would be slow.
+- Use `ast_search` for detailed, language-aware import analysis in the primary language:
   - JavaScript/TypeScript: import declarations, require calls, dynamic import() expressions.
   - Python: import statements, from...import statements.
   - Rust: use declarations, mod declarations, extern crate.
@@ -143,6 +146,9 @@ Record the detected pattern with confidence level and supporting evidence.
 ### Step 9: Store Findings in Docs and Reasoning
 
 Persist the architectural knowledge using the eMCP docs and reasoning servers for future querying.
+
+**Check existing indexed libraries** using `docs_list_libraries`:
+- Before indexing, call `docs_list_libraries` to see what documentation is already indexed. Avoid re-indexing content that is already present and current.
 
 **Index in docs server** using `docs_index`:
 - Index the generated architecture document so its contents are searchable via `docs_search`.

@@ -124,7 +124,7 @@ Common duplication sources:
 Check whether the project is getting the benefit of tree-shaking (dead code elimination):
 
 **Barrel file imports**:
-Use `ast_search` from the eMCP AST server to find import statements that pull from barrel files (index.js/ts):
+Use `egrep_search` to rapidly locate import statements that pull from barrel files across the codebase, or use `ast_search` from the eMCP AST server for structured parsing:
 ```
 import { Button } from './components';        // Barrel import
 import { Button } from './components/Button'; // Direct import

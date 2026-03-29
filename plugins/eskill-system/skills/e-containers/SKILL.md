@@ -11,9 +11,9 @@ Build a comprehensive health dashboard for all Docker containers on the system. 
 
 Before proceeding, verify that Docker is available on the system. Run `docker --version` via `shell_exec`. If Docker is not installed or the daemon is not running, report the issue clearly and stop. Do not attempt to proceed without a functioning Docker installation.
 
-### Step 1: List All Containers
+### Step 1: List All Containers and Images
 
-Use `docker_ps` with the `all` flag set to true to retrieve every container, including those that are stopped, exited, or in a created state. This provides the baseline inventory. For each container, capture:
+Use `docker_ps` with the `all` flag set to true to retrieve every container, including those that are stopped, exited, or in a created state. Use `docker_images` to list all locally available images, capturing repository, tag, image ID, creation date, and size. This provides the baseline inventory of both running workloads and the images backing them. For each container, capture:
 
 - Container ID (short form).
 - Container name.
@@ -37,10 +37,20 @@ For each container that is in a running state, use `docker_inspect` to retrieve 
 - `NetworkSettings.Ports` -- detailed port bindings with host and container ports.
 - `Mounts` -- volume mounts with source and destination paths.
 - `Config.Env` -- environment variables (be careful not to expose secrets; only note the variable names, not values).
-- `Config.Image` -- the image specification.
+- `Config.Image` -- the image specification. Cross-reference with the image list from `docker_images` to verify the image tag still exists locally and check whether a newer version is available.
 - `Config.Labels` -- container labels, which often contain orchestration metadata.
 
 For stopped containers, still run `docker_inspect` but note that resource metrics will not be available.
+
+### Step 2b: Inventory Local Images
+
+From the `docker_images` output collected in Step 1, build an image inventory alongside the container data:
+
+- List all images with their repository, tag, size, and creation date.
+- Identify dangling images (untagged `<none>:<none>`) that are safe to remove.
+- Flag images not referenced by any container (running or stopped) as candidates for cleanup.
+- Note images with multiple tags pointing to the same image ID.
+- Compare image tags against running containers to highlight version mismatches (e.g., container running `node:18.17` but `node:20.10` also available locally).
 
 ### Step 3: Extract Key Metrics
 
@@ -153,12 +163,17 @@ If any container is categorized as Critical, use `sys_notify` to dispatch a desk
 
 This ensures that critical container problems are surfaced even if the user is not actively reviewing the dashboard output. Only send notifications for genuinely critical conditions to avoid notification fatigue.
 
+### Step 9b: Watch Configuration for Changes
+
+If the user requests ongoing monitoring, use `fs_watch` to set up watches on Docker-related configuration files such as `docker-compose.yml`, `Dockerfile`, and `.env` files in the project directory. When a change is detected, flag it in the dashboard output so the user knows the running container state may be out of sync with the current configuration. This is particularly useful during active development when Compose files are being edited frequently.
+
 ## Additional Notes
 
 - When Docker Compose is in use, group containers by their Compose project (identified by the `com.docker.compose.project` label). Present each project as a section in the dashboard.
 - For containers managed by Docker Compose, include the service name from the `com.docker.compose.service` label alongside the container name.
 - If the system has a large number of containers (more than 20), provide a summary table first and only expand details for containers with issues. Offer to show full details for specific containers on request.
 - Respect container log verbosity. If a container produces extremely high log volume, note this as a finding (it may indicate debug logging left enabled in production).
+- Use `docker_images` data to include an image summary table in the dashboard showing total image count, total image disk usage, and the number of dangling images reclaimable via `docker image prune`.
 
 ## Edge Cases
 

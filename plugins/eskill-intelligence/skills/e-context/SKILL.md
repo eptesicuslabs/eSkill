@@ -17,13 +17,14 @@ This skill is most effective when used after other eskill-intelligence skills ha
 
 Retrieve the full knowledge state from the eMCP docs and reasoning servers.
 
-- Call `docs_list_libraries` to get an overview of all indexed documentation libraries.
+- Call `docs_list_libraries` to get an inventory of all indexed documentation libraries with their statistics (document count, index size, last updated). This reveals the full scope of indexed knowledge at a glance.
 - Use `docs_search` with broad queries to survey what knowledge is available across these categories:
   - Architecture topics: project overview, modules, layers, components, patterns.
   - Knowledge topics: terms, API endpoints, configuration options, data models, processes, external dependencies.
   - Decision topics: decisions, options, research findings.
   - Finding topics: findings, sources.
-- Use `think_replay` to review existing reasoning chains and their observations.
+- Use `think_status` to list all reasoning chains and their completion states. This shows which analyses are complete versus in-progress.
+- Use `think_replay` to export the full reasoning trace from each relevant chain. For chains with many steps, use `think_summarize` to generate a condensed structured summary instead of replaying the full trace.
 - If the docs index is empty and no reasoning chains exist, inform the user and suggest running e-carto or e-graph first. Proceed with what is available, supplementing with direct filesystem analysis.
 - Record the knowledge statistics: total indexed libraries, topics covered, reasoning chains available.
 
@@ -41,7 +42,7 @@ If the export is focused on a specific topic, narrow the scope.
 
 Retrieve detailed information for each topic to be included in the export.
 
-- Use `think_replay` to get full reasoning chain details including all observations and relationship steps for core topics.
+- For core topics with extensive reasoning chains, use `think_summarize` to get a structured summary rather than replaying every step. Use `think_replay` only when the full trace is needed for accuracy or when the summary lacks sufficient detail.
 - Use `docs_search` with specific queries to retrieve indexed documentation content for each core topic.
 - For each topic, extract:
   - All observations: definitions, descriptions, source attributions, code references, constraints, examples, status.

@@ -53,6 +53,7 @@ Also check for a `Makefile` or `Taskfile.yml` at the project root, which may def
 
 Determine which CI platform to generate configuration for by checking for existing CI configuration.
 
+- Use `egrep_search_files` to locate CI config files by name (`.github/workflows/*.yml`, `.gitlab-ci.yml`, `.circleci/config.yml`, `Jenkinsfile`, `azure-pipelines.yml`) across the project.
 - Check for `.github/workflows/` directory. If present, the target is GitHub Actions.
 - Check for `.gitlab-ci.yml` file. If present, the target is GitLab CI.
 - Check for `.circleci/` directory. If present, the target is CircleCI.

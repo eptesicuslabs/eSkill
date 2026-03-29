@@ -19,7 +19,7 @@ Analyze the project to build an inventory of all components that should be monit
 
 ### HTTP Endpoints
 
-- Use `ast_search` or filesystem search to find route definitions in the codebase.
+- Use `egrep_search` to find route definitions across the codebase via instant trigram-indexed search, or fall back to `ast_search` for structured parsing.
 - For Express.js (Node.js): search for `app.get(`, `app.post(`, `router.get(`, `router.post(`, and similar patterns.
 - For FastAPI/Flask (Python): search for `@app.route(`, `@app.get(`, `@app.post(`, `@router.get(`, and similar decorators.
 - For Gin/Echo (Go): search for `r.GET(`, `r.POST(`, `e.GET(`, `e.POST(` and similar.
@@ -337,7 +337,7 @@ Monitor for a sudden increase in error-level log entries:
 
 ### Specific Error Patterns
 
-Search the codebase for error handling patterns and log statements that indicate critical failures:
+Use `egrep_search` to scan the codebase for error handling patterns and log statements that indicate critical failures:
 
 - Database connection failures: search for log messages containing "connection refused", "timeout", "connection pool exhausted".
 - Authentication failures: search for log messages related to "unauthorized", "invalid token", "authentication failed".

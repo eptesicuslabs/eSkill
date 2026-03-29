@@ -13,7 +13,7 @@ Confirm the target application directory with the user. Determine whether the ou
 
 ## Step 1: Analyze Application Requirements
 
-Use `filesystem` to scan the project structure and `data_file_read` to examine configuration files.
+Use `filesystem` to scan the project structure and `data_file_read` to examine configuration files. Use `egrep_search` to quickly locate port bindings, environment variable references, and connection strings across the codebase.
 
 Identify the following:
 

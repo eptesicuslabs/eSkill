@@ -124,7 +124,7 @@ Map each field type to an appropriate data generator. Use field names and types 
 | createdAt, updatedAt | datetime      | faker.date.recent()             | `2025-03-20T10:30:00Z`  |
 | isActive, isPublished| boolean       | true (default for happy path)   | `true`                   |
 | slug                 | string        | Derived from title field        | `my-first-post`          |
-| uuid, id (uuid type) | uuid          | faker.string.uuid()             | `a1b2c3d4-...`           |
+| uuid, id (uuid type) | uuid          | `crypto_random` UUID or faker.string.uuid() | `a1b2c3d4-...` |
 | enum fields          | enum          | First enum value                | `'active'`               |
 
 For fields with no semantic match, fall back to type-based defaults: random string for string, random integer for int, current date for datetime.

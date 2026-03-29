@@ -182,6 +182,22 @@ Based on all collected data, identify processes that exhibit anomalous behavior:
 
 For each anomaly, record the process details, the nature of the anomaly, and the potential impact.
 
+### Step 8b: Terminate Problematic Processes
+
+When the analysis identifies runaway or problematic processes, offer to terminate them using `sys_kill`. Present the following options to the user for each candidate:
+
+1. **Graceful termination**: Use `sys_kill` with SIGTERM (signal 15) to request the process shut down cleanly. Wait a few seconds and verify the process has exited.
+2. **Forceful termination**: If the process does not respond to SIGTERM within 10 seconds, offer `sys_kill` with SIGKILL (signal 9) as a last resort.
+
+Never kill a process without explicit user approval. For each kill candidate, display:
+- The PID, process name, and full command line.
+- Current CPU and memory consumption.
+- How long the process has been running.
+- The parent process (to assess whether killing the child will affect the parent).
+- Whether the process is a system service, container runtime, or user application.
+
+After termination, re-check the process list to confirm the process is gone and that no orphaned child processes remain.
+
 ## Step 9: Generate the Analysis Report
 
 Compile all findings into a structured report:

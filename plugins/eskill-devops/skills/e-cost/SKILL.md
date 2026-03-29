@@ -13,7 +13,7 @@ Confirm the target cloud provider (AWS, GCP, Azure) with the user. If the IaC co
 
 ### Step 1: Inventory Cloud Resources
 
-Use `filesystem` to locate IaC configuration files and `data_file_read` to parse them.
+Use `egrep_search_files` to locate IaC configuration files by extension pattern (e.g., `*.tf`, `docker-compose*.yml`, `serverless.yml`) and `data_file_read` to parse them.
 
 Scan for:
 

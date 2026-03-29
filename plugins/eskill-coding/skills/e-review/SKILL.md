@@ -51,7 +51,7 @@ Group files by their role in the project:
 For each modified source file, use LSP tools to understand the ripple effects:
 
 - **lsp_hover** on changed function signatures to confirm type compatibility.
-- **lsp_references** on modified or deleted functions to find all callers. If a function signature changed, every caller is a potential breakage point.
+- **lsp_references** on modified or deleted functions to find all callers. If a function signature changed, every caller is a potential breakage point. For large codebases, use `egrep_search` from the eMCP egrep server for faster codebase-wide symbol searches before drilling down with LSP.
 - **lsp_references** on modified or deleted types/interfaces to find all consumers.
 
 Record which other files depend on the changed code. These are indirect impact zones that reviewers should be aware of.
@@ -87,7 +87,7 @@ Scan the diff for common code review concerns:
 - Changes to authentication or authorization logic.
 
 **Untested code paths**:
-- New functions in source files without corresponding new tests.
+- New functions in source files without corresponding new tests. Use `egrep_search` to quickly check whether test files referencing the new function names exist anywhere in the codebase.
 - Modified branching logic without updated test coverage.
 
 **Style and conventions**:
@@ -156,6 +156,8 @@ The review summary format can be adapted based on the project's review culture:
 - **PR descriptions**: Format as a pull request body with markdown.
 
 When the user specifies a preference, adjust the verbosity and format accordingly.
+
+When suggesting concrete fixes for issues found during review, use `diff_apply` from the eMCP diff server to offer unified patches that the user can apply directly rather than describing changes in prose.
 
 ## Edge Cases
 

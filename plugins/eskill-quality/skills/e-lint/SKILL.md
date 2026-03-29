@@ -10,7 +10,7 @@ This skill analyzes code against configurable quality standards, combining exist
 ## Prerequisites
 
 - A project with source code files to analyze.
-- The eMCP filesystem, data_file_read, and ast_search servers available.
+- The eMCP filesystem, egrep_search, data_file_read, and ast_search servers available.
 - Existing linter configs (.eslintrc, .pylintrc, rustfmt.toml, etc.) or willingness to use language-default rules.
 
 ## Step 1: Detect Existing Linter and Formatter Configuration
@@ -59,7 +59,7 @@ For each detected linter, execute it and capture output.
 
 ## Step 4: Run AST-Based Quality Checks
 
-Perform additional structural analysis using `ast_search` for patterns that standard linters may not cover or may not enforce strictly enough.
+Perform additional structural analysis using `ast_search` for patterns that standard linters may not cover or may not enforce strictly enough. For text-based style violations (naming patterns, comment style, trailing whitespace), use `egrep_search` to scan the entire codebase instantly via its trigram index -- this is significantly faster than `fs_search` for broad pattern matching across many files.
 
 ### Function Length
 
@@ -84,6 +84,7 @@ Perform additional structural analysis using `ast_search` for patterns that stan
 
 ### Naming Conventions
 
+- Use `egrep_search` to quickly find naming convention violations across the entire codebase (e.g., camelCase identifiers in a snake_case Python project, or UPPER_SNAKE_CASE violations). This is faster than scanning files individually with `fs_search`.
 - Use `ast_search` to extract identifiers and their declaration context:
   - Variable declarations: check against the expected convention (camelCase for JS/TS, snake_case for Python/Rust).
   - Function names: same convention as variables in most languages.
@@ -114,6 +115,7 @@ Perform additional structural analysis using `ast_search` for patterns that stan
 ### Dead Code Detection
 
 - Use `lsp_diagnostics` to identify unused variables, unused imports, and unreachable code.
+- Use `egrep_search` to rapidly locate commented-out code blocks, TODO/FIXME markers, and debug-only statements across the entire codebase.
 - Use `ast_search` to find:
   - Functions that are defined but never called (cross-reference with `lsp_references`).
   - Variables that are assigned but never read.

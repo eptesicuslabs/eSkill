@@ -79,7 +79,7 @@ Score:
 
 ### Step 3: Assess Security Posture
 
-Use `ast_search` and `filesystem` to check for security concerns.
+Use `egrep_search` for fast pattern matching across the codebase and `ast_search` for structured analysis to check for security concerns.
 
 | Security Check | Method | Blocking |
 |---------------|--------|----------|

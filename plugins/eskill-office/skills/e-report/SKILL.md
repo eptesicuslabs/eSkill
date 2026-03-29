@@ -14,11 +14,13 @@ document with cross-references and a table of contents.
 The following eMCP tools are required:
 
 - `spreadsheet_read` -- read data from spreadsheets for inclusion in reports
+- `spreadsheet_read_range` -- read a specific cell range in A1 notation (e.g., "B2:D10")
 - `sql_query` -- query databases for report data
 - `diagram_render` -- generate diagrams for embedding in reports
 - `diagram_render_file` -- render and save diagram images
 - `markdown_headings` -- validate heading structure in the report
 - `markdown_links` -- validate all links and references in the report
+- `markdown_read_section` -- extract content under a specific heading from template files
 - `fs_write` -- write the final report file
 - `fs_read` -- read template files or existing report drafts
 
@@ -60,7 +62,10 @@ a standard structure and confirm before proceeding.
 Collect data from each identified source:
 
 **Spreadsheet data:**
-1. Use `spreadsheet_read` to load the specified file and sheet.
+1. Use `spreadsheet_read` to load the specified file and sheet. When only a specific data
+   region is needed (e.g., a summary table in cells A1:F20 or a named range), use
+   `spreadsheet_read_range` with A1 notation to read just that range. This avoids loading
+   entire large workbooks when the report only needs a subset of the data.
 2. Extract relevant rows and columns based on the report requirements.
 3. Compute summary statistics if needed: totals, averages, min/max, counts.
 
@@ -81,6 +86,12 @@ Collect data from each identified source:
 **Document sources:**
 1. Use `pdf_read_text` or `fs_read` to extract relevant passages.
 2. Attribute and quote source material properly.
+
+**Report templates:**
+1. If a markdown template file exists for the report type, use `markdown_read_section` to
+   extract individual template sections by heading (e.g., extract the "Executive Summary"
+   template, "Findings" template) rather than reading the entire template file. This allows
+   selective reuse of template sections when building a custom report structure.
 
 Store all gathered data in a structured intermediate format before assembling the report.
 This allows the user to verify the data before it is woven into narrative.

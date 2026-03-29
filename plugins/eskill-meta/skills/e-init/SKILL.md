@@ -94,7 +94,7 @@ Use the filesystem eMCP tools (`create_directory`) to build the directory tree. 
     workflows/
 ```
 
-Create all directories using `create_directory`. Then create placeholder source files using `fs_write` with minimal but functional content. Each source file should contain a basic hello-world or library stub appropriate to the purpose.
+Create all directories using `fs_mkdir` (which supports creating nested paths in a single call). Then create placeholder source files using `fs_write` with minimal but functional content. Each source file should contain a basic hello-world or library stub appropriate to the purpose.
 
 ## Step 3: Generate Configuration Files
 

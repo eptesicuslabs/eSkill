@@ -68,7 +68,7 @@ For each exported symbol, use `lsp_references` from the eMCP LSP server to find 
 
 For internal (non-exported) symbols, check references within the same file. An internal function with no callers in its own module is dead.
 
-Process symbols in batches to avoid excessive LSP queries. Group symbols by file and query references for all symbols in a file before moving to the next.
+Process symbols in batches to avoid excessive LSP queries. Group symbols by file and query references for all symbols in a file before moving to the next. For large codebases, use `egrep_search` from the eMCP egrep server for fast trigram-indexed cross-reference checks before confirming with LSP. This significantly reduces the number of LSP queries needed.
 
 ### Step 4: Detect Unreachable Code
 
@@ -94,7 +94,7 @@ Use `ast_search` to find code that is structurally unreachable:
 
 Orphan files are source files that are not imported by any other file in the project. They represent entire modules of dead code.
 
-1. For each source file in scope, use `fs_search` (content mode) to search the codebase for import statements referencing the file.
+1. For each source file in scope, use `egrep_search` from the eMCP egrep server to search the codebase for import statements referencing the file. Prefer `egrep_search` over `fs_search` for this step as it uses trigram indexing for near-instant results on large codebases.
 2. Check for both relative imports (`./module`, `../utils/helper`) and package imports (`@org/package/module`).
 3. Account for index files: a directory import (`import from './utils'`) resolves to `./utils/index.ts`.
 4. Check entry points: the application's main entry file(s) and any files referenced in build configurations are not orphans even if nothing imports them.

@@ -15,7 +15,7 @@ This skill performs a structured review of infrastructure-as-code (IaC) files, c
 
 ### Step 1: Identify IaC Files
 
-Search the project for all infrastructure-as-code files using filesystem search operations.
+Search the project for all infrastructure-as-code files. Use `egrep_search_files` to locate files by extension pattern (e.g., `*.tf`, `*.tfvars`, `docker-compose*.yml`, `*-deployment.yaml`) across the project tree.
 
 - Search for `*.tf` and `*.tfvars` files to locate Terraform configurations.
 - Search for `docker-compose*.yml` and `docker-compose*.yaml` files.
@@ -145,7 +145,7 @@ For each Kubernetes manifest, check the following items.
 
 ### Step 6: Check for Hardcoded Secrets
 
-Across all IaC files, search for patterns that indicate hardcoded secrets or credentials.
+Across all IaC files, use `egrep_search` to scan for patterns that indicate hardcoded secrets or credentials.
 
 - Search for string patterns that look like API keys, tokens, passwords, or connection strings.
 - Common patterns to check: `password:`, `secret:`, `api_key:`, `token:`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, base64-encoded strings that decode to credential-like values.

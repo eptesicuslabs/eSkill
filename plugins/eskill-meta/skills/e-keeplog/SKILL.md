@@ -47,7 +47,7 @@ Then proceed with the requested operation.
 
 ## Step 2: Read and Parse the Current Changelog
 
-Use `fs_read` to load the full contents of CHANGELOG.md. Then use `markdown_headings` to extract the structural outline.
+Use `fs_read` to load the full contents of CHANGELOG.md. Use `markdown_front_matter` to parse any YAML frontmatter if present. Then use `markdown_read_section` to extract individual version sections by heading, which is faster than parsing the entire file when only one section is needed.
 
 Identify the following elements by parsing the content:
 

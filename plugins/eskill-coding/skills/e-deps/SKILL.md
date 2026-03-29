@@ -86,13 +86,13 @@ For each finding, record:
 Search the codebase for actual usage of each declared dependency:
 
 For **JavaScript/TypeScript**:
-- Use `ast_search` to find `import` and `require` statements.
+- Use `egrep_search` from the eMCP egrep server to quickly find all `import` and `require` statements across the codebase. This is faster than `ast_search` for the initial scan across many files.
 - Match imported module names against declared dependencies.
 - Check for dynamic imports (`import()`) and require expressions.
 - Check configuration files that may reference packages (babel, webpack, eslint configs).
 
 For **Python**:
-- Use `ast_search` to find `import` and `from ... import` statements.
+- Use `egrep_search` to find `import` and `from ... import` statements across all Python files.
 - Match module names against declared dependencies (note: package names and import names sometimes differ, e.g., `Pillow` is imported as `PIL`).
 
 For **Rust**:

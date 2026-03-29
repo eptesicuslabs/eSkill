@@ -25,7 +25,7 @@ Identify what needs to be rendered and how to serve it.
 
 2. If no server is running, determine how to start one:
    - Check `data_file_read` on `package.json` for `scripts.dev` or `scripts.start`.
-   - Use `shell_bg` to start the dev server in the background. Wait for the port to become available.
+   - Use `shell_bg` to start the dev server in the background. Use `shell_status` to poll until the port becomes available.
    - For static HTML files, use a simple server: `shell_bg` with `npx serve .` or `python -m http.server`.
 
 3. Determine the target URL:
@@ -122,7 +122,7 @@ Verify that interactive elements respond correctly.
 If a reference image or mockup was provided:
 
 1. Place the reference screenshot and the rendered screenshot side by side for comparison.
-2. Use `image_info` to get dimensions of both images for alignment.
+2. Use `image_metadata` to get dimensions and format of both images for alignment.
 3. Call out specific differences:
    - Spacing deviations.
    - Color mismatches.
@@ -155,7 +155,7 @@ If issues are found, provide actionable fixes with file paths and line numbers w
 
 ### Step 8: Cleanup
 
-1. If a dev server was started in Step 1, check if the user wants it kept running. If not, use `shell_kill` to stop it.
+1. If a dev server was started in Step 1, use `shell_status` to confirm it is still running. If the user does not need it, use `shell_kill` to stop it.
 2. Close the browser session with `browser_close` if no further work is expected.
 
 ## Edge Cases

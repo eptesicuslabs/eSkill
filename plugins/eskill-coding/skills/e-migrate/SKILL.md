@@ -190,7 +190,7 @@ Save the migration following the project's migration framework conventions:
 | Flyway        | `sql/V{N}__description.sql`                       |
 | Diesel        | `migrations/YYYY-MM-DD-HHMMSS_name/up.sql` and `down.sql` |
 
-Read existing migration files to detect the project's naming convention and numbering scheme. Follow the established pattern.
+Read existing migration files to detect the project's naming convention and numbering scheme. Follow the established pattern. Use `fs_mkdir` from the eMCP filesystem server to create the migration directory if it does not exist (e.g., `migrations/`, `alembic/versions/`, `db/migrate/`).
 
 If the project uses an ORM with model definitions (Prisma, Django, Sequelize), generate the model change in addition to or instead of raw SQL, as appropriate.
 

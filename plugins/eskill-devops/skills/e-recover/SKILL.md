@@ -13,7 +13,7 @@ Confirm the project scope with the user. Determine whether the DR plan covers a 
 
 ## Step 1: Inventory Infrastructure Components
 
-Use `filesystem` to scan for infrastructure configuration files and `data_file_read` to parse them.
+Use `egrep_search_files` to locate infrastructure configuration files by name pattern and `data_file_read` to parse them.
 
 Search for and read:
 

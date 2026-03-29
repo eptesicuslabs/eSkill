@@ -20,9 +20,10 @@ Identify the target audience (new team member, replacement engineer, cross-team 
 
 ## Step 1: Map Module Boundaries
 
-Use `filesystem` to identify all files belonging to the target module.
+Use `filesystem` to identify all files belonging to the target module and `egrep_search` for fast cross-referencing.
 
 - List all files in the module directory recursively.
+- Use `egrep_search` to find all references to the module across the entire codebase instantly. This reveals every file that imports, calls, or references the module without walking the AST of every file individually.
 - Use `ast_search` to find import statements that reference the module from outside, establishing the module's public interface.
 - Use `lsp_symbols` to extract exported symbols (functions, classes, types, constants) that constitute the module's API.
 - Identify internal files (not imported from outside) versus public files (imported by other modules).
@@ -219,7 +220,7 @@ Present as a coverage map:
 
 ## Step 9: Compile the Knowledge Transfer Document
 
-Use `filesystem` to write the guide and `markdown` for formatting. Structure the document with these sections: Overview (2-3 sentences), Architecture (module structure from Step 1, data flows from Step 2), Business Rules (rules and state machines from Step 3), Domain Model (key abstractions from Step 4), Dependencies (table from Step 5), Configuration (table from Step 6), Error Handling (failure modes from Step 7), Testing (coverage analysis from Step 8), Operational Notes (deployment considerations, monitoring, known issues), and Quick Reference (common tasks table, key files table with read-first priority).
+Use `filesystem` to write the guide and `markdown` for formatting. Use `markdown_read_section` to extract relevant content from existing project documentation (READMEs, contributing guides, architecture docs) by heading, pulling in authoritative descriptions without reading entire files. Structure the document with these sections: Overview (2-3 sentences), Architecture (module structure from Step 1, data flows from Step 2), Business Rules (rules and state machines from Step 3), Domain Model (key abstractions from Step 4), Dependencies (table from Step 5), Configuration (table from Step 6), Error Handling (failure modes from Step 7), Testing (coverage analysis from Step 8), Operational Notes (deployment considerations, monitoring, known issues), and Quick Reference (common tasks table, key files table with read-first priority).
 
 ## Step 10: Review and Deliver
 

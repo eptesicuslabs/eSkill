@@ -12,7 +12,7 @@ Unlike general code review, this skill focuses on **security regressions**: chan
 ## Prerequisites
 
 - A git repository with at least one commit to diff against.
-- The eMCP filesystem, shell, ast_search, and fs_search servers available.
+- The eMCP filesystem, shell, ast_search, fs_search, egrep_search, and diff_apply servers available.
 - Access to the test suite for coverage verification.
 
 ## When to Use
@@ -79,7 +79,7 @@ For each HIGH and MEDIUM risk file, use `filesystem` tools and `ast_search` from
 For each HIGH risk change, determine how many callers are affected:
 
 1. Use `ast_search` to find all call sites for the changed function
-2. Use `fs_search` from the eMCP search server to find references across the codebase
+2. Use `egrep_search` to find references across the codebase -- the trigram-indexed search is faster than `fs_search` for blast radius analysis, especially on large codebases where you need to scan every file for function name references. Fall back to `fs_search` only if `egrep_search` is unavailable.
 3. Count direct callers and transitive callers (callers of callers, one level deep)
 
 | Blast Radius | Direct Callers | Risk Adjustment |
@@ -95,7 +95,7 @@ A HIGH risk change with wide blast radius is the most dangerous combination. Pri
 
 For each security-relevant change:
 
-1. Use `fs_search` to find test files that reference the changed function
+1. Use `egrep_search` to find test files that reference the changed function (faster than `fs_search` for scanning all test directories)
 2. Check if the security property is explicitly tested:
    - Is there a test for the auth check?
    - Is there a test for the validation logic?
@@ -163,6 +163,9 @@ Produce a structured markdown report. Include every section:
 
 **Recommendation:**
 [Specific fix or mitigation]
+
+**Suggested patch:** (when applicable)
+Use `diff_apply` to propose unified patches that fix the identified security issue. Generate the patch in unified diff format and apply it with `diff_apply` so the fix can be reviewed and applied atomically. This is preferred over manual file edits for security fixes because the patch can be reviewed as a self-contained unit.
 
 ## Coverage Gaps
 [Security-relevant changes without test coverage]

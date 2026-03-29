@@ -37,7 +37,7 @@ Check for `.storybook/main.ts` (or `.js`). Read it to determine:
 - Addons installed (controls, actions, docs, a11y).
 
 **Existing story conventions**:
-Find two or three existing story files using `filesystem` tools. Read them to extract:
+Find existing story files using `egrep_search_files` to locate files matching `*.stories.tsx` or `*.stories.ts` patterns. Read two or three representative files to extract:
 - File naming pattern (`*.stories.tsx`, `*.stories.ts`, `*.stories.js`).
 - Whether stories use CSF 2 (`export const Story = Template.bind({})`) or CSF 3 (`export const Story = { args: {} }`).
 - Whether stories are co-located with components or in a separate `stories/` directory.

@@ -47,7 +47,7 @@ Use `fs_list` and `fs_read` to inspect manifest files and detect the ORM:
 | Cargo.toml contains "diesel"         | Diesel          | Rust       |
 | Cargo.toml contains "sqlx"          | SQLx            | Rust       |
 
-Also detect raw database access patterns (direct SQL queries through database drivers) by searching for `db.query`, `connection.execute`, `cursor.execute`, and similar patterns.
+Also detect raw database access patterns (direct SQL queries through database drivers) by using `egrep_search` from the eMCP egrep server to find `db.query`, `connection.execute`, `cursor.execute`, and similar patterns across the codebase. The trigram-indexed search is significantly faster than `fs_search` for this kind of cross-codebase pattern matching.
 
 ### Step 2: Search for Loop Structures
 
@@ -64,7 +64,7 @@ Use `ast_search` from the eMCP AST server to find all loop constructs in the tar
 | Go         | `for _, item := range`                               |
 | Rust       | `for item in`, `.iter().map(`, `.for_each(`          |
 
-If the user specifies target files, search only those. Otherwise, search the full codebase but prioritize files in `services/`, `controllers/`, `handlers/`, `routes/`, and `resolvers/` directories, as these are the most common locations for data-fetching logic.
+If the user specifies target files, search only those. Otherwise, use `egrep_search` to search the full codebase for ORM call patterns, prioritizing results in `services/`, `controllers/`, `handlers/`, `routes/`, and `resolvers/` directories, as these are the most common locations for data-fetching logic.
 
 ### Step 3: Detect Database Calls Inside Loops
 

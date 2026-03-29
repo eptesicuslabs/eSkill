@@ -39,7 +39,7 @@ Document:
 
 Before making any changes, measure the current performance. This baseline is essential for verifying that optimizations have the intended effect.
 
-Use `shell_exec` from the eMCP shell server to run measurement commands:
+Use `shell_exec` from the eMCP shell server to run measurement commands. For long-running benchmarks, use `shell_bg` to start the benchmark in the background, then poll with `shell_status` to check completion without blocking. Use `shell_kill` to terminate a runaway benchmark if needed.
 
 **For HTTP endpoints**:
 ```
@@ -65,6 +65,8 @@ node --max-old-space-size=512 --expose-gc script.js
 ```
 
 Record the baseline numbers. Run measurements multiple times and note the median, min, and max to account for variance.
+
+For benchmarks that require a running server, use `shell_bg` to start the server process in the background, run the benchmark, then use `shell_kill` to clean up the server process afterward.
 
 ### Step 3: Profile Node.js Applications
 

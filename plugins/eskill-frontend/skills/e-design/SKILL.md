@@ -41,7 +41,7 @@ Extract from the user's request:
 | **Constraints**  | Must it match an existing design system, brand, or style?     |
 | **Scope**        | Full page, isolated component, layout shell, or single widget?|
 
-If the user provides a reference image or screenshot, use `image_info` from the eMCP image server to inspect it. If they provide a URL, use `fetch_url` from the eMCP fetch server to retrieve the page content and `browser_navigate` to capture a visual reference.
+If the user provides a reference image or screenshot, use `image_metadata` to inspect dimensions, format, and EXIF data. Use `image_convert` to convert between formats if needed for the target platform. If they provide a URL, use `fetch_url` from the eMCP fetch server to retrieve the page content and `browser_navigate` to capture a visual reference.
 
 If the request is ambiguous (e.g., "make it look good"), do not ask for clarification. Instead, analyze the existing codebase for visual direction cues and make a decisive choice. State the direction you chose and why.
 

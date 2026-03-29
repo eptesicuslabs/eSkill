@@ -40,7 +40,7 @@ If no explicit breakpoint system is found, use the common defaults as reference:
 
 Search for CSS properties that set fixed widths likely to cause horizontal overflow on small screens.
 
-Use `shell_exec` from the eMCP shell server to search stylesheets and component files for these patterns:
+Use `egrep_search` to search stylesheets and component files for these patterns:
 
 **Fixed pixel widths on containers**:
 - `width: [value]px` where value exceeds 320px on non-icon, non-image elements.

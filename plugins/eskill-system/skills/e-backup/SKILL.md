@@ -66,6 +66,8 @@ Additionally, check for a `.gitignore` file in the project root. Parse its patte
 
 If a `.backupignore` file exists in the project root, also parse and apply its patterns. This allows projects to define backup-specific exclusions separate from git exclusions.
 
+Use `fs_info` on each file and directory in scope to retrieve metadata including size, modification time, and permissions. This provides accurate per-file sizing without requiring platform-specific shell commands. For large directory trees, use `fs_info` on the top-level directories first to identify the heaviest subtrees before descending.
+
 Record the complete file list with relative paths and sizes. Compute the total size of all files to be included. Report this to the user before proceeding:
 
 ```
@@ -81,13 +83,15 @@ If the total size exceeds 500 MB, warn the user and ask for confirmation before 
 
 ## Step 3: Create the Archive
 
+Generate a unique backup identifier using `crypto_random` to produce a short random hex string (8 characters). This identifier is appended to the backup name to prevent collisions when multiple backups are created in rapid succession or across distributed systems.
+
 Use `archive_create` to produce the backup archive. Apply the following naming convention:
 
 ```
-<project-name>-backup-<YYYY-MM-DD>-<HHMMSS>.<format>
+<project-name>-backup-<YYYY-MM-DD>-<HHMMSS>-<random-id>.<format>
 ```
 
-For example: `my-project-backup-2025-01-15-143022.tar.gz`.
+For example: `my-project-backup-2025-01-15-143022-a7c3e1f0.tar.gz`.
 
 Use the backup destination directory specified by the user, or default to a `backups/` directory in the project root. Create the directory if it does not exist.
 
@@ -125,7 +129,8 @@ The manifest should contain:
 ```json
 {
   "backup": {
-    "name": "<project-name>-backup-<YYYY-MM-DD>-<HHMMSS>",
+    "id": "<random-id from crypto_random>",
+    "name": "<project-name>-backup-<YYYY-MM-DD>-<HHMMSS>-<random-id>",
     "created": "<ISO 8601 timestamp>",
     "project": "<project directory name>",
     "source": "<absolute path to project root>",
@@ -161,10 +166,11 @@ After creating the archive, verify its integrity by listing its contents using `
 - Verify that the file count matches.
 - Spot-check several files to ensure their paths are correct within the archive.
 - Verify that no unexpected files were included (e.g., files that should have been excluded).
+- Use `archive_read_file` to extract and inspect a few critical files from the archive without fully extracting it. Good candidates for spot-checking are the project manifest (package.json, Cargo.toml, etc.), the primary configuration file, and at least one source file. Compare the extracted content against the original to confirm the archive is not corrupted.
 
 If any discrepancy is found, report it as an error and warn the user that the backup may be incomplete or corrupted. Do not delete the archive in this case; let the user decide what to do.
 
-Also verify the archive size is reasonable. An archive that is 0 bytes or suspiciously small (less than 1% of the source size) likely indicates a failure.
+Use `fs_info` on the created archive to verify its size. An archive that is 0 bytes or suspiciously small (less than 1% of the source size) likely indicates a failure. Also compare the archive size against available disk space at the destination to confirm the write completed fully.
 
 ## Step 7: Database Backup Procedures
 

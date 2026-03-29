@@ -15,7 +15,7 @@ Confirm the project root directory with the user. Determine whether the user wan
 
 ### Step 1: Identify Knowledge Sources
 
-Survey the project for all files that contain human-readable knowledge.
+Survey the project for all files that contain human-readable knowledge. Before starting, use `think_search` to find any related past reasoning chains (e.g., from previous e-carto or e-graph runs) that already contain project knowledge. Reuse existing observations rather than rediscovering what is already recorded.
 
 - **README files**: Search for README.md, README.rst, README.txt, and README (no extension) in the project root and subdirectories. These are the primary knowledge sources and typically contain project overview, setup instructions, and usage examples.
 - **Documentation directories**: Look for directories named docs/, doc/, documentation/, wiki/, guides/, manuals/. Enumerate all files within these directories.
@@ -68,11 +68,12 @@ For each concept, record: name, category, source file, and a brief definition or
 
 ### Step 4: Parse Markdown Structure
 
-For markdown documentation files, use `markdown_headings` to extract the document hierarchy.
+For markdown documentation files, use `markdown_headings` to extract the document hierarchy and `markdown_read_section` to pull content under specific headings without reading entire files.
 
 - Build a heading tree for each document showing the nesting structure (h1, h2, h3, etc.).
+- Use `markdown_read_section` to extract content under specific headings of interest (e.g., "Architecture", "API", "Configuration") for targeted concept extraction rather than reading full documents.
 - Use the heading structure to understand how concepts are organized within documents.
-- Identify sections that describe the same concept across different documents (e.g., "Authentication" section in both README and API docs).
+- Identify sections that describe the same concept across different documents (e.g., "Authentication" section in both README and API docs). Use `markdown_read_section` to compare the content of matching sections across documents directly.
 - Map headings to concepts: each heading typically corresponds to a concept or a facet of a concept.
 - Note the depth of coverage for each concept: a top-level heading with multiple subsections indicates a well-documented concept; a brief mention in a list indicates a concept with minimal documentation.
 
@@ -151,7 +152,8 @@ Derive relations from:
 
 Use the eMCP docs server to index documentation content for full-text search capability.
 
-- Use `docs_index` to index each documentation file. Provide the file path and content.
+- Use `docs_bootstrap` to bulk-index documentation from project dependencies (node_modules, vendor directories, or similar). This indexes library docs in a single call rather than cloning each dependency individually, and is the preferred approach when the project has installed dependencies with bundled documentation.
+- Use `docs_index` to index each project-specific documentation file. Provide the file path and content.
 - For large documentation sets, index files in batches.
 - After indexing, verify the index by running a few test searches with `docs_search` using terms that should appear in the documentation.
 - If the project has external documentation that is referenced but not local, use `docs_clone` to fetch and index it if the URL is available and the user approves.
@@ -189,7 +191,7 @@ The summary document should contain:
 ## Notes
 
 - Knowledge extraction is inherently imperfect. Mark uncertain extractions with a confidence note.
-- Avoid duplicate concepts. Before recording a concept, use `docs_search` to check if similar content already exists in the docs index, and use `think_replay` to review existing reasoning chains for prior observations on the same topic.
+- Avoid duplicate concepts. Before recording a concept, use `docs_search` to check if similar content already exists in the docs index, use `think_search` to run full-text search across past reasoning chains for prior observations on the same topic, and use `think_replay` to review specific chains in detail when matches are found.
 - Concept names should be normalized: use consistent casing and naming to avoid near-duplicates like "UserAuth" and "user-authentication".
 - For very large projects with extensive documentation, prioritize depth over breadth. Focus on the most referenced and most connected concepts first.
 - The knowledge graph is additive. Running this skill again on the same project should update existing indexed content and reasoning chains rather than create duplicates.

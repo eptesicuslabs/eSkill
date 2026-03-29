@@ -19,6 +19,7 @@ The following eMCP tools are required:
 - `ast_search` -- search for AST patterns (imports, class definitions, function calls)
 - `lsp_symbols` -- extract symbols (classes, functions, variables) from source files
 - `lsp_references` -- find all references to a given symbol
+- `diagram_formats` -- list available rendering engines and output formats
 - `diagram_render` -- render diagram source code to an image (returns inline)
 - `diagram_render_file` -- render diagram source code and write to a file (SVG or PNG)
 - `fs_write` -- write diagram source files to disk
@@ -186,8 +187,14 @@ digraph dependencies {
 }
 ```
 
-Choose the format based on user preference. If none is specified, use Mermaid for simple
-diagrams (under 30 nodes) and Graphviz for complex ones (30+ nodes).
+Before choosing the format, call `diagram_formats` to check which rendering engines and
+output formats are available in the current environment. This prevents failures from
+attempting to render with an engine that is not installed. If the user's preferred format
+is unavailable, suggest an available alternative.
+
+Choose the format based on user preference and engine availability. If none is specified,
+use Mermaid for simple diagrams (under 30 nodes) and Graphviz for complex ones (30+ nodes),
+provided the corresponding engine is available.
 
 ### Step 7: Render the Diagram
 

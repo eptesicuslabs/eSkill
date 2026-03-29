@@ -29,8 +29,10 @@ Establish the decision context clearly before evaluating options.
 
 ### Step 2: Start a Reasoning Chain
 
-Use the eMCP reasoning server to begin a structured reasoning process.
+Use the eMCP reasoning server to begin a structured reasoning process. Before creating a new chain, check for prior decision analysis on the same topic.
 
+- Use `think_status` to list all existing reasoning chains. Check whether a chain for this decision or a closely related decision already exists.
+- If a prior chain exists, use `think_replay` to review the full reasoning trace and determine whether it can be extended or whether the prior analysis still holds. Avoid re-evaluating options that were already thoroughly analyzed unless new information has surfaced.
 - Call `think_start` with the decision statement as the goal.
 - Include the constraints as context for the reasoning chain.
 - The reasoning chain provides a persistent, auditable record of the decision process. Each subsequent step adds to this chain.
@@ -133,7 +135,7 @@ Rate each option against every criterion to produce a quantitative comparison.
 
 ### Step 7: Conclude the Reasoning Chain
 
-Synthesize the evaluation into a recommendation.
+Synthesize the evaluation into a recommendation. Use `think_summarize` to generate a structured summary of the reasoning chain before writing the conclusion. The summary surfaces the key evidence, trade-offs, and scoring patterns, making the conclusion easier to articulate.
 
 - Call `think_conclude` with the following:
   - The recommended option and why.
@@ -160,7 +162,7 @@ Persist the decision and its rationale using the eMCP docs and reasoning servers
     - "supersedes": if this decision replaces a previous decision.
     - "depends_on": if this decision depends on another decision.
     - "evaluated": the decision evaluated each option.
-- The full reasoning chain can be reviewed later via `think_replay`. If options were previously analyzed in a e-research reasoning chain, reference that chain rather than duplicating observations.
+- The full reasoning chain can be reviewed later via `think_replay`, or distilled into a structured decision summary via `think_summarize`. Use `think_status` to check chain status at any point. If options were previously analyzed in a e-research reasoning chain, reference that chain rather than duplicating observations.
 
 ### Step 9: Generate Decision Record
 

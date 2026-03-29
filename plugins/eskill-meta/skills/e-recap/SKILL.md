@@ -106,7 +106,7 @@ If no task server is available, skip this step silently.
 
 ## Step 6: Gather Decisions from Memory
 
-Use `think_search` to search the eMCP reasoning server for entries related to decisions, trade-offs, or architectural choices made during the session.
+Use `think_search` to search the eMCP reasoning server for entries related to decisions, trade-offs, or architectural choices made during the session. Use `think_replay` to revisit the full reasoning chain for key decisions, and `think_summarize` to produce concise summaries of long reasoning threads for inclusion in the recap.
 
 Common patterns to search for:
 - Reasoning chains tagged with "decision" or "rationale"
@@ -226,7 +226,7 @@ Present the formatted recap directly in the conversation.
 
 If the user requests it, also write the recap to a file:
 - Default location: `.session-recaps/<YYYY-MM-DD>-<branch-name>.md`
-- Create the directory if it does not exist using `create_directory`
+- Create the directory if it does not exist using `fs_mkdir`
 - Use `fs_write` to save the file
 - Add `.session-recaps/` to `.gitignore` if not already present (session recaps are personal artifacts, not project files)
 

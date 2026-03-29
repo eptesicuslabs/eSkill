@@ -27,7 +27,7 @@ Search the project for GraphQL schema sources. Use `filesystem` tools to find fi
 | Code-first (Go)     | `graph/schema.resolvers.go`, `*.graphqls`  |
 | Generated            | `generated/schema.graphql`, `schema.generated.ts` |
 
-For code-first schemas, use `ast_search` to find class decorators (type-graphql), builder patterns (Nexus, Pothos), or schema definition calls (graphene, Strawberry).
+For code-first schemas, use `egrep_search` to quickly locate files containing GraphQL decorator imports or schema builder patterns, then use `ast_search` to extract class decorators (type-graphql), builder patterns (Nexus, Pothos), or schema definition calls (graphene, Strawberry).
 
 If a generated SDL file exists alongside code-first definitions, prefer reviewing the generated SDL as it represents the actual served schema.
 

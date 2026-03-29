@@ -74,7 +74,7 @@ Generate mock response data for each schema. Use property types, formats, and na
 | string (date)      | ISO 8601 date within past 30 days             |
 | string (email)     | `{firstName}.{lastName}@example.com`          |
 | string (uri)       | `https://example.com/{resource}/{id}`         |
-| string (uuid)      | Valid v4 UUID                                 |
+| string (uuid)      | Valid v4 UUID (use `crypto_random` to generate)|
 | string (enum)      | Random selection from enum values             |
 | integer            | Random within min/max or 1-1000               |
 | number             | Random float within min/max or 0.01-999.99    |
@@ -107,7 +107,7 @@ For array responses, generate between 3 and 5 items with distinct values to test
 
 ### Step 4: Create Mock Server File
 
-Generate the mock server implementation based on the project's technology stack. Detect the stack from project files:
+Use `fs_mkdir` to create the mock output directory structure (e.g., `src/mocks/`, `mocks/data/`). Generate the mock server implementation based on the project's technology stack. Detect the stack from project files:
 
 **MSW (Mock Service Worker) -- for browser-based clients**:
 

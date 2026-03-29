@@ -63,7 +63,7 @@ Use `lsp_references` from the eMCP LSP server to locate every reference to the t
 
 Create a complete list of locations that will need updating. This is the change manifest.
 
-If LSP is unavailable, fall back to `ast_search` with pattern matching and `grep` via shell as a last resort. Note that text-based search may produce false positives.
+If LSP is unavailable, fall back to `egrep_search` from the eMCP egrep server for fast trigram-indexed code search across the codebase, then `ast_search` for structural confirmation. Prefer `egrep_search` over raw shell grep for speed and accuracy on large codebases.
 
 ### Step 4: Analyze Structure with AST
 
@@ -82,10 +82,10 @@ Choose the appropriate mechanism based on the refactoring type:
 
 **Simple renames**: Use `fs_edit` from the eMCP filesystem server applied to each location in the change manifest from Step 3. Process files one at a time.
 
-**Module moves**: This is a multi-step operation:
-1. Create the new file with the moved symbol(s).
-2. Update all import statements to point to the new location.
-3. Remove the symbol(s) from the original file.
+**Module moves**: Use `fs_move` from the eMCP filesystem server to rename or relocate files, then update references. This is a multi-step operation:
+1. Use `fs_move` to relocate the file or create the new file with the moved symbol(s).
+2. Use `egrep_search` to find all import statements referencing the old path across the codebase, then update them to point to the new location.
+3. Remove the symbol(s) from the original file (if extracting rather than moving the whole file).
 4. If the original file re-exported the symbol, add a re-export for backward compatibility (optional, based on user preference).
 
 Apply changes in small batches. Prefer one logical change per iteration so that if tests fail, the cause is isolated.
@@ -118,7 +118,7 @@ To revert, use `git_checkout` on the affected files or `git_stash` to save the w
 
 After all refactoring steps are complete and tests are green, review the full set of changes:
 
-- Use `diff_files` from the eMCP diff server to see the complete diff.
+- Use `diff_files` from the eMCP diff server to see the complete diff. When the refactoring is expressible as a unified patch, use `diff_apply` to apply the changes atomically across multiple files.
 - Verify that no unintended changes crept in.
 - Confirm that the diff only contains the planned refactoring, not accidental formatting or logic changes.
 - Check that no debugging artifacts (console.log, print statements) were introduced.

@@ -10,14 +10,15 @@ This skill analyzes a project's dependency tree to verify that all dependency li
 ## Prerequisites
 
 - A project with a dependency manifest (package.json, pyproject.toml, Cargo.toml, go.mod, pom.xml, or equivalent).
-- The eMCP filesystem and data_file_read servers available for parsing dependency trees.
+- The eMCP filesystem, egrep_search_files, and data_file_read servers available for parsing dependency trees and locating license files.
 - The project's own license declared in a LICENSE file or manifest field.
 
 ## Step 1: Read the Project License
 
 Determine the project's own license to establish the compatibility baseline.
 
-1. Use `filesystem` `fs_read` to check for a `LICENSE` or `LICENSE.md` file at the project root.
+1. Use `egrep_search_files` to find all LICENSE files across the project and its dependencies (patterns: `LICENSE`, `LICENSE.md`, `LICENSE.txt`, `LICENCE`, `COPYING`, `NOTICE`). This locates license files at the project root and within vendored or dependency directories in a single search.
+2. Use `filesystem` `fs_read` to read the project root LICENSE file.
 2. If no standalone license file exists, use `data_file_read` to read `package.json` and extract the `license` field.
 3. For Python projects, check `setup.py`, `setup.cfg`, or `pyproject.toml` for the `license` field.
 4. For Rust projects, read the `license` field from `Cargo.toml`.
@@ -46,11 +47,11 @@ Gather the complete list of direct and transitive dependencies.
 For Node.js projects:
 
 1. Run `shell` command: `npx license-checker --json` if available, or fall back to manual extraction.
-2. For manual extraction: iterate through `node_modules/*/package.json` using `filesystem` operations.
+2. For manual extraction: use `egrep_search_files` to find all `package.json` files under `node_modules/` rather than iterating directory-by-directory. This is faster for projects with many dependencies.
 3. For each dependency package.json, extract:
    - The `license` field (string or object).
    - The `licenses` field (legacy format, array of objects with `type` and `url`).
-4. If neither field exists, check for a LICENSE file in the package directory.
+4. If neither field exists, use `egrep_search_files` to find LICENSE files within the specific package directory (`node_modules/<pkg>/LICENSE*`, `node_modules/<pkg>/COPYING*`).
 5. Record the license for each dependency. Mark as "Unknown" if no license information is found.
 
 ## Step 4: Extract Dependency Licenses (Python)
@@ -61,7 +62,7 @@ For Python projects:
 2. Alternatively, read metadata files directly:
    - `site-packages/<package>.dist-info/METADATA` or `PKG-INFO`.
    - Look for the `License:` header and `Classifier: License ::` classifiers.
-3. For packages installed from source: check the package directory for LICENSE files.
+3. For packages installed from source: use `egrep_search_files` to locate LICENSE files within installed package directories.
 4. Record the SPDX identifier for each dependency. If the license is specified as a classifier (e.g., `License :: OSI Approved :: MIT License`), map it to the corresponding SPDX identifier.
 
 ## Step 5: Categorize Dependency Licenses

@@ -62,7 +62,7 @@ Always push for the strongest applicable property. "No exception" alone is a smo
 
 ### Step 1: Identify Testable Patterns
 
-Use `fs_search` from the eMCP search server and `ast_search` from the eMCP AST server to find candidate functions:
+Use `egrep_search` for fast trigram-indexed pattern matching and `ast_search` from the eMCP AST server to find candidate functions:
 
 1. Search for serialization pairs:
    - Pattern: functions named `encode`/`decode`, `serialize`/`deserialize`, `toJSON`/`fromJSON`, `pack`/`unpack`, `marshal`/`unmarshal`

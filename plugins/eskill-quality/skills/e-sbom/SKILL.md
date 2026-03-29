@@ -13,7 +13,7 @@ Confirm the output format with the user: SPDX 2.3 (JSON or tag-value) or Cyclone
 
 ## Step 1: Detect Package Ecosystems
 
-Use `filesystem` to scan the project root for dependency manifests.
+Use `filesystem` and `egrep_search_files` to scan the project root for dependency manifests. `egrep_search_files` can locate all manifest files across the entire project tree in a single call (e.g., finding all `package.json`, `Cargo.toml`, `go.mod`, `pyproject.toml` files in a monorepo).
 
 | Manifest File | Ecosystem | Lock File |
 |--------------|-----------|-----------|
@@ -29,7 +29,7 @@ Use `filesystem` to scan the project root for dependency manifests.
 | `composer.json` | PHP | `composer.lock` |
 | `*.csproj` / `packages.config` | .NET | `packages.lock.json` |
 
-Read each detected manifest with `data_file_read`. Prefer lock files over manifests when both exist, as lock files contain resolved exact versions.
+Read each detected manifest with `data_file_read`. Use `egrep_search_files` to locate corresponding lock files (`package-lock.json`, `yarn.lock`, `Cargo.lock`, `poetry.lock`, etc.) alongside each manifest. Prefer lock files over manifests when both exist, as lock files contain resolved exact versions.
 
 Record the ecosystems found. A project may span multiple ecosystems (e.g., a Node.js frontend with a Python backend).
 
@@ -46,6 +46,7 @@ For each dependency, record:
 | Resolved version | Lock file entry |
 | Scope | `dependencies` vs `devDependencies`, `[tool.poetry.group.dev]`, etc. |
 | Registry | Default registry or custom registry URL if specified |
+| File metadata | Use `fs_info` to collect file size, modification time, and permissions for each manifest and lock file. Include this metadata in the SBOM for provenance tracking. |
 
 Distinguish between production and development dependencies. The SBOM should include both but mark the scope, as consumers may filter on scope for runtime vulnerability assessment.
 
@@ -95,7 +96,7 @@ Map license identifiers to SPDX license expression format:
 - Dual licenses: `MIT OR Apache-2.0`.
 - Unknown or custom licenses: `NOASSERTION`.
 
-Use `crypto` to compute SHA-256 hashes of dependency archives or lock file entries for integrity verification.
+Use `crypto` to compute SHA-256 hashes of dependency archives or lock file entries for integrity verification. Use `fs_info` to collect file metadata (size, modification time, permissions) for each dependency's distributed files, enriching the SBOM with provenance data.
 
 Record the license for each component. Flag any dependencies with:
 - No license information (`NOASSERTION`).
@@ -112,7 +113,9 @@ For each dependency, gather additional metadata required by the SBOM format.
 | Version | PackageVersion | version | Lock file |
 | Supplier | PackageSupplier | supplier | Registry metadata |
 | Download URL | PackageDownloadLocation | externalReferences[distribution] | Registry |
-| Checksum | PackageChecksum | hashes | Lock file or computed |
+| Checksum | PackageChecksum | hashes | Lock file or computed via `crypto` |
+| File size | - | - | `fs_info` metadata |
+| Last modified | - | - | `fs_info` metadata |
 | Homepage | PackageHomePage | externalReferences[website] | Registry metadata |
 | Description | PackageDescription | description | Registry metadata |
 | CPE | ExternalRef (cpe23Type) | cpe | Constructed from vendor/product/version |

@@ -12,7 +12,7 @@ The core insight: most bugs are not unique. A logic error in one module often ha
 ## Prerequisites
 
 - A known bug or vulnerability instance to use as the seed pattern.
-- The eMCP filesystem, fs_search, and ast_search servers available.
+- The eMCP filesystem, fs_search, egrep_search, and ast_search servers available.
 - Access to the full codebase from the project root (not just the affected module).
 
 ## When to Use
@@ -50,10 +50,10 @@ Document these answers before proceeding. If you cannot articulate the root caus
 
 ### Step 2: Create an Exact Match Pattern
 
-Start with a search pattern that matches ONLY the known instance. Use `fs_search` from the eMCP search server:
+Start with a search pattern that matches ONLY the known instance. Use `egrep_search` as the primary search tool -- it is specifically designed for pattern-based code search with a trigram index that returns results instantly even on very large codebases:
 
 ```
-fs_search("exact_vulnerable_code_here")
+egrep_search("exact_vulnerable_code_here")
 ```
 
 Verify: does the pattern match exactly ONE location (the original bug)? If it matches zero, the pattern is wrong. If it matches more than one, you may have already found variants.
@@ -75,7 +75,7 @@ Examine the pattern and decide what can be generalized:
 This is the core of variant analysis. Change ONE element at a time:
 
 1. Modify the search pattern to generalize one element
-2. Run `fs_search` against the ENTIRE codebase (project root scope, not just the current directory)
+2. Run `egrep_search` against the ENTIRE codebase (project root scope, not just the current directory). The trigram index makes each iteration fast enough to support rapid generalization cycles.
 3. Review ALL new matches
 4. Classify each match as true positive or false positive
 5. If false positive rate is acceptable (<50%), generalize the next element
@@ -128,7 +128,7 @@ Sort by confidence (HIGH first), then by exploitability.
 ### Narrow Search Scope
 Searching only the module where the original bug was found misses variants in `utils/`, `middleware/`, or completely different services.
 
-**Mitigation:** Always search from the project root. Use `fs_search` with the widest scope.
+**Mitigation:** Always search from the project root. Use `egrep_search` with the widest scope.
 
 ### Pattern Too Specific
 Using only the exact function name from the original bug.
@@ -153,13 +153,14 @@ Testing patterns only with normal scenarios.
 
 | Scenario | Tool | Rationale |
 |----------|------|-----------|
-| Quick surface search | `fs_search` (eMCP search server) | Fast, no setup, works on any codebase |
+| Quick surface search | `egrep_search` (eMCP egrep server) | Trigram-indexed instant results, fastest option for pattern-based code search |
+| Fallback text search | `fs_search` (eMCP search server) | Use when egrep_search is unavailable |
 | Structural matching | `ast_search` (eMCP AST server) | Matches code structure, ignores formatting |
 | Cross-function tracing | `ast_search` with call graph mode | Follows values across function boundaries |
 | Large codebase rules | External: Semgrep | Pattern rule files, no build required |
 | Deep data flow | External: CodeQL | Best interprocedural taint analysis |
 
-Start with `fs_search` for speed. Escalate to `ast_search` when text matching produces too many false positives. Recommend external tools when the codebase is large (>1000 files) or the analysis requires cross-function data flow tracking.
+Start with `egrep_search` for speed -- its trigram index is specifically designed for the iterative pattern-matching workflow of variant analysis. Escalate to `ast_search` when text matching produces too many false positives. Recommend external tools when the analysis requires cross-function data flow tracking.
 
 ## Rationalizations to Reject
 

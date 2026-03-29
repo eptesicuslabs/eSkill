@@ -57,8 +57,8 @@ The formula rewards having tests at all (+10) and having zero failures (+10), wi
 
 Since full coverage instrumentation may not be available, estimate coverage by comparing test files to source files:
 
-1. Use `fs_list` recursively or filesystem tools to list all source files (*.ts, *.py, *.rs, *.go, etc.)
-2. List all test files (files matching *test*, *spec*, or in test/tests directories)
+1. Use `egrep_search_files` to list all source files by extension pattern (*.ts, *.py, *.rs, *.go, etc.)
+2. Use `egrep_search_files` to list all test files (files matching *test*, *spec*, or in test/tests directories)
 3. For each source file, check if a corresponding test file exists (e.g., `src/auth.ts` -> `test/auth.test.ts`)
 4. Calculate the ratio: `coverage_estimate = test_files_with_match / total_source_files`
 
@@ -150,7 +150,7 @@ Check for the presence and quality of documentation files:
 ### README.md
 - Does it exist? (+20 points)
 - Is it substantive (more than 50 lines)? (+10 points)
-- Use `markdown_headings` to check for key sections: Installation, Usage, License (+5 each, up to +15)
+- Use `markdown_read_section` to check for key sections: Installation, Usage, License (+5 each, up to +15)
 
 ### CHANGELOG.md
 - Does it exist? (+10 points)
@@ -292,7 +292,7 @@ Format the report as follows:
 
 Present the report directly in the conversation.
 
-If the user requests it, save the report to `.e-health/<YYYY-MM-DD>.md` using `create_directory` and `fs_write`.
+If the user requests it, save the report to `.e-health/<YYYY-MM-DD>.md` using `fs_mkdir` to create the directory and `fs_write` for the file.
 
 ## Step 10: Generate Visual Representation
 

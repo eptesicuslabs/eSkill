@@ -141,11 +141,11 @@ Offer the user multiple resolution strategies, ordered by recommendation.
 
 **Option 1: Terminate the blocking process** (when the process is unnecessary)
 
-- Provide the specific command to stop the process:
-  - Graceful: `kill <PID>` (SIGTERM) or stopping the service.
-  - Forceful: `kill -9 <PID>` (SIGKILL) as a last resort.
-  - Docker: `docker stop <container>` or `docker compose down`.
-- Warn if the process appears to be a system service or is owned by another user.
+- Use `sys_kill` to send the appropriate signal to the process by PID:
+  - Graceful: `sys_kill` with SIGTERM (signal 15) to request clean shutdown. Wait a few seconds and verify the port is released.
+  - Forceful: If the process does not respond to SIGTERM within 10 seconds, use `sys_kill` with SIGKILL (signal 9) as a last resort.
+  - Docker: `docker stop <container>` or `docker compose down` for containerized processes.
+- Warn if the process appears to be a system service or is owned by another user. Never kill without explicit user confirmation.
 
 **Option 2: Change the port of the new service** (when both services are needed)
 
@@ -169,9 +169,9 @@ Offer the user multiple resolution strategies, ordered by recommendation.
 After the user selects an option, execute it.
 
 **For process termination**:
-1. Use `shell` to send the appropriate signal.
-2. Wait briefly and verify the process has stopped.
-3. Verify the port is now free using `shell` to check listeners.
+1. Use `sys_kill` to send SIGTERM to the blocking process by PID. This is preferred over shelling out to `kill` because it works cross-platform and provides structured error reporting.
+2. Wait briefly and verify the process has stopped by re-checking `sys_procs`.
+3. Verify the port is now free using `shell` to check listeners. If the process is still alive after 10 seconds, offer to escalate with `sys_kill` using SIGKILL.
 
 **For port reassignment**:
 1. Select an available port. Standard alternatives for common services:

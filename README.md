@@ -198,7 +198,7 @@ Every eMCP server is used by at least one skill. See the [e-mcp](plugins/eskill-
 | `@emcp/server-git` | `git_status`, `git_log`, `git_diff`, `git_show`, `git_branches`, `git_tags` | coding, devops, meta, intelligence |
 | `@emcp/server-ast` | `ast_search`, `ast_rewrite` | coding, office, quality, intelligence |
 | `@emcp/server-lsp` | `lsp_symbols`, `lsp_definition`, `lsp_references`, `lsp_hover`, `lsp_diagnostics` | coding, office, quality, intelligence, meta |
-| `@emcp/server-shell` | `shell_exec`, `shell_bg`, `shell_status`, `shell_kill` | coding, system, devops, quality, meta |
+| `@emcp/server-shell` | `shell_exec`, `shell_bg`, `shell_status`, `shell_kill` | coding, system, devops, quality, meta, testing, frontend |
 | `@emcp/server-test-runner` | `test_run`, `test_run_file`, `test_list_files` | coding, devops, meta, testing |
 | `@emcp/server-reasoning` | `think_start`, `think_step`, `think_branch`, `think_conclude`, `think_status`, `think_replay`, `think_search`, `think_summarize` | intelligence, meta |
 | `@emcp/server-docker` | `docker_ps`, `docker_images`, `docker_logs`, `docker_inspect`, `docker_exec` | system, devops |
@@ -208,22 +208,22 @@ Every eMCP server is used by at least one skill. See the [e-mcp](plugins/eskill-
 | `@emcp/server-docx` | `docx_read_text`, `docx_read_html`, `docx_read_metadata`, `docx_read_tables`, `docx_read_sections` | office |
 | `@emcp/server-pptx` | `pptx_read_text`, `pptx_read_slides`, `pptx_read_metadata`, `pptx_read_slide`, `pptx_extract_tables` | office |
 | `@emcp/server-spreadsheet` | `spreadsheet_read`, `spreadsheet_list_sheets`, `spreadsheet_query`, `spreadsheet_read_csv`, `spreadsheet_read_range` | office |
-| `@emcp/server-markdown` | `markdown_to_html`, `markdown_headings`, `markdown_links`, `markdown_code_blocks`, `markdown_front_matter`, `markdown_read_section` | office, meta, intelligence |
+| `@emcp/server-markdown` | `markdown_to_html`, `markdown_headings`, `markdown_links`, `markdown_code_blocks`, `markdown_front_matter`, `markdown_read_section` | office, meta, intelligence, coding |
 | `@emcp/server-diagram` | `diagram_render`, `diagram_render_file`, `diagram_formats` | office, meta |
-| `@emcp/server-diff` | `diff_files`, `diff_text`, `diff_dirs`, `diff_apply` | coding, quality, devops |
+| `@emcp/server-diff` | `diff_files`, `diff_text`, `diff_dirs`, `diff_apply` | coding, quality, devops, api |
 | `@emcp/server-data-file` | `data_file_read`, `data_file_query`, `data_file_set`, `data_file_convert` | coding, devops, quality, meta, system |
-| `@emcp/server-crypto` | `crypto_hash`, `crypto_hash_file`, `crypto_encode`, `crypto_random`, `crypto_hmac` | system, quality |
+| `@emcp/server-crypto` | `crypto_hash`, `crypto_hash_file`, `crypto_encode`, `crypto_random`, `crypto_hmac` | system, quality, testing |
 | `@emcp/server-archive` | `archive_list`, `archive_read_file`, `archive_extract`, `archive_create` | system |
 | `@emcp/server-system` | `sys_info`, `sys_procs`, `sys_disk`, `sys_env`, `sys_kill`, `sys_notify` | system |
 | `@emcp/server-docs` | `docs_index`, `docs_clone`, `docs_search`, `docs_list_libraries`, `docs_remove`, `docs_bootstrap` | intelligence, emcp |
 | `@emcp/server-fetch` | `fetch_url`, `fetch_many`, `extract_links`, `extract_text` | intelligence, frontend |
 | `@emcp/server-task` | `task_create`, `task_list`, `task_update`, `task_delete`, `task_tree` | meta |
 | `@emcp/server-browser` | `browser_search`, `browser_navigate`, `browser_snapshot`, `browser_click`, `browser_type`, + 13 more | intelligence, frontend |
-| `@emcp/server-image` | `image_info`, `image_metadata`, `image_resize`, `image_convert`, `image_ocr`, `image_ocr_languages` | office, frontend |
+| `@emcp/server-image` | `image_info`, `image_metadata`, `image_resize`, `image_convert`, `image_ocr`, `image_ocr_languages` | office, frontend, testing |
 | `@emcp/server-media` | `media_info`, `media_convert`, `media_trim`, `media_extract_audio`, `media_extract_frame` | office |
 | `@emcp/server-clipboard` | `clip_read`, `clip_write` | system |
 | `@emcp/server-computer-use` | `screen_screenshot`, `screen_left_click`, `screen_type`, `screen_key`, + 17 more | system |
-| `@emcp/server-egrep` | `egrep_search`, `egrep_search_files`, `egrep_status`, `egrep_reindex` | coding, quality |
+| `@emcp/server-egrep` | `egrep_search`, `egrep_search_files`, `egrep_status`, `egrep_reindex` | coding, quality, intelligence, devops, frontend, testing, meta |
 | `@emcp/server-time` | `current_time`, `convert_time` | meta |
 | `@emcp/server-desktop` | Composite: filesystem + shell + diff + system + clipboard | system |
 | `@emcp/server-document` | Composite: pdf + docx + pptx + markdown + spreadsheet | office |

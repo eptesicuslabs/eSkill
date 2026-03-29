@@ -51,7 +51,7 @@ Check if the tool is already installed by looking for its config file or checkin
 
 Mutation testing is computationally expensive. Scope the run to relevant code to avoid multi-hour executions.
 
-Use `ast_search` from the eMCP AST server to identify source files and their test coverage relevance. Configure the tool to target specific directories or files:
+Use `egrep_search` to quickly locate files containing mutation-worthy code patterns (conditionals, arithmetic, boundary checks), and `ast_search` from the eMCP AST server for structured analysis. Configure the tool to target specific directories or files:
 
 **Stryker (JS/TS)** -- generate or update `stryker.config.json`:
 ```json

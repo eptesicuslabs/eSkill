@@ -16,9 +16,14 @@ The following eMCP tools are required:
 
 - `pdf_read_text` -- extract text content from PDF files with page range support
 - `pdf_read_metadata` -- retrieve PDF document metadata (title, author, creation date)
+- `pdf_search` -- search for specific text across pages with surrounding context
+- `pdf_extract_tables` -- extract tabular data from PDF pages as structured arrays
 - `docx_read_html` -- read DOCX content as structured HTML for accurate conversion
 - `docx_read_text` -- read DOCX content as plain text (fallback)
+- `docx_read_tables` -- extract tables from DOCX as structured arrays
+- `docx_read_sections` -- extract content organized by heading hierarchy
 - `pptx_read_slides` -- read slide content and speaker notes from PPTX files
+- `pptx_read_slide` -- read specific slides by range (e.g., "3-5,8") for targeted extraction
 - `fs_write` -- write the resulting markdown file to disk
 
 ## Procedure
@@ -45,14 +50,20 @@ For PDF documents, follow this sequence:
 2. Call `pdf_read_text` to extract text content. If the document exceeds 20 pages, process
    it in batches of 20 pages at a time (e.g., pages "1-20", then "21-40") and concatenate
    the results.
-3. Use the metadata title as the top-level heading (`# Title`). If the metadata title is
+3. Call `pdf_extract_tables` to extract any tabular data from the PDF. Tables extracted
+   this way are more accurate than heuristic detection from raw text. Use the structured
+   array output directly when converting tables to markdown pipe format.
+4. If the user requests content from a specific section of a large PDF, use `pdf_search`
+   to locate the relevant pages first, then extract only those pages. This avoids
+   processing the entire document when only a portion is needed.
+5. Use the metadata title as the top-level heading (`# Title`). If the metadata title is
    empty, derive a title from the filename.
-4. Inspect the extracted text for structural cues:
+6. Inspect the extracted text for structural cues:
    - Lines in ALL CAPS or larger font indicators often represent headings.
    - Numbered sequences (1., 2., 3.) indicate ordered lists.
    - Bullet characters or dashes at line starts indicate unordered lists.
    - Repeated delimiter patterns (pipes, dashes) suggest tables.
-5. Apply heuristics to assign heading levels based on text patterns and positioning.
+7. Apply heuristics to assign heading levels based on text patterns and positioning.
 
 PDF-specific considerations:
 
@@ -68,12 +79,17 @@ PDF-specific considerations:
 
 For DOCX documents, follow this sequence:
 
-1. Call `docx_read_html` to obtain the document content as structured HTML. This preserves
-   headings, lists, tables, bold, italic, and other formatting.
-2. If `docx_read_html` fails or returns empty content, fall back to `docx_read_text` for
-   plain text extraction.
-3. When using the HTML path, proceed to Step 6 for HTML-to-markdown conversion.
-4. When using the plain text fallback, apply the same structural heuristics described in
+1. Call `docx_read_sections` to extract the document content organized by heading hierarchy.
+   This provides a pre-structured view of the document that maps directly to markdown
+   heading levels, making conversion more accurate than parsing raw HTML.
+2. Call `docx_read_tables` to extract all tables as structured arrays. Use these directly
+   for markdown table generation rather than parsing table markup from HTML.
+3. Call `docx_read_html` to obtain remaining content as structured HTML. This preserves
+   bold, italic, links, and other inline formatting not captured by the section/table tools.
+4. If all structured extraction tools fail or return empty content, fall back to
+   `docx_read_text` for plain text extraction.
+5. When using the HTML path, proceed to Step 6 for HTML-to-markdown conversion.
+6. When using the plain text fallback, apply the same structural heuristics described in
    Step 2 for PDF content.
 
 DOCX-specific considerations:
@@ -90,7 +106,9 @@ DOCX-specific considerations:
 For PPTX documents, follow this sequence:
 
 1. Call `pptx_read_slides` to extract all slide content including titles, body text, and
-   speaker notes.
+   speaker notes. For targeted extraction of specific slides (e.g., a subset requested by
+   the user), use `pptx_read_slide` with a range like "1-5" or "3,7,12" instead of reading
+   the entire presentation.
 2. Structure the output so that each slide becomes a markdown section. Use `## Slide N: Title`
    as the heading for each slide, where N is the slide number and Title is the slide title.
 3. Render bullet points from slides as markdown unordered lists.

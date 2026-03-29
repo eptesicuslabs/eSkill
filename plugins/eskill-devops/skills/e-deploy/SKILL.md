@@ -34,7 +34,7 @@ This is a blocking check. Any test failure means the deployment must not proceed
 
 Execute the project's build process to verify it completes without errors.
 
-- Use the `shell` tool to run the build command:
+- Use `shell` or `shell_bg` to run the build command (use `shell_bg` for long builds, checking progress with `shell_status`):
   - Node.js: `npm run build`.
   - Python: `python -m build` or `pip install -e .`.
   - Rust: `cargo build --release`.
@@ -87,7 +87,7 @@ Verify that dependency lock files are consistent and up to date.
   - Python: `poetry.lock`, `Pipfile.lock`, or `requirements.txt` (with pinned versions).
   - Rust: `Cargo.lock`.
   - Go: `go.sum`.
-- Check that the lock file is not older than the manifest file (using filesystem metadata).
+- Use `fs_info` to compare timestamps between the lock file and manifest file to verify the lock file is not stale.
 - For Node.js: run `npm ls` via shell to check for missing or extraneous dependencies.
 - For Python with Poetry: run `poetry check` via shell.
 - Record the result: PASS if lock files are present and consistent, FAIL if missing or outdated.

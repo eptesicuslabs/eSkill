@@ -18,6 +18,11 @@ Determine the ADR storage location. Check for an existing ADR directory:
 
 If no ADR directory exists, default to `docs/adr/` and create it. Use `fs_list` to check for existing ADR files to determine the next sequence number.
 
+The following eMCP tools are used for ADR content analysis:
+
+- `markdown_front_matter` -- parse YAML frontmatter from existing ADR files to extract metadata (status, date, deciders) without reading the full document
+- `markdown_read_section` -- extract content under a specific heading from existing ADRs (e.g., read just the "Decision" or "Context" section for cross-referencing)
+
 ## Step 1: Gather Decision Context
 
 Collect information about the architectural decision from the user and from the codebase.
@@ -33,7 +38,11 @@ To supplement user input, gather context from the codebase:
 
 - Use `git_log` to check recent commits for changes related to the decision (new dependencies, configuration changes, architectural refactoring).
 - Use `fs_search` to identify relevant configuration files, dependency manifests, or infrastructure definitions that reflect the decision.
-- Check for existing ADRs that this decision may supersede or relate to.
+- Check for existing ADRs that this decision may supersede or relate to. Use
+  `markdown_front_matter` on existing ADR files to quickly read their status and date
+  metadata without loading the full content. Use `markdown_read_section` to extract
+  specific sections (e.g., the "Decision" section) from related ADRs when building
+  cross-references.
 
 If the user provides minimal input, ask clarifying questions:
 
@@ -141,7 +150,10 @@ For each consequence, note whether it is short-term (during adoption) or long-te
 
 ## Step 6: Link Related Decisions
 
-Use `fs_read` to read existing ADR files and identify relationships.
+Use `markdown_front_matter` on each existing ADR file to read its status metadata. Use
+`markdown_read_section` to extract the "Decision" and "Context" sections from candidate
+related ADRs without reading entire files. Fall back to `fs_read` for full file reads
+when deeper analysis is needed.
 
 Check for:
 

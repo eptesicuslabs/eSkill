@@ -22,7 +22,7 @@ Multiple frameworks can be evaluated simultaneously. The checklist will note ove
 
 ## Step 1: Inventory Data Handling Patterns
 
-Use `ast_search` to find code patterns related to data collection, storage, and processing.
+Use `ast_search` and `egrep_search` to find code patterns related to data collection, storage, and processing. Use `egrep_search` for fast trigram-indexed text pattern searches (e.g., finding all PII field names, logging statements, data deletion calls across the codebase) and `ast_search` for structural code analysis.
 
 Search for:
 
@@ -38,7 +38,7 @@ Use `filesystem` to check for data flow documentation if it exists (data flow di
 
 ## Step 2: Evaluate Authentication and Access Controls
 
-Use `ast_search` and `lsp_symbols` to examine authentication implementation.
+Use `ast_search`, `lsp_symbols`, and `egrep_search` to examine authentication implementation. Use `egrep_search` to quickly locate all authentication-related patterns across the codebase (e.g., `@login_required`, `@PreAuthorize`, `authMiddleware`, `isAuthenticated`, session configuration, RBAC role definitions).
 
 Check for:
 
@@ -92,7 +92,7 @@ Use `ast_search` to analyze logging practices and `data_file_read` to check moni
 - System events: Application start/stop, error conditions, dependency failures.
 
 **Log security**:
-- PII in logs: Search for logging statements that may include passwords, tokens, SSNs, credit card numbers, or health data. Use regex patterns to detect sensitive data in log format strings.
+- PII in logs: Use `egrep_search` to search for logging statements that may include passwords, tokens, SSNs, credit card numbers, or health data. The trigram index enables fast regex pattern detection across all log format strings in the codebase.
 - Log integrity: Check for tamper-evident logging (centralized log service, write-once storage).
 - Log retention: Check log rotation configuration and retention policies.
 - Log access: Check who can access logs and whether access is audited.
@@ -132,7 +132,7 @@ If evaluating GDPR or HIPAA, perform additional data privacy checks.
 | Breach Notification | Breach procedures | Incident response plan, notification templates |
 | BAA | Business associates | Third-party service agreements |
 
-Use `filesystem` to search for privacy policies, DPA templates, BAA templates, and incident response plans in the repository.
+Use `filesystem` and `egrep_search` to search for privacy policies, DPA templates, BAA templates, and incident response plans in the repository. Use `egrep_search` to find references to consent mechanisms, data subject rights implementations, and breach notification procedures in code.
 
 ## Step 6: Evaluate Infrastructure Security (SOC2/PCI-DSS Focus)
 

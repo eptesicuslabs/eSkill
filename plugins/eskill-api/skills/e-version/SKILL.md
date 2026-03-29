@@ -22,7 +22,7 @@ Determine the current API surface by examining the most recent stable version. U
 - Look for tags matching `v*`, `release-*`, or semver patterns.
 - If no tags exist, use the base branch (main/master) HEAD as the baseline.
 
-Use `filesystem` tools to read the current API definition from the baseline:
+Use `filesystem` tools and `egrep_search_files` to locate and read the current API definition from the baseline:
 
 | API Type        | Baseline Source                            |
 |-----------------|--------------------------------------------|

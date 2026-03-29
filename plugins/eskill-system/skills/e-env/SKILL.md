@@ -28,7 +28,7 @@ Read the project root to locate configuration files that declare tool and runtim
 - `rust-toolchain.toml` or `rust-toolchain` -- Rust toolchain channel and version.
 - `.java-version` or `pom.xml` / `build.gradle` -- Java version requirements.
 
-Use the filesystem tool (`fs_read`) to read each file that exists. Do not fail if a file is absent; simply skip it. Collect all discovered requirements into a structured list of `(tool, required_version, source_file)` tuples.
+Use `fs_info` to check each configuration file for existence and read permissions before attempting to read it. This avoids unnecessary read errors and gives early visibility into permission problems that could affect the build. For each file that exists and is readable, use `fs_read` to parse its contents. Do not fail if a file is absent; simply skip it. Collect all discovered requirements into a structured list of `(tool, required_version, source_file)` tuples.
 
 ### Step 2: Check OS and Platform
 
@@ -85,6 +85,8 @@ Use `sys_env` to read the current environment. Check for variables commonly requ
 
 Flag any missing variables that appear in `.env.example` but are absent from the current environment.
 
+Use `fs_info` on the `.env` and `.env.example` files to check their permissions. If `.env` is world-readable, flag it as a security warning -- environment files containing secrets should be readable only by the owner. Similarly, verify that `.env` is listed in `.gitignore` to prevent accidental commits of secrets.
+
 ### Step 6: Check Disk Space
 
 Use `sys_disk` to retrieve disk usage information. Evaluate:
@@ -108,7 +110,7 @@ Check that lock files are consistent with their corresponding manifest files:
 - `go.sum` should be in sync with `go.mod`.
 - `Cargo.lock` should be in sync with `Cargo.toml`.
 
-For each pair found, verify that the lock file exists and is not stale. If the lock file is missing but the manifest exists, flag it as a warning. If both exist, compare their modification times -- a manifest newer than its lock file suggests the lock file needs regeneration.
+For each pair found, use `fs_info` on both the manifest and lock file to check existence and retrieve modification timestamps. If the lock file is missing but the manifest exists, flag it as a warning. If both exist, compare their modification times from the `fs_info` metadata -- a manifest newer than its lock file suggests the lock file needs regeneration.
 
 ### Step 8: Generate the Validation Report
 

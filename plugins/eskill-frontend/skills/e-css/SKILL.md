@@ -34,7 +34,7 @@ Read `postcss.config.js` or `postcss.config.ts` if present to understand what Po
 Identify CSS selectors that do not match any element in the project's templates or components.
 
 **For CSS/SCSS files**:
-Extract all selectors from the stylesheets. For each selector, use `shell_exec` from the eMCP shell server to search component files for matching class names, IDs, or element references.
+Extract all selectors from the stylesheets. For each selector, use `egrep_search` to instantly search component files for matching class names, IDs, or element references via trigram-indexed code search.
 
 Build a cross-reference:
 
@@ -87,7 +87,7 @@ Properties that have no visual effect given the element's display context:
 | `margin-top`/`margin-bottom` on inline | Element is `display: inline`     |
 | `overflow` on inline      | Element is `display: inline`                 |
 
-Use `ast_search` or `shell_exec` to find these patterns in stylesheet files.
+Use `ast_search` or `egrep_search` to find these patterns in stylesheet files.
 
 ### Step 4: Analyze Specificity Conflicts
 
@@ -178,7 +178,7 @@ Identify legacy CSS patterns that have cleaner modern alternatives:
 | Separate dark mode stylesheets        | `@media (prefers-color-scheme: dark)` |
 | Custom scroll styling (webkit-only)   | `scrollbar-color`, `scrollbar-width`  |
 
-Use `shell_exec` to search for these patterns across the stylesheets.
+Use `egrep_search` to search for these patterns across the stylesheets.
 
 ### Step 7: Check for CSS Performance Issues
 

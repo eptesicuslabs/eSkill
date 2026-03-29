@@ -206,7 +206,7 @@ If the eMCP task server is available, create each subtask using `task_create`:
 
 If the task server is not available, format the tasks as a structured list in the conversation (see Step 10).
 
-After creating all tasks, use `task_tree` to display the hierarchical view of the decomposed issue.
+After creating all tasks, use `task_tree` to display the hierarchical view of the decomposed issue, showing parent-child relationships and dependency chains at a glance. Use `task_delete` to remove any tasks created in error during the decomposition process.
 
 ## Step 9: Visualize the Dependency Graph
 

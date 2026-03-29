@@ -10,7 +10,7 @@ This skill creates checksum manifests for sets of project files and verifies the
 ## Prerequisites
 
 - Files or directories to include in the checksum manifest.
-- The eMCP filesystem and shell servers available for file reading and hash computation.
+- The eMCP filesystem, fs_info, crypto_encode, and shell servers available for file reading, metadata retrieval, and hash computation.
 - An existing manifest file for verification workflows (not needed for initial creation).
 
 ## Step 1: Define the Scope
@@ -50,8 +50,8 @@ For each file in the enumerated list, compute a cryptographic hash.
 2. SHA-256 is the default because it provides strong collision resistance while being computationally efficient. If the user requests a different algorithm (SHA-512, BLAKE2), use that instead.
 3. For each file, record:
    - Relative path from the project root (using forward slashes).
-   - SHA-256 hash (hex-encoded).
-   - File size in bytes (from filesystem metadata).
+   - SHA-256 hash (hex-encoded). Use `crypto_encode` to convert hash output to alternate formats (base64, hex) when the manifest consumer requires a specific encoding.
+   - File size in bytes and modification timestamp from `fs_info` (file metadata). Using `fs_info` provides precise file size, creation time, and modification time in a single call, which is more efficient than separate filesystem stat operations.
 4. Handle errors gracefully:
    - Files that cannot be read (permissions issues): record as "error" with the reason.
    - Symbolic links: follow the link and hash the target file content. Record that the entry is a symlink.
@@ -68,11 +68,13 @@ Assemble all collected data into a structured manifest.
      - Project root path.
      - Scope definition (inclusion and exclusion patterns).
      - Hash algorithm used.
+     - Hash encoding format (hex or base64, as produced by `crypto_encode`).
      - Total file count.
      - Total size of all files in bytes.
+     - Per-file metadata from `fs_info`: modification time, creation time, file permissions.
      - Generator identifier: "eskill-quality/e-checksum".
    - **Files section**:
-     - An array of entries, each with: path, hash, size.
+     - An array of entries, each with: path, hash (encoded via `crypto_encode`), size, and file metadata from `fs_info` (modification time, permissions).
      - Sorted alphabetically by path.
 2. Format the manifest as JSON for machine readability and easy parsing during verification.
 3. Validate the manifest structure before writing: ensure no duplicate paths, all hashes are the correct length, all sizes are non-negative integers.

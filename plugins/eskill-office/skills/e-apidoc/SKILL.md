@@ -11,6 +11,10 @@ This skill generates OpenAPI 3.1 specifications from source code analysis by ext
 
 Confirm the API framework in use and the desired output format (OpenAPI 3.1 JSON or YAML). Identify the base path or prefix for the API routes. If the project already has a partial OpenAPI spec, locate it for merging.
 
+The following eMCP tool supports documentation template extraction:
+
+- `markdown_read_section` -- extract content under a specific heading from existing documentation files. Use this to pull description templates, example sections, or boilerplate from existing API documentation when generating new endpoint docs.
+
 ## Step 1: Detect API Framework
 
 Use `ast_search` and `lsp_symbols` to identify the web framework and routing approach.
@@ -218,7 +222,10 @@ Report validation results and fix any issues before finalizing.
 
 ## Step 9: Generate Human-Readable Documentation
 
-Alongside the OpenAPI spec, produce a markdown summary of the API.
+Alongside the OpenAPI spec, produce a markdown summary of the API. If an existing API
+documentation template exists in the project, use `markdown_read_section` to extract
+reusable sections (e.g., authentication guides, error code references, getting started
+content) and incorporate them into the generated documentation.
 
 ```
 ## API Reference

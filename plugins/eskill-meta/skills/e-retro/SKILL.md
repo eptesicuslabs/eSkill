@@ -91,7 +91,7 @@ Calculate the test-to-code ratio: how many test lines were added per lines of pr
 
 **Lint and type checking**: If possible, compare linter output at the start and end of the period.
 
-**Debt indicators**: Use `filesystem` to count TODO, FIXME, and HACK annotations at the end of the period. Compare with the start (using `git` to check the state at the starting commit).
+**Debt indicators**: Use `egrep_search` to count TODO, FIXME, and HACK annotations at the end of the period. Use `think_search` to find reasoning entries from the period that documented decisions about incurring debt. Compare with the start (using `git` to check the state at the starting commit).
 
 | Debt Indicator | Period Start | Period End | Change |
 |---------------|-------------|-----------|--------|

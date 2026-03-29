@@ -122,7 +122,7 @@ Create structured changelog entries from the commit history since the last tag.
 
 ## Step 6: Update CHANGELOG.md
 
-Insert the generated changelog entries into the project's CHANGELOG.md file.
+Insert the generated changelog entries into the project's CHANGELOG.md file. Use `markdown_read_section` to extract the current `[Unreleased]` section for reference before modifying.
 
 - If `CHANGELOG.md` exists, read it and insert the new version section at the top, after the file header but before previous version entries.
 - If `CHANGELOG.md` does not exist, create it with a standard header:

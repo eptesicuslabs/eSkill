@@ -16,6 +16,8 @@ The following eMCP tools are required:
 
 - `pptx_read_metadata` -- retrieve presentation metadata (title, author, slide count)
 - `pptx_read_slides` -- extract slide content including titles, body text, and speaker notes
+- `pptx_read_slide` -- read specific slides by range (e.g., "3-5,8") for targeted extraction
+- `pptx_extract_tables` -- extract tables from slides as structured arrays
 - `fs_write` -- write output markdown files
 - `fs_list` -- check output directory existence
 
@@ -41,7 +43,11 @@ Begin by extracting the presentation-level metadata:
 
 Extract the content of every slide in the presentation:
 
-1. Call `pptx_read_slides` with the file path.
+1. Call `pptx_read_slides` with the file path to extract all slides. When the user only
+   needs a subset of slides (e.g., "just slides 5 through 10" or "slides 1,3,7"), use
+   `pptx_read_slide` with a range like "5-10" or "1,3,7" instead of reading the entire
+   presentation. This is faster for large presentations and avoids processing irrelevant
+   slides.
 2. For each slide, the tool returns:
    - Slide number (1-based index)
    - Slide title (from the title placeholder, if present)
@@ -78,7 +84,9 @@ For each slide, parse and structure the content:
    by the tool.
 
 4. **Special content detection**:
-   - Tables: If structured table data is present, format as a markdown pipe table.
+   - Tables: Call `pptx_extract_tables` to extract tables from slides as structured arrays.
+     This produces cleaner markdown pipe tables than parsing table text from the general
+     slide content. Match extracted tables to their slide numbers for correct placement.
    - Code snippets: If a text box uses a monospace font or contains code-like content,
      wrap in a fenced code block.
    - URLs: Detect bare URLs and convert to markdown links.

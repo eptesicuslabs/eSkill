@@ -11,9 +11,11 @@ This skill detects secrets committed to git repositories, assesses exposure scop
 
 Confirm the repository root with the user. Determine whether the repository is public or private, and whether it has been pushed to a remote. Public repository exposure is significantly more severe because secrets may already be cached by third parties.
 
+The eMCP egrep_search and crypto_random servers must be available. `egrep_search` provides trigram-indexed instant code search for scanning large codebases and git history for secret patterns. `crypto_random` generates cryptographically secure replacement secrets during rotation.
+
 ## Step 1: Scan Current Working Tree
 
-Use `filesystem` to search the current state of all tracked files for secret patterns.
+Use `egrep_search` to scan the current state of all tracked files for secret patterns. The trigram-indexed search is significantly faster than `fs_search` for applying multiple regex patterns across a large codebase and returns results instantly.
 
 Apply the following detection patterns:
 
@@ -43,13 +45,13 @@ For each finding, record the file path, line number, secret type, and a truncate
 
 ## Step 2: Scan Git History
 
-Use `git` to search the commit history for secrets that may have been committed and later removed.
+Use `git` and `egrep_search` to search the commit history for secrets that may have been committed and later removed.
 
 Execute the following approach:
 
 1. Use `git_log` to retrieve the list of all commits on the current branch.
 2. For each commit (or for a targeted range if the user specifies), use `git_diff` to examine the changes introduced.
-3. Apply the same detection patterns from Step 1 against the `+` lines (additions) in each diff.
+3. Apply the same detection patterns from Step 1 against the `+` lines (additions) in each diff. Use `egrep_search` to scan diff output for secret patterns -- its trigram index handles large diffs efficiently.
 4. Record findings with the commit hash, author, date, file path, and secret type.
 
 Alternative approach for large repositories:
@@ -80,11 +82,13 @@ Use `git` to determine:
 
 For each secret, assign an exposure level: low, medium, high, or critical.
 
-Use `crypto` to generate a SHA-256 hash of each detected secret value. This hash can be used to track the secret through rotation without storing the actual value.
+Use `crypto` to generate a SHA-256 hash of each detected secret value. This hash can be used to track the secret through rotation without storing the actual value. Use `crypto_random` to generate cryptographically secure replacement values (random bytes, UUIDs) for each secret that needs rotation.
 
 ## Step 4: Generate Rotation Plan
 
 For each detected secret, produce a rotation procedure specific to the secret type.
+
+For all secret types below, use `crypto_random` to generate the replacement secret value (e.g., a 32-byte random hex string for API keys, a UUID for tokens, a 64-character random string for passwords). This ensures cryptographic randomness rather than relying on ad-hoc generation.
 
 **AWS Access Keys**:
 1. Create a new access key pair in the IAM console or via AWS CLI.

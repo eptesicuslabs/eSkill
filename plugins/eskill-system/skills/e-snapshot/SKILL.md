@@ -99,9 +99,9 @@ First, test whether Docker is installed and the daemon is running by checking th
 If Docker is available, capture:
 
 - Docker version (client and server).
-- List of all containers with: name, image, status, ports, creation time.
+- List of all containers with: name, image, status, ports, creation time (via `docker_ps` with `all` set to true).
 - Count of containers by state: running, stopped, paused, restarting.
-- List of Docker images: repository, tag, size, creation date.
+- List of Docker images: repository, tag, image ID, size, creation date. Use `docker_images` to retrieve the full local image inventory rather than shelling out to `docker images`. This provides structured data including image IDs and exact sizes.
 - Docker disk usage summary if obtainable.
 - Docker networks: name, driver, scope.
 
@@ -137,6 +137,10 @@ Only include configuration files that the user explicitly requests or that are d
 
 Apply the same redaction rules as for environment variables: strip any values that may contain secrets, tokens, or credentials.
 
+### Step 7b: Generate Snapshot Identifier
+
+Before assembling the final document, generate a unique snapshot identifier using `crypto_random` to produce a UUID (v4). This ID serves as a stable reference for the snapshot across systems and tools. Include it in the snapshot header and filename suffix so that snapshots can be unambiguously referenced even if two are taken at the same second.
+
 ### Step 8: Compute Snapshot Checksum
 
 Once all data has been collected, assemble the complete snapshot content as a single text document. Before writing it to disk, compute a checksum using `crypto_hash` with the SHA-256 algorithm.
@@ -152,15 +156,15 @@ Integrity: SHA-256 <hash_value>
 
 ### Step 9: Write Snapshot to File
 
-Write the complete snapshot to a timestamped markdown file in the project directory. Use the following naming convention:
+Write the complete snapshot to a timestamped markdown file in the project directory. Use the following naming convention, incorporating the UUID generated in Step 7b:
 
 ```
-e-snapshot-<YYYY-MM-DD>-<HHMMSS>.md
+e-snapshot-<YYYY-MM-DD>-<HHMMSS>-<short-uuid>.md
 ```
 
-For example: `e-snapshot-2025-01-15-143022.md`.
+For example: `e-snapshot-2025-01-15-143022-a3f1b2c4.md` (using the first 8 characters of the UUID for brevity).
 
-Place the file in a `snapshots/` subdirectory of the project root. Create the directory if it does not exist. If the user specifies a different output location, use that instead.
+Place the file in a `snapshots/` subdirectory of the project root. Create the directory using `fs_mkdir` if it does not exist. If the user specifies a different output location, use that instead.
 
 ### Step 10: Format the Snapshot Document
 
@@ -169,6 +173,7 @@ Structure the snapshot document with the following sections:
 ```
 # System Snapshot
 
+**Snapshot ID**: <UUID from crypto_random>
 **Generated**: <full ISO 8601 timestamp with timezone>
 **Hostname**: <hostname>
 **Purpose**: <user-specified purpose or "General system state capture">
@@ -249,6 +254,7 @@ Adjust column widths and content based on actual data. Omit sections that have n
 ## Edge Cases
 
 - **Docker not installed or not running**: The Docker state section should report "Docker not available" rather than failing the entire snapshot. Each section should be independently resilient.
+- **Processes blocking data collection**: If a process is holding a lock on a file needed for the snapshot (e.g., a database lock preventing a clean dump), use `sys_kill` to send a graceful SIGTERM signal to the blocking process after confirming with the user. Never kill processes without explicit user approval.
 - **Restricted permissions**: On shared or corporate machines, some commands (lsof, netstat, dmidecode) may require sudo. Attempt unprivileged execution first, note permission errors, and skip rather than halt.
 - **WSL environments**: Windows Subsystem for Linux reports hybrid system information. The kernel version is Linux but hardware info comes from the Windows host. Document the WSL context to avoid confusion.
 - **Ephemeral container environments**: Snapshots of CI runners, Docker build stages, or Kubernetes pods capture state that will be destroyed. Note the ephemeral nature and focus on tool versions and configuration rather than hardware.

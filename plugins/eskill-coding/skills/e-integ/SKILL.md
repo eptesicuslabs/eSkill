@@ -57,7 +57,7 @@ Use `fs_list`, `fs_read`, and `data_file_read` from the eMCP data-file server to
 | Gin            | httptest.NewRecorder  | `net/http/httptest`             |
 | Actix          | actix_web::test       | `use actix_web::test`           |
 
-Also check for existing integration test files to detect established patterns. Search for directories named `integration/`, `e2e/`, or files matching `*.integration.test.*` or `*_integration_test.*` using `fs_list` (with recursive flag) and `fs_search` (filename mode).
+Also check for existing integration test files to detect established patterns. Search for directories named `integration/`, `e2e/`, or files matching `*.integration.test.*` or `*_integration_test.*` using `egrep_search_files` from the eMCP egrep server for fast filename-based search and `fs_list` (with recursive flag).
 
 ### Step 3: Analyze Route Handlers and Endpoints
 
@@ -326,7 +326,7 @@ Follow the project's existing conventions for integration test placement. Check 
 | Go same-package                      | `handlers/users_integration_test.go`        |
 | Rust tests directory                 | `tests/api/users.rs`                        |
 
-Use `fs_search` (filename mode) to search for existing integration test files and match their naming convention. If no integration tests exist, default to a `tests/integration/` directory and note this in the output.
+Use `egrep_search_files` to search for existing integration test files and match their naming convention. If no integration tests exist, default to a `tests/integration/` directory. Use `fs_mkdir` from the eMCP filesystem server to create the directory if it does not exist, and note this in the output.
 
 ### Step 10: Validate the Scaffold
 

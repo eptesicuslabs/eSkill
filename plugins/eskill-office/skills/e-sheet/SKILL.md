@@ -15,6 +15,7 @@ ongoing data quality monitoring, and compliance verification.
 The following eMCP tools are required:
 
 - `spreadsheet_read` -- read data from XLSX and XLS files
+- `spreadsheet_read_range` -- read a specific cell range in A1 notation (e.g., "B2:D10")
 - `spreadsheet_read_csv` -- read data from CSV and TSV files
 - `fs_write` -- write validation reports to disk
 - `fs_read` -- read rule configuration files if provided
@@ -32,7 +33,11 @@ Load the data to be validated:
 2. Treat the first row as column headers by default. If the user specifies that headers
    are in a different row or absent, adjust accordingly.
 3. Record the total number of rows and columns.
-4. Preview the first 5 rows to confirm the data was read correctly.
+4. Preview the first 5 rows to confirm the data was read correctly. When validating a
+   specific region of a large spreadsheet, use `spreadsheet_read_range` with A1 notation
+   (e.g., "A1:M500") to read only the relevant range. This is useful when the user knows
+   the data occupies a particular area or when the spreadsheet contains multiple unrelated
+   data regions that should be validated independently.
 5. Report the data shape to the user: row count, column count, column names, and a
    sample of values from each column.
 

@@ -35,6 +35,7 @@ Establish clear objectives for the exploration session.
 
 Get the broadest possible view of the project before diving into details.
 
+- Use `docs_list_libraries` to check whether documentation for this project or its dependencies has already been indexed in the docs server. If indexes exist, the exploration can leverage existing searchable content rather than reading every file from scratch.
 - Use `fs_list` from the eMCP filesystem server on the project root with depth 2-3 to see the directory structure. This provides the "map" for subsequent exploration.
 - Read the root README file if one exists. Extract:
   - What the project does (purpose and scope).
@@ -145,11 +146,11 @@ Explore the codebase in layers of increasing depth. Each level builds on the pre
 
 Select the right eMCP tools for the current exploration depth.
 
-- **Level 1 (structure)**: Use filesystem tools (`fs_list`) to map the directory structure. Use `fs_search` to find specific file types.
-- **Level 2 (API surface)**: Use filesystem `fs_read` to read entry points and route files. Use `lsp_symbols` to extract exported symbols without reading entire files.
+- **Level 1 (structure)**: Use filesystem tools (`fs_list`) to map the directory structure. Use `egrep_search_files` to find specific file types by name pattern across the entire tree instantly. Use `egrep_search` for fast text searches when looking for configuration markers or project indicators.
+- **Level 2 (API surface)**: Use filesystem `fs_read` to read entry points and route files. Use `lsp_symbols` to extract exported symbols without reading entire files. Use `egrep_search` to quickly locate route definitions, exported functions, or API decorators across all files.
 - **Level 3 (core logic)**: Use `ast_search` to trace function calls and data flow. Use `lsp_symbols` to understand class hierarchies and type definitions. Use filesystem `fs_read` for detailed code reading.
-- **Level 4 (infrastructure)**: Use filesystem `fs_read` for configuration files. Use `data_file_read` for structured data files (YAML, JSON, TOML).
-- **Level 5 (advanced)**: Use `ast_search` to find error handling patterns (try/catch blocks, Result handling). Use `fs_search` to find TODO/FIXME comments. Use `git_log` to understand the history of specific files.
+- **Level 4 (infrastructure)**: Use filesystem `fs_read` for configuration files. Use `data_file_read` for structured data files (YAML, JSON, TOML). Use `docs_bootstrap` to bulk-index documentation from installed dependencies (node_modules, vendor) so library docs become searchable via `docs_search` during exploration. Use `extract_links` on documentation pages to discover linked resources, tutorials, and API references for unfamiliar dependencies.
+- **Level 5 (advanced)**: Use `ast_search` to find error handling patterns (try/catch blocks, Result handling). Use `egrep_search` to find TODO/FIXME/HACK comments instantly via trigram index. Use `git_log` to understand the history of specific files.
 
 ### Step 6: Record Findings in Docs and Reasoning
 

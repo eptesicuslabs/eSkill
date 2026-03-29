@@ -60,9 +60,9 @@ Use `fs_list` and `shell_exec` to measure the size of common development artifac
 | Terraform plugins | `.terraform/` | Provider binaries |
 | Git objects | `.git/` | Repository history and pack files |
 
-For each found artifact, calculate its size using `shell_exec`:
-- On Linux/macOS: `du -sh <directory>`
-- On Windows: `powershell -command "(Get-ChildItem -Recurse <directory> | Measure-Object -Property Length -Sum).Sum"`
+For each found artifact, use `fs_info` to retrieve its size and metadata. `fs_info` works cross-platform and returns structured data, eliminating the need for platform-specific shell commands. For directories, `fs_info` reports the aggregate size including all nested contents. For individual large files, `fs_info` provides exact byte counts that can be used for precise reporting.
+
+Fall back to `shell_exec` with platform-specific commands (`du -sh` on Linux/macOS, `Get-ChildItem -Recurse | Measure-Object` on Windows) only if `fs_info` does not support recursive directory sizing on the current eMCP version.
 
 Record findings:
 
@@ -79,7 +79,7 @@ Record findings:
 Use `shell_exec` with Docker CLI to analyze Docker's disk usage.
 
 **Docker system overview**:
-Use `shell_exec` to run `docker system df` to get a summary:
+Use `docker_images` to list all locally available images with their repository, tag, image ID, size, and creation date. This provides structured data about the image inventory without requiring shell parsing. Supplement with `shell_exec` to run `docker system df` for the full summary including containers, volumes, and build cache:
 
 | Type | Total | Active | Size | Reclaimable |
 |------|-------|--------|------|-------------|
@@ -89,7 +89,7 @@ Use `shell_exec` to run `docker system df` to get a summary:
 | Build Cache | | | <size> | <size> |
 
 **Unused images**: List Docker images not referenced by any container.
-- Use `shell_exec` to run `docker images` and cross-reference with running containers.
+- Use the `docker_images` data and cross-reference with `docker_ps` to identify images not backing any container (running or stopped).
 - Dangling images (untagged `<none>:<none>`) are always safe to remove.
 - Old base image versions (e.g., `node:16` when the project uses `node:20`) are candidates for removal.
 
@@ -137,12 +137,12 @@ Search for patterns that indicate wasted space.
 
 **Stale lock files**: Multiple lock file types in the same project (e.g., both `package-lock.json` and `yarn.lock`) suggesting a package manager migration where the old lock file was not cleaned up.
 
-**Large files in git**: Use `shell_exec` to check for large files tracked by git that may be better suited for Git LFS or external storage:
+**Large files in git**: Use `fs_info` on files within the repository to identify those exceeding 10 MB. `fs_info` provides exact byte counts per file, making it straightforward to rank files by size without parsing shell output. Check for:
 - Files over 10 MB in the repository.
 - Binary files (images, fonts, PDFs, archives) that could be externalized.
 - Database dumps or fixture files committed to the repository.
 
-Record each finding with its size and whether it can be addressed.
+Record each finding with its exact size from `fs_info` and whether it can be addressed.
 
 ## Step 6: Classify and Prioritize Cleanup Targets
 

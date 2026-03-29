@@ -10,7 +10,7 @@ This skill scans frontend code for accessibility violations by matching structur
 ## Prerequisites
 
 - A project containing frontend markup files (HTML, JSX, TSX, Vue, Svelte, or template engine files).
-- The eMCP filesystem and fs_search servers available for scanning and pattern matching.
+- The eMCP filesystem, fs_search, and egrep_search servers available for scanning and pattern matching.
 - Knowledge of the target WCAG level (A, AA, or AAA) or willingness to default to WCAG 2.1 AA.
 
 ## Step 1: Identify Frontend Files
@@ -146,7 +146,7 @@ WCAG 4.1.2 (Level A): Name, Role, Value.
 Execute each pattern from Step 2 against the complete set of frontend files identified in Step 1.
 
 1. Run `ast_search` queries for structural patterns (missing attributes, incorrect element usage).
-2. Use `filesystem` `fs_search` for patterns that are more easily caught with regex (autoplay attributes, lang attributes, ARIA attribute presence).
+2. Use `egrep_search` for patterns that are more easily caught with regex (autoplay attributes, lang attributes, ARIA attribute presence). The trigram index makes `egrep_search` faster than `fs_search` for scanning all frontend files for `aria-*` attributes, `role=` patterns, `tabIndex`, and other accessibility markers across the entire codebase.
 3. Collect all matches with file path and line number.
 4. De-duplicate findings that may be flagged by multiple pattern checks.
 
@@ -154,7 +154,7 @@ Execute each pattern from Step 2 against the complete set of frontend files iden
 
 Check that ARIA attributes, when present, are used correctly.
 
-1. Search for all elements with `aria-*` attributes using `ast_search` or text search.
+1. Search for all elements with `aria-*` attributes using `egrep_search` for fast pattern matching (e.g., `aria-hidden`, `aria-label`, `aria-expanded`, `role=`) or `ast_search` for structural validation.
 2. Validate common correctness rules:
    - `aria-hidden="true"` should not be on focusable elements (elements with `tabIndex`, `<a>`, `<button>`, `<input>`). This makes the element invisible to assistive technology while still being focusable, which is confusing.
    - `role="presentation"` or `role="none"` should not be on elements that have semantic meaning needed for accessibility.

@@ -10,7 +10,7 @@ This skill compares configuration files across environments and deployment targe
 ## Prerequisites
 
 - At least two environment configuration files to compare (e.g., .env.development and .env.production, or staging.yml and production.yml).
-- The eMCP filesystem and data_file_read servers available for parsing config files.
+- The eMCP filesystem, egrep_search, and data_file_read servers available for parsing config files and searching for config references.
 - Knowledge of which environments exist or willingness to auto-detect from file naming conventions.
 
 ## Step 1: Identify Configuration Files and Environment Variants
@@ -82,6 +82,7 @@ Analyze the comparison data to identify drift patterns.
 
 - A key present in production but missing from staging suggests staging may not faithfully reproduce production behavior.
 - A key present in the example file but missing from any environment indicates incomplete setup.
+- For each missing key, use `egrep_search` to find all references to that config key across the codebase (e.g., `process.env.MISSING_KEY`, `os.environ['MISSING_KEY']`). This reveals which code paths are affected by the missing configuration and helps prioritize remediation.
 - Report each missing key with the environments where it is absent.
 
 ### Suspicious Identical Values
@@ -128,6 +129,7 @@ Scan all configuration files for security-related problems.
 ### Plaintext Secrets
 
 - Search for values that appear to be secrets based on their key names: keys containing `password`, `secret`, `token`, `key`, `credential`, `auth`.
+- Use `egrep_search` to find all references to these secret config keys across the entire codebase. This reveals whether secrets are accessed safely (via secret managers) or directly interpolated into code, connection strings, or log statements.
 - If the value is present in plaintext (not a reference to a secret manager), flag it.
 - Check whether the configuration file is in `.gitignore`. If not, flag the risk of secrets being committed to version control.
 

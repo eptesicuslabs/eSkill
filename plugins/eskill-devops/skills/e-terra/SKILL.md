@@ -13,7 +13,7 @@ Confirm the root directory of the Terraform configuration with the user. This is
 
 ## Step 1: Inventory Terraform Files
 
-Use `filesystem` to enumerate all Terraform-related files in the project.
+Use `egrep_search_files` to enumerate all Terraform-related files in the project by matching file name patterns (`*.tf`, `*.tfvars`, `*.tf.json`, `terragrunt.hcl`).
 
 - Search for files matching `*.tf` and `*.tfvars` recursively from the project root.
 - Search for `*.tf.json` files (JSON-based Terraform configuration).
@@ -83,7 +83,7 @@ For each variable declaration, check:
 4. **Validation blocks**: Complex variables (CIDR blocks, ARNs, email addresses) benefit from `validation` blocks. Note their presence or absence.
 5. **Sensitive flag**: Variables containing secrets should have `sensitive = true`. Cross-reference variable names against the sensitive patterns above.
 6. **Naming convention**: Variables should use snake_case. Flag camelCase or mixed-case variable names.
-7. **Unused variables**: Variables declared but never referenced in any `.tf` file are dead code. Use `shell` to search for references to each variable name across all `.tf` files.
+7. **Unused variables**: Variables declared but never referenced in any `.tf` file are dead code. Use `egrep_search` to search for references to each variable name across all `.tf` files.
 
 Separately, check `.tfvars` files:
 

@@ -32,7 +32,7 @@ Determine where the public API surface begins. Entry points vary by project type
 - Identify each package or workspace member.
 - Map each package's entry point separately.
 
-Use `fs_list` and `fs_search` to locate these files and `data_file_read` to parse manifest contents.
+Use `fs_list` and `fs_search` to locate these files and `data_file_read` to parse manifest contents. For large codebases, use `egrep_search` from the eMCP egrep server to quickly find export statements (`export`, `module.exports`, `pub fn`, `__all__`) across all source files.
 
 ### Step 2: Extract Exported Symbols with LSP
 
@@ -87,7 +87,7 @@ Use `ast_search` from the eMCP AST server to get detailed type information for e
 
 ### Step 4: Extract HTTP API Routes
 
-For HTTP services, search for route definitions using `ast_search` with patterns specific to the framework:
+For HTTP services, search for route definitions using `egrep_search` for a fast initial pass to locate files containing route registration patterns, then `ast_search` for structured extraction specific to the framework:
 
 | Framework      | Pattern to Search                                    |
 |----------------|------------------------------------------------------|

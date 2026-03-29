@@ -162,7 +162,7 @@ Use git history to detect changes. Compare the current spec against the previous
 
 ### Step 7: Generate Test Configuration
 
-Generate supporting configuration files:
+Use `fs_mkdir` to create the contract test output directory structure if it does not exist. Generate supporting configuration files:
 
 **Test setup file**:
 - Base URL configuration (environment variable with localhost default).

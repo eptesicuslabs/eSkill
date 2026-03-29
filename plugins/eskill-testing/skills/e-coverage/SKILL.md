@@ -17,7 +17,7 @@ This skill runs coverage collection, parses the output, computes risk-weighted p
 
 ### Step 1: Detect Coverage Tooling
 
-Identify the project's language and available coverage tools by reading manifest files with `filesystem` tools (fs_list, fs_read):
+Identify the project's language and available coverage tools by reading manifest files with `filesystem` tools (fs_list, fs_read). Use `egrep_search_files` to locate source and test files by extension pattern for structural coverage estimation:
 
 | Language    | Coverage Tool         | Install / Enable                          | Output Format    |
 |-------------|-----------------------|-------------------------------------------|------------------|

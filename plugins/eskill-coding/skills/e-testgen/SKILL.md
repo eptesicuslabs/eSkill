@@ -22,7 +22,7 @@ Determine which source files need test scaffolds. Acceptable inputs:
 - A directory (e.g., `src/services/` -- generate scaffolds for all files in the directory).
 - A list of files (e.g., files changed in a recent commit).
 
-For directories, use `fs_list` to enumerate files. Filter out non-source files (configs, assets, type definitions that contain no logic).
+For directories, use `fs_list` to enumerate files. Filter out non-source files (configs, assets, type definitions that contain no logic). Use `egrep_search_files` from the eMCP egrep server to quickly locate existing test files matching a naming pattern (e.g., `*.test.ts`, `*_test.py`) so you know which source files already have test coverage.
 
 ### Step 2: Extract Exported Symbols with LSP
 
@@ -162,9 +162,9 @@ Follow the project's existing test file convention. Determine placement by check
 | Rust inline `#[cfg(test)]`      | Same file, `mod tests` block         |
 | Go `_test.go` suffix            | `auth_test.go` in same package       |
 
-Search for existing test files using `fs_search` (filename mode) and `fs_list` to detect which convention the project uses. If multiple conventions exist, prefer the one used most recently (by file modification date).
+Search for existing test files using `egrep_search_files` from the eMCP egrep server and `fs_list` to detect which convention the project uses. If multiple conventions exist, prefer the one used most recently (by file modification date).
 
-If no existing test files are found, default to a `__tests__/` directory for JavaScript/TypeScript, `tests/` for Python, and co-located for Go and Rust.
+If no existing test files are found, default to a `__tests__/` directory for JavaScript/TypeScript, `tests/` for Python, and co-located for Go and Rust. Use `fs_mkdir` from the eMCP filesystem server to create the test directory if it does not exist.
 
 ## Notes
 

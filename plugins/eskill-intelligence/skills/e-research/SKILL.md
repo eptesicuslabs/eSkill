@@ -31,12 +31,14 @@ Formulate a precise research question that guides the investigation.
 
 Identify and access documentation sources relevant to the research question.
 
+- **Prior research**: Use `think_search` to search across all past reasoning chains for previous research on the same or related topics. If a prior chain covers relevant ground, use `think_status` to check its completion state, then build on existing findings rather than starting from scratch.
 - **Local documentation**: Use `docs_search` to search any previously indexed project documentation that may be relevant.
-- **Web documentation**: Use `fetch_url` to retrieve official documentation pages for the technologies being researched. Target the most authoritative sources:
+- **Web documentation**: Use `fetch_many` to retrieve multiple official documentation pages in parallel for the technologies being researched. Batch all known URLs into a single `fetch_many` call rather than fetching sequentially with `fetch_url`. Target the most authoritative sources:
   - Official project websites and documentation portals.
   - GitHub repository READMEs and wiki pages.
   - Official API references and specification documents.
   - Published benchmarks and comparison articles from reputable sources.
+- **Discover linked resources**: After fetching documentation pages, use `extract_links` on the returned HTML to discover additional relevant resources (related docs, API references, changelog pages, benchmark reports) that were not in the initial URL list. Filter extracted links by relevance before fetching.
 - **Search for sources**: If the relevant URLs are not known, use web search to identify authoritative documentation pages. Prefer primary sources (official docs, RFCs, specifications) over secondary sources (blog posts, tutorials).
 - For each source accessed, record:
   - URL or file path.
@@ -76,6 +78,7 @@ Process each source to extract the information relevant to the research question
 
 Use the eMCP reasoning server to organize and analyze findings systematically.
 
+- Before starting a new chain, use `think_search` to check for existing reasoning chains on the topic. If a relevant chain exists, use `think_status` to check whether it is complete or in progress, then extend it rather than creating a duplicate.
 - Call `think_start` with the research question as the goal. This begins a structured reasoning chain.
 - For each major finding or topic area, call `think_step` with type "thought" to record the finding and its implications:
   - What does this finding mean for our question?
@@ -109,7 +112,7 @@ Verify findings by comparing information across sources.
 
 ### Step 7: Synthesize Findings
 
-Combine all findings into a coherent analysis that answers the research question.
+Combine all findings into a coherent analysis that answers the research question. Use `think_summarize` to generate a structured summary of the reasoning chain built in Steps 5-6. This summary distills the chain into key findings, evidence strength, and open questions, providing a foundation for the synthesis.
 
 - Organize findings into themes or categories that align with the research question.
 - For evaluation research, construct a comparison matrix:
@@ -147,7 +150,7 @@ Persist the research findings using the eMCP docs and reasoning servers for futu
     - "supports": connecting findings that support or contradict an option.
     - "sourced_from": connecting findings to their specific sources.
     - "recommends": connecting the research conclusion to a specific option.
-- The full reasoning chain can be reviewed later via `think_replay`.
+- The full reasoning chain can be reviewed later via `think_replay`, searched across chains via `think_search`, or distilled via `think_summarize`.
 
 ### Step 9: Generate Research Report
 

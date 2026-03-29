@@ -19,7 +19,7 @@ This skill systematically investigates tests that fail intermittently by reprodu
 
 Collect information about the flaky test(s) before attempting reproduction.
 
-Use `filesystem` tools (fs_read) to read CI configuration files and `log` tools (log_read) to access recent CI logs:
+Use `filesystem` tools (fs_read) to read CI configuration files and `log` tools (log_read) to access recent CI logs. Use `egrep_search` to scan test output logs for recurring error patterns:
 
 1. Test name(s) and file location(s).
 2. Failure frequency: what percentage of runs fail?

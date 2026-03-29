@@ -63,7 +63,7 @@ This lookup table is the reference for detecting violations in subsequent steps.
 
 Search the target files for hardcoded color values that should use tokens.
 
-Use `ast_search` from the eMCP AST server to find string literals in style-related code. Additionally, use `shell_exec` from the eMCP shell server to run targeted searches:
+Use `ast_search` from the eMCP AST server to find string literals in style-related code. Additionally, use `egrep_search` to run instant trigram-indexed searches across all source files:
 
 **Hex colors**:
 Search for patterns matching `#[0-9a-fA-F]{3,8}` in CSS, SCSS, JS, TS, JSX, and TSX files.

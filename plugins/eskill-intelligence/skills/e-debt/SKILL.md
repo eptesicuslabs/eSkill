@@ -13,7 +13,7 @@ Confirm the project root and the scope of the analysis. For large monorepos, the
 
 ## Step 1: Scan for Annotation-Based Debt
 
-Use `ast_search` to find code annotations that indicate known debt.
+Use `egrep_search` for the initial sweep to find code annotations that indicate known debt. The trigram-indexed search returns results instantly across the entire codebase, making it the preferred tool for pattern-matching TODO, FIXME, HACK, and similar markers. Follow up with `ast_search` for language-aware analysis where needed (e.g., distinguishing comments from string literals).
 
 Search for these annotation patterns across all source files:
 
@@ -39,13 +39,13 @@ For each finding, extract:
 5. **Author**: Use `git` with `git_blame` or `git_log` for the file to determine who wrote the annotation and when.
 6. **Age**: How long ago the annotation was added. Older debt is more likely to be forgotten and should be surfaced.
 
-Use `filesystem` to exclude generated directories (`node_modules`, `vendor`, `dist`, `build`, `.git`, `__pycache__`, `target`).
+Use `egrep_search_files` to locate configuration files (`.eslintrc*`, `tsconfig.json`, `pyproject.toml`, `.prettierrc*`) that may define custom lint suppressions or debt-related ignores. Use `filesystem` to exclude generated directories (`node_modules`, `vendor`, `dist`, `build`, `.git`, `__pycache__`, `target`).
 
 Record all findings in a working list.
 
 ## Step 2: Detect Deprecated API Usage
 
-Use `ast_search` and `lsp_diagnostics` to find usage of deprecated functions, methods, and libraries.
+Use `egrep_search` for a fast first pass to find deprecation markers (`@deprecated`, `@Deprecated`, `#[deprecated]`, `[Obsolete]`, `DeprecationWarning`) across the codebase. Then use `ast_search` and `lsp_diagnostics` for language-aware verification and to find usage of deprecated functions, methods, and libraries.
 
 **Language-specific patterns**:
 
@@ -117,14 +117,14 @@ Record each outdated dependency with:
 
 ## Step 5: Find Code Duplication Indicators
 
-Use `ast_search` to detect potential code duplication without a full clone detection analysis.
+Use `egrep_search` and `ast_search` to detect potential code duplication without a full clone detection analysis. `egrep_search` is particularly effective here because trigram-indexed search can find repeated string patterns, function signatures, and code fragments across the entire codebase in milliseconds.
 
 Heuristic indicators of duplication:
 
-1. **Similar function names**: Functions with names like `processUserV2`, `handleOrderLegacy`, or numbered suffixes (`parseData1`, `parseData2`) suggest copied-and-modified code.
-2. **Parallel directory structures**: Directories with similar structure and file names (e.g., `old/` alongside `new/`, `v1/` and `v2/`).
-3. **Utility sprawl**: Multiple utility files across the codebase (`utils.ts` in 5 different directories) that may contain overlapping functionality.
-4. **Repeated patterns**: Use `filesystem` search to find identical code blocks appearing in multiple files (common string literals, similar error handling blocks, repeated configuration patterns).
+1. **Similar function names**: Functions with names like `processUserV2`, `handleOrderLegacy`, or numbered suffixes (`parseData1`, `parseData2`) suggest copied-and-modified code. Use `egrep_search` to find these patterns (e.g., search for `V2`, `Legacy`, `Old` in function definitions).
+2. **Parallel directory structures**: Directories with similar structure and file names (e.g., `old/` alongside `new/`, `v1/` and `v2/`). Use `egrep_search_files` to find files with version-suffixed names.
+3. **Utility sprawl**: Multiple utility files across the codebase (`utils.ts` in 5 different directories) that may contain overlapping functionality. Use `egrep_search_files` to locate all utility files by name pattern.
+4. **Repeated patterns**: Use `egrep_search` to find identical code blocks appearing in multiple files (common string literals, similar error handling blocks, repeated configuration patterns).
 
 For each duplication indicator, record:
 - The files involved.

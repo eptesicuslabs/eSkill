@@ -223,7 +223,7 @@ Use `ast_search` to scan existing page components for dynamic content patterns t
 
 Run the visual tests for the first time to create baseline screenshots.
 
-Use `shell` tools (shell_exec) from the eMCP shell server:
+Use `shell` tools from the eMCP shell server. For dev servers needed during capture, start them with `shell_bg` and use `shell_status` to verify they are running before proceeding:
 
 | Tool         | Baseline Command                              | Baseline Location                   |
 |--------------|-----------------------------------------------|-------------------------------------|
@@ -234,7 +234,7 @@ Use `shell` tools (shell_exec) from the eMCP shell server:
 
 After generation, verify baselines are reasonable:
 1. Use `filesystem` tools to confirm the screenshot files were created.
-2. Check file sizes: empty or very small files indicate capture failures.
+2. Use `image_metadata` to verify screenshot dimensions and format. Use `image_convert` if baselines need format conversion (e.g., PNG to WebP for storage savings). Check file sizes: empty or very small files indicate capture failures.
 3. List all generated baselines and their dimensions.
 
 Commit baselines to version control. Note that screenshot files can be large; recommend Git LFS if the project has many baselines:

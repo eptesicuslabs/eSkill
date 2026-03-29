@@ -10,7 +10,7 @@ This skill performs a comprehensive security scan of project source code by matc
 ## Prerequisites
 
 - A project with source code to scan.
-- The eMCP filesystem, fs_search, ast_search, and data_file_read servers available.
+- The eMCP filesystem, fs_search, egrep_search, ast_search, and data_file_read servers available.
 - Knowledge of the project's deployment context (web app, API, CLI, library) for risk prioritization.
 
 ## Step 1: Determine Project Languages and Frameworks
@@ -65,13 +65,15 @@ For JavaScript/TypeScript, search for string concatenation or template literals 
 
 ### Hardcoded Secrets (A07:2021 - Identification and Authentication Failures)
 
-Use `filesystem` `fs_search` with regex patterns:
+Use `egrep_search` (trigram-indexed, faster than fs_search on large codebases) with regex patterns:
 - API key patterns: `(?i)(api[_-]?key|apikey)\s*[:=]\s*['"][A-Za-z0-9]{16,}['"]`
 - Password patterns: `(?i)(password|passwd|pwd)\s*[:=]\s*['"][^'"]{4,}['"]`
 - Token patterns: `(?i)(token|secret|auth)\s*[:=]\s*['"][A-Za-z0-9+/=]{16,}['"]`
 - AWS key patterns: `AKIA[0-9A-Z]{16}`
 - Private key blocks: `-----BEGIN (RSA |EC |DSA )?PRIVATE KEY-----`
 - Generic high-entropy strings assigned to credential-like variable names.
+
+`egrep_search` is preferred over `fs_search` for these pattern scans because it uses a trigram index for instant results even on very large codebases. Fall back to `fs_search` only if egrep_search is unavailable.
 
 ### Insecure Cryptography (A02:2021 - Cryptographic Failures)
 
@@ -112,7 +114,7 @@ When the project uses multiple languages, run language-specific patterns only ag
 
 For patterns better suited to text search (hardcoded secrets, URL patterns, specific string literals):
 
-1. Use `filesystem` `fs_search` with the regex patterns from Step 2.
+1. Use `egrep_search` with the regex patterns from Step 2 for fastest results across the entire codebase. The trigram index makes this significantly faster than `fs_search` for large repositories with many files.
 2. Exclude binary files, lock files, and vendored dependencies.
 3. Exclude known false positive paths: test fixtures, documentation examples, mock data.
 4. Add matches to the working results list under the appropriate category.

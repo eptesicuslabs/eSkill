@@ -84,7 +84,11 @@ If the commit body contains additional context that is useful for release notes,
   for client credentials.
 ```
 
-### Step 5: Handle Edge Cases
+### Step 5: Cross-Reference with Existing Changelog
+
+If the project already has a CHANGELOG.md or similar file, use `markdown_read_section` from the eMCP markdown server to extract the most recent release section. Compare entries to avoid duplicating items that were already documented. This also helps maintain consistent formatting with previous entries.
+
+### Step 6: Handle Edge Cases
 
 **No conventional commits found**: If fewer than 20% of commits follow the conventional format, fall back to grouping by file area. Use the primary directory of changed files to create sections (e.g., "API Changes", "Frontend Changes", "Infrastructure").
 
@@ -94,7 +98,7 @@ If the commit body contains additional context that is useful for release notes,
 
 **Commits with multiple types**: Use the primary type from the subject line. If the body references additional types, the commit appears only once under its primary type.
 
-### Step 6: Output in Changelog Format
+### Step 7: Output in Changelog Format
 
 Produce output following the Keep a Changelog format (https://keepachangelog.com/):
 

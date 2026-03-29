@@ -95,12 +95,12 @@ The application must be running before E2E tests execute:
    ```
    curl -s -o /dev/null -w "%{http_code}" http://localhost:3000
    ```
-2. If not running, start it in the background:
+2. If not running, use `shell_bg` to start it in the background:
    ```
-   npm run dev &
-   python manage.py runserver &
+   npm run dev
+   python manage.py runserver
    ```
-3. Wait for the application to be ready by polling the health endpoint.
+   Use `shell_status` to confirm the background process is alive, then poll the health endpoint until the application is ready.
 
 For Playwright, the config file typically handles this via the `webServer` option. Check `playwright.config.ts` for an existing `webServer` block.
 
@@ -203,7 +203,7 @@ For each failure, use `ast_search` to find the test source code and identify the
 - **Dynamic content**: Tests that assert against timestamps, random IDs, or live data need tolerance. Suggest using regex matchers or freezing time.
 - **CI vs local differences**: If tests pass locally but fail in CI, check for headless browser configuration, screen resolution settings, font rendering differences, and environment variable availability.
 - **Flaky tests**: If a test fails intermittently, delegate to the e-flaky skill for deeper analysis.
-- **Port conflicts**: If the application or services fail to start due to port conflicts, check for orphaned processes from previous test runs.
+- **Port conflicts**: If the application or services fail to start due to port conflicts, use `shell_status` to check for orphaned background processes from previous test runs and `shell_kill` to terminate them.
 
 ## Related Skills
 
