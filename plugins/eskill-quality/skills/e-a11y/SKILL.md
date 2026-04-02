@@ -1,19 +1,32 @@
 ---
 name: e-a11y
-description: "Scans HTML, JSX, Vue, and Svelte files for WCAG accessibility violations. Use when auditing web accessibility, preparing for a11y reviews, or checking new components for issues. Also applies when: 'check accessibility', 'missing alt tags', 'a11y audit', 'WCAG compliance', 'screen reader support'."
+description: "Scans frontend code for automatable WCAG accessibility violations as a baseline filter. Use when auditing web accessibility, preparing for a11y reviews, or checking new components for structural issues. Also applies when: 'check accessibility', 'missing alt tags', 'a11y audit', 'WCAG check', 'screen reader support'."
 ---
 
 # Accessibility Scanner
 
-This skill scans frontend code for accessibility violations by matching structural patterns in HTML, JSX, Vue, Svelte, and other template formats against WCAG 2.1 success criteria. It identifies missing attributes, incorrect ARIA usage, keyboard navigation gaps, and semantic structure issues.
+This skill scans frontend code for accessibility violations by matching structural patterns in HTML, JSX, Vue, Svelte, and other template formats against WCAG 2.2 success criteria. It identifies missing attributes, incorrect ARIA usage, keyboard navigation gaps, and semantic structure issues.
+
+## Automation Boundaries
+
+Automated accessibility scanning is a baseline filter, not a compliance guarantee. The W3C WAI states: "tools can not determine accessibility, they can only assist." Independent studies place the detection rate for automated tools between 41% and 57% of real accessibility issues:
+
+- The UK Government Digital Service tested 10 tools against a page with 143 known failures. The best single tool found 41% of barriers; 29% of barriers were missed by every tool tested (GDS, 2017).
+- Deque reports that axe-core detects 57% of issues by volume across production audits of 13,000+ pages (Deque, 2023). This figure is self-reported by the tool vendor and represents an upper bound under favorable conditions.
+
+This skill catches structural violations that are detectable by static analysis. It cannot assess whether alt text is meaningful, whether reading order is logical, whether keyboard traps exist in complex widget interactions, or whether content on hover/focus is accessible. Those require manual testing with assistive technology.
+
+Treat findings from this skill as a minimum quality floor. Passing this scan does not mean the UI is accessible.
 
 ## Prerequisites
 
 - A project containing frontend markup files (HTML, JSX, TSX, Vue, Svelte, or template engine files).
-- The eMCP filesystem, fs_search, and egrep_search servers available for scanning and pattern matching.
-- Knowledge of the target WCAG level (A, AA, or AAA) or willingness to default to WCAG 2.1 AA.
+- The eMCP filesystem and egrep servers available for scanning and pattern matching.
+- Knowledge of the target WCAG level (A, AA, or AAA) or willingness to default to WCAG 2.2 AA.
 
-## Step 1: Identify Frontend Files
+## Workflow
+
+### Step 1: Identify Frontend Files
 
 Locate all files containing markup that will be rendered in a browser.
 
@@ -29,7 +42,7 @@ Locate all files containing markup that will be rendered in a browser.
 3. Record the total count of frontend files to scan.
 4. If no frontend files are found, report that the project does not appear to have frontend code and exit.
 
-## Step 2: Scan for Common Accessibility Violations
+### Step 2: Scan for Common Accessibility Violations
 
 Use `ast_search` to find structural patterns that indicate accessibility violations. Execute each pattern check across all identified frontend files.
 
@@ -141,7 +154,7 @@ WCAG 4.1.2 (Level A): Name, Role, Value.
 - For tab components: check for `role="tablist"`, `role="tab"`, `role="tabpanel"`, and `aria-selected` usage.
 - Flag custom interactive components that lack appropriate ARIA roles and keyboard support.
 
-## Step 3: Search Across All Frontend Files
+### Step 3: Search Across All Frontend Files
 
 Execute each pattern from Step 2 against the complete set of frontend files identified in Step 1.
 
@@ -150,7 +163,7 @@ Execute each pattern from Step 2 against the complete set of frontend files iden
 3. Collect all matches with file path and line number.
 4. De-duplicate findings that may be flagged by multiple pattern checks.
 
-## Step 4: Validate ARIA Attribute Usage
+### Step 4: Validate ARIA Attribute Usage
 
 Check that ARIA attributes, when present, are used correctly.
 
@@ -163,7 +176,7 @@ Check that ARIA attributes, when present, are used correctly.
    - `aria-live` regions should use appropriate politeness settings (`polite` for non-urgent, `assertive` for urgent).
 3. Flag incorrect ARIA usage. Incorrect ARIA is often worse than no ARIA at all, as it provides misleading information to assistive technology.
 
-## Step 5: Verify Heading Hierarchy
+### Step 5: Verify Heading Hierarchy
 
 WCAG 1.3.1 (Level A): Info and Relationships. WCAG 2.4.6 (Level AA): Headings and Labels.
 
@@ -177,7 +190,7 @@ WCAG 1.3.1 (Level A): Info and Relationships. WCAG 2.4.6 (Level AA): Headings an
 5. Flag pages with no `h1`, multiple `h1` elements, or skipped heading levels.
 6. Report the heading outline for each page to help developers visualize the structure.
 
-## Step 6: Check Keyboard Navigation Support
+### Step 6: Check Keyboard Navigation Support
 
 WCAG 2.1.1 (Level A): Keyboard.
 
@@ -193,7 +206,7 @@ WCAG 2.1.1 (Level A): Keyboard.
    - If focus outlines are removed, verify that a custom focus indicator is provided (e.g., box-shadow, border change).
    - Flag blanket removal of focus outlines without replacement as a keyboard accessibility issue.
 
-## Step 7: Categorize Findings by WCAG Level
+### Step 7: Categorize Findings by WCAG Level
 
 Assign each finding to a WCAG conformance level to help prioritize remediation.
 
@@ -223,7 +236,7 @@ These represent the highest level of accessibility and are aspirational for most
 - Extended audio description.
 - Reading level considerations.
 
-## Step 8: Generate the Accessibility Report
+### Step 8: Generate the Accessibility Report
 
 Structure the report for both developers and accessibility reviewers.
 
@@ -252,7 +265,7 @@ For each type of violation found, create a section:
 
 List categories that were scanned but produced no findings, confirming they were checked.
 
-## Step 9: Generate the Summary
+### Step 9: Generate the Summary
 
 Provide an actionable overview at the top of the report.
 
@@ -268,7 +281,25 @@ Provide an actionable overview at the top of the report.
   5. Level AAA enhancements.
 - Overall accessibility posture: a brief narrative assessment.
 
-## Reference: WCAG 2.1 Success Criteria for Common Violations
+## What This Skill Cannot Check
+
+The following WCAG requirements are beyond the reach of static code analysis. They require manual testing with assistive technology, cognitive evaluation, or rendered-DOM inspection:
+
+| Requirement | Why It Cannot Be Automated |
+|-------------|---------------------------|
+| Meaningful alt text | Static analysis can detect missing alt attributes but cannot judge whether alt text accurately describes the image content |
+| Logical reading order | DOM order may not match visual order; only screen reader testing reveals this |
+| Keyboard traps in complex widgets | Detecting whether focus escapes a custom date picker, tree view, or rich text editor requires interactive testing |
+| Content on hover/focus (1.4.13) | Determining whether hover-triggered content is dismissible, hoverable, and persistent requires runtime interaction |
+| Error identification context (3.3.1) | Whether an error message provides enough context to find and fix the issue is a judgment call |
+| Cognitive load and readability | No static tool can assess whether content is understandable to the target audience |
+| Color contrast in complex scenarios | Gradients, overlapping elements, and images behind text require rendered pixel analysis, not source inspection |
+| Motion and animation impact | Whether animations cause vestibular discomfort depends on rendering context, not code patterns |
+| Touch target spacing (2.5.8) | Adjacent target spacing requires rendered layout measurement |
+
+When this skill reports zero findings, the response should be: "no automatable violations detected" — not "the UI is accessible."
+
+## Reference: WCAG 2.2 Success Criteria for Common Violations
 
 | Criterion | Level | Description                                    | Common Violation                        |
 |-----------|-------|------------------------------------------------|-----------------------------------------|
@@ -295,5 +326,8 @@ Provide an actionable overview at the top of the report.
 
 ## Related Skills
 
-- **e-tokens** (eskill-frontend): Run e-tokens alongside this skill to check that design system components meet accessibility standards.
+- **e-tokens** (eskill-frontend): Run e-tokens alongside this skill to verify that design system components use accessible color tokens with sufficient contrast ratios.
 - **e-lint** (eskill-quality): Run e-lint alongside this skill to enforce accessibility-related coding conventions.
+- **e-stories** (eskill-frontend): Use e-stories to generate Storybook stories with accessibility addon integration. Storybook's a11y addon runs axe-core against the rendered DOM, catching violations that static code analysis misses.
+- **e-render** (eskill-frontend): Use e-render after this skill to validate accessibility in a rendered browser context when static analysis is insufficient.
+- **e-design** (eskill-frontend): Use e-design to establish accessible visual direction (contrast ratios, touch targets, focus indicators) before implementation.

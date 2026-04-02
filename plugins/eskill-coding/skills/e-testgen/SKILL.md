@@ -183,4 +183,4 @@ If no existing test files are found, default to a `__tests__/` directory for Jav
 ## Related Skills
 
 - **e-integ** (eskill-coding): Follow up with e-integ after this skill to extend unit test scaffolds into integration tests.
-- **e-threshold** (eskill-coding): Follow up with e-threshold after this skill to verify the new tests meet project coverage targets.
+- **e-coverage** (eskill-testing): Follow up with e-coverage after this skill to measure how much the new tests improved coverage and identify the next gaps.

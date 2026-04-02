@@ -5,7 +5,7 @@ description: "Creates distinctive, production-grade frontend interfaces with hig
 
 # Frontend Design
 
-This skill produces frontend interfaces that are visually distinctive and production-ready. It treats design quality as a first-class engineering concern — not an afterthought. The workflow moves from design intent through visual direction to refined implementation, using eMCP tools for codebase analysis and file generation.
+This skill produces frontend interfaces with intentional visual direction and production-grade implementation. It treats design quality as a first-class engineering concern — not an afterthought. The workflow moves from design intent through visual direction to refined implementation, using eMCP tools for codebase analysis and file generation.
 
 ## Core Design Philosophy
 
@@ -320,26 +320,30 @@ Use the project's existing breakpoints if defined. Otherwise, use content-driven
 - Grids: reduce columns as viewport narrows. `grid-template-columns: repeat(auto-fit, minmax(300px, 1fr))` handles most card grids.
 - Tables: horizontal scroll on mobile with sticky first column, or restructure to card layout.
 - Typography: use `clamp()` for fluid scaling. Heading at `clamp(1.5rem, 2vw + 1rem, 2.25rem)` scales smoothly without breakpoint jumps.
-- Touch targets: minimum 44x44px on mobile for all interactive elements (WCAG 2.5.5).
+- Touch targets: 44x44px recommended on mobile for all interactive elements. WCAG 2.5.8 (Level AA) requires a minimum of 24x24px; 44x44px meets the stricter 2.5.5 (Level AAA) and matches Apple HIG and Material Design guidance.
 
 Use `e-responsive` from eskill-frontend to verify the responsive implementation.
 
-### Step 8: Validate Output
+### Step 8: Verify and Hand Off
 
-Before reporting completion, verify the implementation:
+Before reporting completion, verify file integrity and hand off to specialized validation skills. This skill owns design direction and implementation — it does not own comprehensive validation, which is the responsibility of the downstream skills.
 
-1. **Token compliance**: Run `e-tokens` from eskill-frontend to confirm no hardcoded values bypass the design system.
-2. **Accessibility**: Run `e-a11y` from eskill-quality to verify WCAG compliance.
-3. **CSS quality**: Run `e-css` from eskill-frontend to catch redundancy or specificity issues.
-4. **File integrity**: Use `filesystem` tools (fs_list) to confirm all generated files are in the correct locations.
-5. **Import verification**: Use `ast_search` to confirm all imports resolve (no broken references to generated components).
-6. **Visual check**: If `browser_navigate` from the eMCP browser server is available, navigate to the rendered output and verify visual correctness.
+**Verify within this skill**:
+1. **File integrity**: Use `filesystem` tools (fs_list) to confirm all generated files are in the correct locations.
+2. **Import verification**: Use `ast_search` to confirm all imports resolve (no broken references to generated components).
+3. **Visual check**: If `browser_navigate` from the eMCP browser server is available, navigate to the rendered output and verify visual correctness.
+
+**Hand off to downstream skills** (do not duplicate their work):
+- **e-tokens**: Token compliance (hardcoded values, design system consistency).
+- **e-a11y**: Accessibility scanning (structural WCAG violations).
+- **e-responsive**: Responsive behavior (missing breakpoints, overflow, container query opportunities).
+- **e-css**: CSS quality (redundancy, specificity, unused rules).
 
 Report the implementation to the user with:
 - Files created or modified (paths and purpose).
 - Design decisions made and rationale.
 - Any tradeoffs or compromises noted.
-- Suggested follow-up refinements.
+- Which downstream skills should be run for validation.
 
 ## Edge Cases
 
@@ -372,9 +376,12 @@ These patterns produce the generic "AI-generated" look. Avoid them unless the de
 
 ## Related Skills
 
-- **e-component** (eskill-frontend): Use e-component for generating boilerplate component files. Use e-design when the visual design and interaction quality of the component matters.
-- **e-tokens** (eskill-frontend): Run e-tokens after e-design to verify token compliance.
-- **e-responsive** (eskill-frontend): Run e-responsive after e-design to verify responsive behavior.
+This skill establishes design direction and produces implementation. Validation and ongoing quality are the responsibility of downstream skills:
+
+- **e-component** (eskill-frontend): Use e-component for generating boilerplate component files without design intent. Use e-design when the visual direction and interaction quality of the component matters.
+- **e-tokens** (eskill-frontend): e-design establishes token values and structure in Step 3. e-tokens validates that implementation code uses those tokens rather than hardcoded values. Run e-tokens after e-design.
+- **e-responsive** (eskill-frontend): e-design includes responsive implementation in Step 7 but does not audit for responsive issues. Run e-responsive after e-design for static analysis of breakpoint coverage, container query opportunities, and overflow risks.
 - **e-css** (eskill-frontend): Run e-css after e-design to clean up generated CSS.
-- **e-a11y** (eskill-quality): Run e-a11y after e-design to verify WCAG compliance.
-- **e-stories** (eskill-frontend): Follow up with e-stories to generate Storybook stories for new components.
+- **e-a11y** (eskill-quality): e-design includes an accessibility baseline in Step 5 (non-negotiable items like alt text, labels, focus rings). e-a11y performs comprehensive structural WCAG scanning. The two are not redundant: e-design bakes accessibility into the implementation, e-a11y audits for violations afterward.
+- **e-stories** (eskill-frontend): Follow up with e-stories to generate Storybook stories with interaction tests and accessibility checks for new components.
+- **e-visual** (eskill-testing): Follow up with e-visual to establish visual regression baselines for components created by e-design.

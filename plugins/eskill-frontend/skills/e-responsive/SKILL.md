@@ -1,11 +1,11 @@
 ---
 name: e-responsive
-description: "Analyzes CSS and component code for responsive design issues including missing breakpoints, fixed widths, and overflow-prone patterns. Use when reviewing responsive layouts, auditing mobile support, or fixing layout bugs. Also applies when: 'check responsive design', 'mobile layout issues', 'does this work on mobile', 'find overflow problems'."
+description: "Analyzes CSS and component code for responsive design issues including missing breakpoints, container query opportunities, fixed widths, and overflow-prone patterns. Use when reviewing responsive layouts, auditing mobile support, or fixing layout bugs. Also applies when: 'check responsive design', 'mobile layout issues', 'does this work on mobile', 'find overflow problems', 'container queries'."
 ---
 
 # Responsive Layout Check
 
-This skill analyzes CSS and component code to identify responsive design problems. It detects fixed dimensions that cause overflow on small screens, missing breakpoints, viewport-unit misuse, and layout patterns that break across device sizes.
+This skill analyzes CSS and component code to identify responsive design problems. It detects fixed dimensions that cause overflow on small screens, missing breakpoints, container query opportunities, viewport-unit misuse, and layout patterns that break across device sizes.
 
 ## Prerequisites
 
@@ -14,9 +14,11 @@ This skill analyzes CSS and component code to identify responsive design problem
 
 ## Workflow
 
-### Step 1: Identify the Project's Breakpoint System
+### Step 1: Identify the Project's Responsive Strategy
 
-Before scanning for issues, determine what breakpoints the project uses. Use `filesystem` tools (fs_read) to check these sources:
+Before scanning for issues, determine what responsive mechanisms the project uses. Use `filesystem` tools (fs_read) to check these sources:
+
+**Media query breakpoints**:
 
 | Source                     | How to Extract Breakpoints                     |
 |----------------------------|-------------------------------------------------|
@@ -35,6 +37,16 @@ If no explicit breakpoint system is found, use the common defaults as reference:
 | lg     | 1024px    | Tablets landscape      |
 | xl     | 1280px    | Desktops               |
 | 2xl    | 1536px    | Large desktops         |
+
+**Container queries**: Use `egrep_search` to search for `container-type`, `@container`, and `container-name` in stylesheets. Container queries (CSS `@container`) have been baseline-stable since February 2023 with ~95% global browser support (Chrome 106+, Firefox 110+, Safari 16+, Edge 106+). They provide component-level responsive behavior based on the container's dimensions rather than the viewport.
+
+The distinction matters for this audit:
+- **Media queries**: correct for viewport-level layout decisions (page grid, navigation collapse, overall structure).
+- **Container queries**: correct for component-level responsive behavior (a card that adapts when placed in a sidebar vs. a main content area).
+
+If the project uses neither media queries nor container queries on layout-affecting components, flag it. If the project uses container queries appropriately on components, do not flag those components as "missing breakpoints."
+
+Note: CSS container style queries for custom properties are supported in Chromium-based browsers (Chrome 111+, Edge 111+) but not yet in Firefox or Safari. Style queries on standard CSS properties beyond custom properties have limited support. Size container queries are universally stable across all major browsers.
 
 ### Step 2: Scan for Fixed Width Issues
 
@@ -83,7 +95,12 @@ Check for these layout properties without corresponding breakpoint adjustments:
 
 For Tailwind projects, check for responsive prefixes. A component using `flex` and `gap-8` without any `sm:`, `md:`, or `lg:` variants on layout-affecting classes may need responsive adjustments.
 
-For CSS/SCSS projects, check whether the file or its imported partials contain any `@media` rules. A layout stylesheet with no media queries is a likely candidate for responsive issues.
+For CSS/SCSS projects, check whether the file or its imported partials contain any `@media` or `@container` rules. A layout stylesheet with neither is a likely candidate for responsive issues.
+
+**Container query opportunities**: Flag components that use media queries for behavior that depends on the component's own container rather than the viewport. Signs that a component should use container queries instead of media queries:
+- The same component is rendered in containers of different widths (sidebar, main content, modal).
+- The media query breakpoint does not correspond to a viewport width but to a content-width threshold.
+- The component's layout change is contextual, not global.
 
 ### Step 4: Scan for Overflow-Prone Patterns
 
@@ -101,7 +118,7 @@ Search for CSS patterns known to cause horizontal or vertical overflow:
 - Images without `max-width: 100%` or equivalent constraint.
 - Iframes or embeds with fixed dimensions and no responsive wrapper.
 
-Use `shell_exec` to search for these patterns in CSS and component files. For each match, note the file, line, pattern, and a brief explanation of the risk.
+Use `egrep_search` to search for these patterns in CSS and component files. For each match, note the file, line, pattern, and a brief explanation of the risk.
 
 ### Step 5: Check Viewport Unit Usage
 
@@ -111,9 +128,10 @@ Scan for viewport unit misuse that causes problems on mobile browsers:
 The `100vh` value does not account for mobile browser chrome (address bar, toolbar). On iOS Safari and Android Chrome, this causes content to be hidden behind the browser UI.
 
 Search for `height: 100vh` and `min-height: 100vh`. Flag occurrences and recommend alternatives:
-- `height: 100dvh` (dynamic viewport height, modern browsers).
-- `height: 100svh` (small viewport height).
-- `min-height: -webkit-fill-available` as a fallback.
+- `height: 100dvh` (dynamic viewport height — adjusts when mobile browser chrome appears/disappears).
+- `height: 100svh` (small viewport height — the viewport size when browser chrome is fully visible, the safe minimum).
+- `height: 100lvh` (large viewport height — the viewport size when browser chrome is fully hidden).
+- `min-height: -webkit-fill-available` as a fallback for older browsers that lack `dvh`/`svh`/`lvh` support.
 
 **`vw` without overflow protection**:
 The `100vw` value includes the scrollbar width on desktop, causing horizontal overflow. Search for `width: 100vw` and `calc(100vw - ...)` patterns.
@@ -140,7 +158,7 @@ Also check for CSS rules on images:
 
 Scan interactive elements for touch target sizes that are too small for mobile use:
 
-Minimum recommended touch target: 44x44px (WCAG) or 48x48dp (Material Design).
+WCAG 2.5.8 (Level AA) requires a minimum touch target of 24x24px. The recommended target is 44x44px (WCAG 2.5.5, Level AAA) or 48x48dp (Material Design). Flag targets below 24px as violations and targets between 24px and 44px as warnings.
 
 Search for:
 - Buttons, links, and inputs with explicit height or padding that result in targets smaller than 44px.
@@ -201,7 +219,7 @@ Apply these priority levels in the audit report to guide triage.
 ## Edge Cases
 
 - **Server-rendered content**: Pages with server-rendered HTML may have responsive styles in a global stylesheet rather than co-located with components. Check global CSS files and `<style>` blocks in layout templates.
-- **Container queries**: If the project uses CSS container queries (`@container`), these serve a similar purpose to media queries. Do not flag components that use container queries as missing breakpoints.
+- **Container queries**: If the project uses CSS container queries (`@container`) for component-level responsiveness, do not flag those components as missing breakpoints. Container queries and media queries are complementary, not interchangeable. A component using `@container` for its own layout and `@media` for viewport-level concerns is correctly implemented.
 - **Print stylesheets**: Fixed widths in `@media print` blocks are intentional and should be excluded from the scan.
 - **Email templates**: HTML email templates have different responsive constraints. If the target files are in an email template directory, adjust expectations (tables for layout are expected, viewport units are unsupported).
 - **Canvas and WebGL**: Elements using `<canvas>` or WebGL renderers manage their own sizing. Exclude them from fixed-width checks.
@@ -212,3 +230,5 @@ Apply these priority levels in the audit report to guide triage.
 
 - **e-tokens** (eskill-frontend): Run e-tokens before this skill to verify responsive breakpoints match design system guidelines.
 - **e-css** (eskill-frontend): Follow up with e-css after this skill to address responsive CSS issues detected during layout checks.
+- **e-render** (eskill-frontend): Use e-render to validate responsive behavior in a real browser at multiple viewport sizes. This skill analyzes code statically; e-render validates rendered output.
+- **e-visual** (eskill-testing): Use e-visual to capture baselines at multiple viewport sizes for ongoing responsive regression detection.

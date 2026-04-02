@@ -236,5 +236,5 @@ Use `lsp_references` from the eMCP LSP server to find how the function is called
 
 ## Related Skills
 
-- **e-threshold** (eskill-coding): Run e-threshold before this skill to identify areas with low coverage where mutation testing is most valuable.
+- **e-coverage** (eskill-testing): Run e-coverage before this skill to identify under-covered, high-risk areas where mutation testing is most valuable.
 - **e-testgen** (eskill-coding): Follow up with e-testgen after this skill to generate tests for code areas where mutations survived.

@@ -1,32 +1,63 @@
 ---
 name: e-tokens
-description: "Audits UI code for design system consistency by checking color tokens, spacing values, typography, and component usage against project standards. Use when enforcing design system adoption, reviewing UI PRs, or assessing visual consistency. Also applies when: 'check design system', 'are we using the right colors', 'audit design tokens', 'find hardcoded styles'."
+description: "Audits UI code for design system consistency by checking token usage, naming, hierarchy, and format compliance. Use when enforcing design system adoption, validating token structure, reviewing UI PRs, or assessing visual consistency. Also applies when: 'check design system', 'are we using the right colors', 'audit design tokens', 'find hardcoded styles', 'validate token structure'."
 ---
 
-# Design System Audit
+# Design Token Audit
 
-This skill audits frontend code for design system consistency by identifying hardcoded values that should use design tokens, detecting unauthorized color and spacing values, and reporting typography and component usage violations.
+This skill audits frontend code for design system consistency by identifying hardcoded values that should use design tokens, validating token hierarchy and naming, detecting unauthorized color and spacing values, and reporting typography and component usage violations. It recognizes the W3C Design Tokens Community Group (DTCG) format, Style Dictionary configurations, and framework-specific token systems.
+
+## Token Hierarchy Model
+
+Production design systems use a three-tier token hierarchy. This structure is independently documented by Adobe Spectrum, IBM Carbon, Shopify Polaris, and the DTCG 2025.10 specification:
+
+| Tier | Purpose | Example | Naming Pattern |
+|------|---------|---------|---------------|
+| Global (primitive) | Raw values with no semantic meaning | `gray-100: #f5f5f5` | Color name + scale step |
+| Semantic (alias) | References to global tokens that carry intent | `color-background-surface: {gray-100}` | Context + property + variant |
+| Component | Scoped to a single component, references semantic tokens | `button-background-primary: {color-background-surface}` | Component + property + variant |
+
+The audit validates that component code references semantic or component tokens, not global primitives or raw values. Using `gray-100` directly in a component bypasses the abstraction that enables theming.
+
+## Validation Boundaries
+
+Static token validation can detect:
+- Hardcoded values where tokens exist (hex codes, raw pixels, font stacks).
+- Deprecated or renamed token references.
+- Token naming convention violations.
+- DTCG format conformance (`$value`, `$type`, circular alias detection).
+- Property-context mismatches (a text-color token used on `background-color`).
+
+Static token validation cannot determine:
+- Whether the correct semantic token was chosen (using `color-background-danger` on a success state passes all linters but is semantically wrong).
+- Whether the rendered output looks correct (requires visual regression testing).
+- Whether the token in code matches what a designer specified (requires design-code sync tooling).
+- Runtime token resolution in theme-switching or conditional logic.
 
 ## Prerequisites
 
-- A frontend project with an established design system or token set (CSS custom properties, Tailwind config, theme file, or token JSON).
+- A frontend project with an established design system or token set (CSS custom properties, Tailwind config, theme file, token JSON, or DTCG-format `.tokens` files).
 - Source files to audit (components, stylesheets, or an entire directory).
 
 ## Workflow
 
-### Step 1: Locate Design Token Definitions
+### Step 1: Locate and Classify Token Definitions
 
 Use `filesystem` tools (fs_list, fs_read) to search for design token sources. Check these locations in order:
 
-| Token Source               | Common Paths                                    |
-|----------------------------|-------------------------------------------------|
-| CSS custom properties      | `src/styles/variables.css`, `src/styles/tokens.css`, `:root` blocks in global CSS |
-| Tailwind config            | `tailwind.config.js`, `tailwind.config.ts`      |
-| Theme file (JS/TS)         | `src/theme.ts`, `src/styles/theme.ts`, `src/tokens/index.ts` |
-| Design token JSON          | `tokens.json`, `src/tokens/*.json`, `.tokens/`  |
-| SCSS variables             | `src/styles/_variables.scss`, `src/styles/_tokens.scss` |
-| Styled-components theme    | `src/theme.ts`, `src/styles/theme.ts`           |
-| CSS-in-JS constants        | `src/constants/styles.ts`, `src/styles/constants.ts` |
+| Token Source               | Common Paths                                    | Format |
+|----------------------------|-------------------------------------------------|--------|
+| DTCG tokens                | `*.tokens`, `*.tokens.json`, `tokens/*.tokens.json` | W3C DTCG 2025.10 (`$value`, `$type`) |
+| Style Dictionary config    | `config.json`, `style-dictionary.config.*`, `tokens/` | Style Dictionary JSON (`value`, `attributes`) |
+| CSS custom properties      | `src/styles/variables.css`, `src/styles/tokens.css`, `:root` blocks | CSS vars |
+| Tailwind config            | `tailwind.config.js`, `tailwind.config.ts`      | Tailwind theme object |
+| Theme file (JS/TS)         | `src/theme.ts`, `src/styles/theme.ts`, `src/tokens/index.ts` | JS/TS exports |
+| SCSS variables             | `src/styles/_variables.scss`, `src/styles/_tokens.scss` | SCSS `$var` |
+| Styled-components theme    | `src/theme.ts`, `src/styles/theme.ts`           | ThemeProvider object |
+
+**Format detection**: If token files contain `$value` and `$type` properties prefixed with `$`, they follow the DTCG format. If they contain `value` without the `$` prefix and may include `attributes`, `category`, or `type` at the top level, they follow the Style Dictionary format. Detect the format before parsing to avoid misreading token structures.
+
+**DTCG token types** (from the 2025.10 specification): `color`, `dimension`, `font-family`, `font-weight`, `duration`, `cubic-bezier`, `number`. Composite types: `shadow`, `border`, `transition`, `gradient`, `typography`.
 
 Read each token source and build a reference catalog organized by category:
 
@@ -37,6 +68,8 @@ Read each token source and build a reference catalog organized by category:
 - **Borders**: Radius, width values.
 - **Shadows**: Box shadow definitions.
 - **Z-index**: Layer ordering values.
+
+Classify each token by tier (global, semantic, or component) based on naming patterns and whether it references another token via alias syntax (`{group.name}` in DTCG, `{group.name.value}` in Style Dictionary).
 
 ### Step 2: Establish the Token Vocabulary
 
@@ -205,9 +238,13 @@ Apply these severity levels in the audit report to guide triage.
 - **Animation and transition values**: Duration, easing, and keyframe values may not have corresponding tokens. Flag only if the project defines animation tokens.
 - **Legacy code**: If the project is migrating to a design system, the audit may produce hundreds of violations. Offer to scope the report to specific directories or recently modified files.
 - **Tailwind with custom theme**: If Tailwind's config extends the default theme, ensure both default and extended values are included in the token vocabulary.
-- **Design token formats**: Token files may use the W3C Design Tokens Community Group format, Style Dictionary format, or a custom schema. Detect the format before parsing to avoid misreading token structures.
+- **Design token formats**: Token files may use the W3C DTCG 2025.10 format (properties prefixed with `$`), Style Dictionary format (properties without `$` prefix), or a custom schema. The format is detected in Step 1. Do not mix format assumptions across files.
+- **Token alias chains**: DTCG allows tokens to reference other tokens via `{group.name}` syntax. Circular references are forbidden by the spec. If detected, report the cycle and stop traversing that chain.
+- **Style Dictionary build pipeline**: If a Style Dictionary config is present, the token source files are inputs, not outputs. Audit the output files (CSS variables, JS exports) for usage compliance, but validate the source files for naming, hierarchy, and alias correctness.
 
 ## Related Skills
 
 - **e-css** (eskill-frontend): Follow up with e-css after this skill to clean up CSS inconsistencies found during the audit.
-- **e-a11y** (eskill-quality): Run e-a11y alongside this skill to verify design system components meet accessibility standards.
+- **e-a11y** (eskill-quality): Run e-a11y alongside this skill to verify that color tokens provide sufficient contrast ratios for accessibility.
+- **e-design** (eskill-frontend): e-design establishes the visual direction and token structure. e-tokens validates compliance with that structure after implementation.
+- **e-component** (eskill-frontend): Run e-tokens after e-component to verify that scaffolded components use tokens rather than hardcoded values.

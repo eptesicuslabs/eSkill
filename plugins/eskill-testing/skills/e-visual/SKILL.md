@@ -1,11 +1,11 @@
 ---
 name: e-visual
-description: "Configures visual regression testing by identifying UI components, generating baselines, and setting up comparison workflows. Use when adding visual testing, preventing UI regressions, or validating design changes. Also applies when: 'set up visual regression', 'screenshot testing', 'prevent visual bugs', 'compare UI changes'."
+description: "Configures visual regression testing at page, component, and state levels with baseline management and CI integration. Use when adding visual testing, preventing UI regressions, or validating design changes. Also applies when: 'set up visual regression', 'screenshot testing', 'prevent visual bugs', 'compare UI changes', 'component screenshot test'."
 ---
 
 # Visual Regression Setup
 
-This skill configures visual regression testing for a project by detecting the UI framework, selecting an appropriate screenshot comparison tool, identifying components and pages to capture, generating baseline scripts, and integrating the workflow into CI.
+This skill configures visual regression testing for a project by detecting the UI framework, selecting an appropriate screenshot comparison tool, identifying components and pages to capture at multiple granularities (page-level, component-level, and state-level), generating baseline scripts, and integrating the workflow into CI.
 
 ## Prerequisites
 
@@ -91,15 +91,23 @@ If no Storybook exists, identify key components by scanning for:
 - Data display components (Table, Card, List, Chart).
 - Modal and dialog components.
 
-Build a capture manifest:
+Build a capture manifest with three granularity levels:
 
-| Target             | Type      | URL / Path                    | Viewport(s)        |
-|--------------------|-----------|-------------------------------|---------------------|
-| Home page          | Page      | `/`                           | Desktop, Mobile     |
-| Login page         | Page      | `/login`                      | Desktop, Mobile     |
-| Dashboard          | Page      | `/dashboard`                  | Desktop             |
-| Header             | Component | Storybook: `Header--default`  | Desktop, Mobile     |
-| UserCard           | Component | Storybook: `UserCard--filled` | Desktop             |
+| Target             | Level     | URL / Path                    | Viewport(s)        | Capture Method |
+|--------------------|-----------|-------------------------------|---------------------|----------------|
+| Home page          | Page      | `/`                           | Desktop, Mobile     | `page.toHaveScreenshot()` |
+| Login page         | Page      | `/login`                      | Desktop, Mobile     | `page.toHaveScreenshot()` |
+| Dashboard          | Page      | `/dashboard`                  | Desktop             | `page.toHaveScreenshot()` |
+| Header             | Component | Storybook: `Header--default`  | Desktop, Mobile     | `locator.toHaveScreenshot()` |
+| UserCard           | Component | `/` or Storybook              | Desktop             | `locator.toHaveScreenshot()` |
+| Button hover       | State     | Storybook: `Button--default`  | Desktop             | Hover + `locator.toHaveScreenshot()` |
+| Input error        | State     | Storybook: `Input--error`     | Desktop             | `locator.toHaveScreenshot()` |
+
+**Page-level** captures use `expect(page).toHaveScreenshot()` from Playwright's `PageAssertions`. These test full-page layout, header/footer, and content composition.
+
+**Component-level** captures use `expect(page.locator('.selector')).toHaveScreenshot()` from Playwright's `LocatorAssertions`. These isolate a single component for targeted regression detection without full-page noise. Both APIs share the same option surface (`threshold`, `maxDiffPixels`, `mask`, `animations`, `stylePath`).
+
+**State-level** captures interact with a component (hover, focus, fill, error trigger) before capturing. Use Playwright interaction methods (`hover()`, `focus()`, `fill()`) or Storybook play functions to reach the target state before screenshotting.
 
 ### Step 4: Configure Viewport and Browser Settings
 
@@ -142,7 +150,7 @@ Create the visual test files that capture screenshots and compare against baseli
 ```typescript
 import { test, expect } from '@playwright/test';
 
-test.describe('Visual Regression', () => {
+test.describe('Visual Regression - Pages', () => {
   test('home page', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
@@ -157,6 +165,24 @@ test.describe('Visual Regression', () => {
     await expect(page).toHaveScreenshot('login.png', {
       maxDiffPixelRatio: 0.01,
     });
+  });
+});
+
+test.describe('Visual Regression - Components', () => {
+  test('header component', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    const header = page.locator('header');
+    await expect(header).toHaveScreenshot('header.png', {
+      maxDiffPixelRatio: 0.01,
+    });
+  });
+
+  test('button hover state', async ({ page }) => {
+    await page.goto('/storybook/iframe.html?id=button--default');
+    const button = page.getByRole('button');
+    await button.hover();
+    await expect(button).toHaveScreenshot('button-hover.png');
   });
 });
 ```
@@ -180,18 +206,20 @@ test.describe('Visual Regression', () => {
 }
 ```
 
-Use `filesystem` tools to write the test files and configuration. Use `data_file` tools (data_file_write) for JSON configuration files.
+Use `filesystem` tools (`fs_write`) to write the test files and JSON configuration files.
 
 ### Step 6: Handle Dynamic Content
 
 Pages with dynamic content produce false positives. Identify and mask dynamic elements:
 
-| Dynamic Element       | Masking Strategy                           | Implementation                      |
+Playwright provides built-in options for handling dynamic content. Prefer these over manual JavaScript injection:
+
+| Dynamic Element       | Playwright Option                          | Implementation                      |
 |-----------------------|--------------------------------------------|-------------------------------------|
-| Timestamps            | Replace with fixed text via JS injection   | `page.evaluate()`                   |
-| User avatars          | CSS overlay or fixed test image            | `page.addStyleTag()`               |
-| Advertisements        | Hide the container                         | `page.locator('.ad').evaluate(hide)`|
-| Animations            | Disable via CSS                            | `*, *::before, *::after { animation: none !important; transition: none !important; }` |
+| Timestamps, avatars   | `mask` option                              | `toHaveScreenshot({ mask: [page.locator('.timestamp')] })` — overlays matched elements with a solid color box |
+| Mask color            | `maskColor` option                         | Default is `#FF00FF`. Override with `maskColor: '#000000'` |
+| Volatile elements     | `stylePath` option                         | Path to a CSS file that hides dynamic elements. Pierces Shadow DOM and iframes |
+| Animations            | `animations` option                        | `animations: 'disabled'` (default). Finite animations fast-forward to completion; infinite animations cancel to initial state |
 | Carousels / sliders   | Pin to first slide                         | `page.evaluate()` to stop rotation |
 | Loading spinners      | Wait for completion                        | `page.waitForLoadState('networkidle')` |
 | Random content        | Seed or mock the data source               | Intercept API responses             |
@@ -283,15 +311,19 @@ Key CI considerations:
 
 ## Edge Cases
 
-- **Font rendering differences**: Different OSes render fonts differently. Generate baselines on the same OS as CI (typically Linux). If baselines were generated on macOS, expect false positives on Linux runners. Use Docker for consistent rendering.
+- **Font rendering non-determinism**: Chromium rendering is not guaranteed to be deterministic across OS, hardware, or headless/headed mode. Playwright maintainers have confirmed this as a known, unresolved limitation. Generate and commit baselines inside the same environment as CI (typically Linux). Use Docker containers for rendering consistency. If baselines were generated on macOS, expect false positives on Linux runners due to font hinting, anti-aliasing, and subpixel rendering differences.
+- **Platform-specific baselines**: Playwright names baseline files as `{test-name}-{browser}-{platform}.png` (e.g., `home-chromium-linux.png`). There is no single cross-platform baseline. If the team develops on macOS but CI runs Linux, generate separate baseline sets or standardize on Docker-based generation.
 - **Responsive breakpoints**: Test at exact breakpoint widths (e.g., 768px) to catch off-by-one CSS issues where elements jump between layouts.
 - **Dark mode**: If the application supports dark mode, generate separate baselines for light and dark themes. Use Playwright's `colorScheme` option to switch.
 - **Internationalization**: If the UI supports multiple languages, text length differences can cause layout shifts. Test the longest language (often German) alongside the default.
-- **Sub-pixel rendering**: Anti-aliasing produces small per-pixel differences across runs. Set `maxDiffPixelRatio` to 0.01 (1%) to avoid false positives while still catching real regressions.
+- **Sub-pixel rendering**: Anti-aliasing produces small per-pixel differences across runs. Set `maxDiffPixelRatio` to 0.01 (1%) to avoid false positives while still catching real regressions. Playwright uses the pixelmatch library with a YIQ color space and a default `threshold` of 0.2 for per-pixel comparison.
 - **Large baseline sets**: If the project has hundreds of components and multiple viewports, visual test runs become slow. Prioritize critical user-facing pages and component states. Run the full visual suite nightly rather than on every PR.
 - **Merge conflicts on baselines**: Binary PNG files cannot be merged. When two branches update the same baseline, the second to merge must regenerate its baselines. Document this in contributing guidelines.
+- **Component-level testing with Playwright CT**: `@playwright/experimental-ct-react` (and equivalents for Vue, Svelte, Solid) provides a `mount` fixture that renders components in a real browser. Visual regression via `LocatorAssertions.toHaveScreenshot()` works on mounted components. The package is experimental; known limitations include inability to pass non-serializable props (live objects, functions) to components.
 
 ## Related Skills
 
-- **e-stories** (eskill-frontend): Run e-stories before this skill to create the component stories that visual regression tests will capture.
+- **e-stories** (eskill-frontend): Run e-stories before this skill to create component stories that provide isolated, state-specific capture targets for visual regression. Stories with play functions can set up interaction states (hover, focus, error) before screenshot capture.
 - **e-e2e** (eskill-testing): Follow up with e-e2e after this skill to include visual checks in end-to-end test workflows.
+- **e-render** (eskill-frontend): e-render validates a single page render against design intent. e-visual sets up ongoing regression detection across multiple pages and components. Use e-render for one-time validation, e-visual for continuous protection.
+- **e-tokens** (eskill-frontend): Use e-tokens for static token compliance. Use e-visual to verify that token changes produce the expected visual output in the rendered browser.

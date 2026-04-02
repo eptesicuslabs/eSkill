@@ -1,11 +1,11 @@
 ---
 name: e-bundle
-description: "Analyzes JavaScript and CSS bundle composition to identify large dependencies, duplicate modules, and tree-shaking opportunities. Use when optimizing load times, reducing bundle size, or investigating slow page loads. Also applies when: 'analyze bundle size', 'why is the bundle so large', 'find large dependencies', 'optimize load time'."
+description: "Analyzes JavaScript and CSS bundle composition to identify large dependencies, duplicate modules, tree-shaking opportunities, and estimated Core Web Vitals risk factors. Use when optimizing load times, reducing bundle size, investigating slow page loads, or assessing performance budgets. Also applies when: 'analyze bundle size', 'why is the bundle so large', 'find large dependencies', 'optimize load time', 'bundle performance impact', 'lighthouse budget'."
 ---
 
 # Bundle Analysis
 
-This skill analyzes the composition of JavaScript and CSS bundles to identify large dependencies, duplicate modules, dead code, and tree-shaking opportunities. It produces prioritized recommendations for reducing bundle size and improving load times.
+This skill analyzes the composition of JavaScript and CSS bundles to identify large dependencies, duplicate modules, dead code, and tree-shaking opportunities. It connects bundle findings to user-facing performance impact through Core Web Vitals thresholds and produces prioritized recommendations for reducing bundle size and improving load times.
 
 ## Prerequisites
 
@@ -241,6 +241,28 @@ Compile all findings into a prioritized report:
 [Findings from Step 6]
 ```
 
+### Step 10: Assess Core Web Vitals Impact
+
+Connect bundle findings to user-facing performance metrics. The current Core Web Vitals (as of March 2024, when INP replaced FID) are:
+
+| Metric | Good | Needs Improvement | Poor | What It Measures |
+|--------|------|-------------------|------|------------------|
+| LCP (Largest Contentful Paint) | < 2.5s | 2.5s - 4.0s | > 4.0s | Time until the largest visible element renders |
+| INP (Interaction to Next Paint) | < 200ms | 200ms - 500ms | > 500ms | Latency from user interaction to visual response |
+| CLS (Cumulative Layout Shift) | < 0.1 | 0.1 - 0.25 | > 0.25 | Visual stability throughout the page lifecycle |
+
+These thresholds are assessed at the 75th percentile of page loads.
+
+**Bundle size to LCP mapping**: Large JavaScript bundles block rendering because the browser must download, parse, and execute scripts before painting. As a rough heuristic, each 100 KB of uncompressed JavaScript adds approximately 50-100ms to parse time on mid-range mobile devices. This estimate varies significantly by JavaScript engine version, code complexity, and device generation. Map the top optimization opportunities from Step 9 to estimated LCP improvement.
+
+**Bundle size to INP mapping**: Heavy main-thread JavaScript execution blocks the browser from responding to user input. Dependencies that run synchronous work on the main thread (large utility libraries, synchronous state management) directly increase INP. Flag any dependency over 50 KB that executes synchronously on interaction.
+
+**Code splitting to CLS mapping**: If large components are loaded lazily without layout reservation (no explicit width/height or skeleton), they cause layout shift when they render. Check that code-split components have sized containers.
+
+**Lighthouse CI regression checking**: If the project uses Lighthouse CI (`@lhci/cli` in devDependencies or a `lighthouserc.*` config file), read the configuration and report the current performance budgets. If no Lighthouse CI is configured, note it as a gap.
+
+Lighthouse collects lab (synthetic) data only. It cannot accurately measure INP because it cannot simulate realistic user interaction timing. CLS measurement in lab mode misses post-load layout shifts from lazy-loaded content and user scrolling. CPU throttling uses a simulated 4x multiplier that is relative to the host machine's hardware, not an absolute performance target. Lab data is useful for regression detection but should not be treated as equivalent to field performance data from real users.
+
 ## Edge Cases
 
 - **Monorepo with shared packages**: Bundle stats may include internal packages that appear as external dependencies. Distinguish between third-party and internal packages when calculating dependency sizes.
@@ -254,3 +276,5 @@ Compile all findings into a prioritized report:
 
 - **e-deadcode** (eskill-coding): Run e-deadcode before this skill to identify unused code contributing to bundle bloat.
 - **e-css** (eskill-frontend): Follow up with e-css after this skill to reduce CSS file sizes in the bundle.
+- **e-render** (eskill-frontend): Use e-render after this skill to validate that bundle optimizations (code splitting, lazy loading) do not degrade the rendered user experience.
+- **e-perf** (eskill-coding): e-perf profiles runtime performance (CPU, memory, I/O). This skill profiles the bundle (download size, parse cost, dependency weight). Use both for a complete performance picture.

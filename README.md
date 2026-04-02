@@ -2,7 +2,7 @@
 
 eSkill is the skill and workflow layer of the [eAgent](https://github.com/eptesicuslabs/eAgent) platform. It composes [eMCP](https://github.com/eptesicuslabs/eMCP) server tools into higher-level workflows — where eMCP provides primitives (`git_log`, `ast_search`, `sql_query`), eSkill provides orchestration (changelog generation, codebase cartography, deployment checklists).
 
-11 plugins. 89 skills. 3 hooks. Local-only, MIT-licensed.
+11 plugins. 90 skills. 3 hooks. Local-only, MIT-licensed.
 
 ## Architecture
 
@@ -20,7 +20,7 @@ crypto_hash_file + archive_create    -> e-backup
 ast_search + lsp_diagnostics         -> e-scan
 ```
 
-eMCP exposes 31 servers (plus 2 composites) with 174 tools. eSkill's 89 skills call sequences of those tools in deliberate order, handle edge cases, and produce structured output. A skill that composes eMCP tools into a workflow is the intended design. A skill that reimplements what an eMCP server already provides is waste.
+eMCP exposes 31 servers (plus 2 composites) with 174 tools. eSkill's 90 skills call sequences of those tools in deliberate order, handle edge cases, and produce structured output. A skill that composes eMCP tools into a workflow is the intended design. A skill that reimplements what an eMCP server already provides is waste.
 
 ## Installation
 
@@ -30,7 +30,7 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 
 | Plugin | Domain | Skills |
 |--------|--------|-------:|
-| [eskill-coding](plugins/eskill-coding) | Git workflows, code review, refactoring, database, performance | 14 |
+| [eskill-coding](plugins/eskill-coding) | Git workflows, code review, debugging, refactoring, database, performance | 15 |
 | [eskill-office](plugins/eskill-office) | Document conversion, data pipelines, diagrams, reports | 9 |
 | [eskill-system](plugins/eskill-system) | Environment setup, Docker, log analysis, system diagnostics, backups | 8 |
 | [eskill-intelligence](plugins/eskill-intelligence) | Codebase exploration, knowledge graphs, research, decisions | 8 |
@@ -50,6 +50,7 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 |-------|-------------|-------------|
 | e-changelog | git, markdown | Generate changelogs from commit history between refs |
 | e-review | git, lsp, ast, diff | Prepare code review summaries from diffs with semantic context |
+| e-debug | lsp, ast, test-runner, shell, git, filesystem, egrep, log, system, data-file | Structured debugging from failing test or runtime error to verified fix |
 | e-testgen | lsp, ast, filesystem, data-file | Generate test file scaffolds from code structure analysis |
 | e-refactor | ast, lsp, test-runner, diff, filesystem | Safe refactoring with AST rewriting and test verification loops |
 | e-deps | data-file, shell, ast, filesystem | Audit dependencies for vulnerabilities, outdated versions, unused packages |
@@ -61,7 +62,7 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 | e-deadcode | lsp, ast, filesystem, git | Identify unreachable code, unused exports, and orphan files |
 | e-integ | ast, lsp, filesystem, data-file, test-runner | Generate integration test scaffolds for API endpoints and database operations |
 | e-nplus | ast, lsp, filesystem | Detect N+1 query patterns in ORM code and suggest batch alternatives |
-| e-threshold | shell, filesystem, data-file, ast | Check test coverage against configurable thresholds and identify gaps |
+| e-threshold | shell, filesystem, data-file, git | Define and enforce coverage policy in CI with thresholds, no-regression rules, and ratchets |
 
 ### Office
 
@@ -96,7 +97,7 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 |-------|-------------|-------------|
 | e-carto | filesystem, ast, lsp, docs, data-file | Map codebase architecture into navigable knowledge graphs |
 | e-graph | filesystem, reasoning, markdown, docs | Build knowledge graphs from project documentation and code |
-| e-research | docs, fetch, reasoning, task | Structured research with source gathering and synthesis |
+| e-research | docs, fetch, reasoning | Structured research with source gathering and synthesis |
 | e-decide | reasoning, docs | Guided decision-making with options analysis and ADR output |
 | e-context | docs, reasoning, git, filesystem | Export project context for session handoffs |
 | e-learn | filesystem, lsp, ast, docs, git | Systematic exploration of unfamiliar codebases |
@@ -126,7 +127,7 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 | e-lint | ast, lsp, shell, filesystem | Enforce coding standards with AST and LSP analysis |
 | e-config | data-file, filesystem, diff | Compare configurations across environments to detect drift |
 | e-checksum | crypto, filesystem | Create and verify checksum manifests for change detection |
-| e-a11y | ast, filesystem | Scan frontend code for WCAG accessibility violations |
+| e-a11y | ast, filesystem, egrep | Scan frontend code for automatable WCAG accessibility violations |
 | e-diffrev | git, ast, filesystem, shell | Security-focused differential review of code changes with blast radius analysis |
 | e-defaults | ast, filesystem, data-file | Detect fail-open insecure defaults and hardcoded secrets |
 | e-variant | ast, filesystem | Find similar vulnerabilities across a codebase from a known pattern |
@@ -140,11 +141,11 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 |-------|-------------|-------------|
 | e-design | filesystem, ast, lsp, image, browser, fetch | Create production-grade frontend interfaces with high visual craft |
 | e-component | filesystem, ast | Generate UI component scaffolds following project patterns |
-| e-tokens | ast, filesystem | Audit UI code for design system consistency and token compliance |
-| e-responsive | ast, filesystem | Analyze CSS and components for responsive design issues |
+| e-tokens | ast, filesystem, egrep, data-file | Audit UI code for design token compliance with DTCG and hierarchy validation |
+| e-responsive | ast, filesystem, egrep | Analyze CSS and components for responsive issues including container queries |
 | e-css | ast, filesystem | Identify CSS optimization opportunities and specificity conflicts |
-| e-bundle | data-file, filesystem, shell | Analyze bundle composition and dependency weight |
-| e-stories | ast, filesystem | Generate Storybook story files from component analysis |
+| e-bundle | data-file, filesystem, shell, egrep, ast | Analyze bundle composition, dependency weight, and estimated Core Web Vitals risk factors |
+| e-stories | ast, filesystem, egrep | Generate Storybook stories with interaction tests and accessibility checks |
 | e-render | browser, computer-use, shell, image, filesystem | Render and validate frontend output in a live browser |
 
 ### API
@@ -166,8 +167,8 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 | e-mutate | test-runner, ast, filesystem | Configure and analyze mutation testing for test quality |
 | e-factory | filesystem, ast, data-file | Generate test data factories from schema definitions |
 | e-flaky | test-runner, git, log, filesystem | Identify and diagnose flaky tests from history and logs |
-| e-coverage | test-runner, ast, lsp, filesystem | Identify untested code paths and generate targeted test suggestions |
-| e-visual | filesystem, shell, browser | Configure visual regression testing for UI components |
+| e-coverage | test-runner, shell, ast, lsp, filesystem, data-file | Analyze coverage gaps, threshold compliance, and testing priorities end to end |
+| e-visual | filesystem, shell, browser, image | Configure page, component, and state-level visual regression testing |
 | e-proptest | ast, filesystem, test-runner | Generate property-based tests for serialization, parsing, and validation |
 
 ### Meta
@@ -179,7 +180,7 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 | e-recap | git, test-runner, reasoning, task | Summarize work completed in the current session |
 | e-health | test-runner, lsp, data-file, markdown, git, diagram | Generate project health dashboards with quality scores |
 | e-decompose | reasoning, ast, lsp, task, filesystem | Break complex issues into actionable subtasks |
-| e-retro | git, test-runner, filesystem, data-file, markdown | Generate sprint or milestone retrospectives from git history and metrics |
+| e-retro | git, test-runner, filesystem, data-file, markdown, egrep, reasoning | Generate sprint or milestone retrospectives from git history and metrics |
 | e-ship | filesystem, data-file, git, ast, lsp, shell, test-runner | Evaluate shipping readiness by checking docs, tests, security, and ops |
 
 ### eMCP
@@ -190,7 +191,7 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 
 ## eMCP Server Coverage
 
-Every eMCP server is used by at least one skill. See the [e-mcp](plugins/eskill-emcp/skills/e-mcp) skill for full parameter schemas.
+Every eMCP server is documented in eSkill. Most are used by at least one workflow skill; reference-only coverage via `e-mcp` is marked explicitly below.
 
 | eMCP Server | Tools | Plugins |
 |-------------|-------|---------|
@@ -211,20 +212,20 @@ Every eMCP server is used by at least one skill. See the [e-mcp](plugins/eskill-
 | `@emcp/server-markdown` | `markdown_to_html`, `markdown_headings`, `markdown_links`, `markdown_code_blocks`, `markdown_front_matter`, `markdown_read_section` | office, meta, intelligence, coding |
 | `@emcp/server-diagram` | `diagram_render`, `diagram_render_file`, `diagram_formats` | office, meta |
 | `@emcp/server-diff` | `diff_files`, `diff_text`, `diff_dirs`, `diff_apply` | coding, quality, devops, api |
-| `@emcp/server-data-file` | `data_file_read`, `data_file_query`, `data_file_set`, `data_file_convert` | coding, devops, quality, meta, system |
+| `@emcp/server-data-file` | `data_file_read`, `data_file_query`, `data_file_set`, `data_file_convert` | coding, devops, quality, meta, system, frontend |
 | `@emcp/server-crypto` | `crypto_hash`, `crypto_hash_file`, `crypto_encode`, `crypto_random`, `crypto_hmac` | system, quality, testing |
 | `@emcp/server-archive` | `archive_list`, `archive_read_file`, `archive_extract`, `archive_create` | system |
 | `@emcp/server-system` | `sys_info`, `sys_procs`, `sys_disk`, `sys_env`, `sys_kill`, `sys_notify` | system |
 | `@emcp/server-docs` | `docs_index`, `docs_clone`, `docs_search`, `docs_list_libraries`, `docs_remove`, `docs_bootstrap` | intelligence, emcp |
 | `@emcp/server-fetch` | `fetch_url`, `fetch_many`, `extract_links`, `extract_text` | intelligence, frontend |
 | `@emcp/server-task` | `task_create`, `task_list`, `task_update`, `task_delete`, `task_tree` | meta |
-| `@emcp/server-browser` | `browser_search`, `browser_navigate`, `browser_snapshot`, `browser_click`, `browser_type`, + 13 more | intelligence, frontend |
+| `@emcp/server-browser` | `browser_search`, `browser_navigate`, `browser_snapshot`, `browser_click`, `browser_type`, + 13 more | frontend, testing |
 | `@emcp/server-image` | `image_info`, `image_metadata`, `image_resize`, `image_convert`, `image_ocr`, `image_ocr_languages` | office, frontend, testing |
-| `@emcp/server-media` | `media_info`, `media_convert`, `media_trim`, `media_extract_audio`, `media_extract_frame` | office |
-| `@emcp/server-clipboard` | `clip_read`, `clip_write` | system |
-| `@emcp/server-computer-use` | `screen_screenshot`, `screen_left_click`, `screen_type`, `screen_key`, + 17 more | system |
+| `@emcp/server-media` | `media_info`, `media_convert`, `media_trim`, `media_extract_audio`, `media_extract_frame` | emcp (reference only) |
+| `@emcp/server-clipboard` | `clip_read`, `clip_write` | emcp (reference only) |
+| `@emcp/server-computer-use` | `screen_screenshot`, `screen_left_click`, `screen_type`, `screen_key`, + 17 more | frontend |
 | `@emcp/server-egrep` | `egrep_search`, `egrep_search_files`, `egrep_status`, `egrep_reindex` | coding, quality, intelligence, devops, frontend, testing, meta |
-| `@emcp/server-time` | `current_time`, `convert_time` | meta |
+| `@emcp/server-time` | `current_time`, `convert_time` | emcp (reference only) |
 | `@emcp/server-desktop` | Composite: filesystem + shell + diff + system + clipboard | system |
 | `@emcp/server-document` | Composite: pdf + docx + pptx + markdown + spreadsheet | office |
 

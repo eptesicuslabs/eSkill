@@ -1,11 +1,11 @@
 ---
 name: e-stories
-description: "Generates Storybook story files from component analysis, creating stories for each prop variant and state combination. Use when adding components to Storybook or building component documentation. Also applies when: 'create stories', 'add to Storybook', 'generate Storybook stories', 'document this component'."
+description: "Generates Storybook story files with controls, interaction tests, and accessibility checks from component analysis. Use when adding components to Storybook, building component documentation, or setting up interaction testing. Also applies when: 'create stories', 'add to Storybook', 'generate Storybook stories', 'document this component', 'add play functions'."
 ---
 
-# Storybook Scaffold
+# Storybook Story Generation
 
-This skill generates Storybook story files by analyzing component props via AST, detecting the project's Storybook configuration, and producing stories with controls, args, and documentation that cover each prop variant and state combination.
+This skill generates Storybook story files by analyzing component props via AST, detecting the project's Storybook configuration, and producing stories with controls, args, play functions for interaction testing, and accessibility addon integration. Stories serve a dual role: component documentation and executable test.
 
 ## Prerequisites
 
@@ -205,14 +205,39 @@ export const Disabled: Story = {
 };
 ```
 
-For stories requiring user interaction, use the `play` function:
+For stories requiring user interaction, use play functions with `@storybook/test`. Play functions run after the story renders and serve as both interactive documentation and executable tests. The `@storybook/test` package provides `expect` (from Vitest), `userEvent`, `within`, and `fn` — use these instead of importing testing utilities directly.
 
 ```typescript
+import { expect, userEvent, within, fn } from '@storybook/test';
+
+export const ClickInteraction: Story = {
+  args: {
+    onClick: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button');
+    await userEvent.click(button);
+    await expect(args.onClick).toHaveBeenCalledOnce();
+  },
+};
+
 export const Focused: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const button = canvas.getByRole('button');
     await button.focus();
+    await expect(button).toHaveFocus();
+  },
+};
+
+export const FormFilled: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole('textbox');
+    await userEvent.clear(input);
+    await userEvent.type(input, 'test@example.com');
+    await expect(input).toHaveValue('test@example.com');
   },
 };
 ```
@@ -234,6 +259,29 @@ If the component requires providers or wrappers to render correctly, add decorat
 - **Store context**: Wrap with the store provider and seed initial state if the component reads from a global store.
 
 Check existing stories for decorator patterns using `ast_search`. Reuse the same decorators for consistency.
+
+**Accessibility addon configuration**: If `@storybook/addon-a11y` is installed (check `.storybook/main.*` addons list), configure accessibility test behavior on the meta object. The addon runs axe-core against the rendered story DOM. Three test modes are available via `parameters.a11y.test`:
+
+| Mode | Behavior | CI Impact |
+|------|----------|-----------|
+| `'error'` | Violations cause test failures | Blocks CI |
+| `'todo'` | Violations shown as warnings in sidebar | Does not block CI |
+| `'off'` | Accessibility checks disabled for this story | No checks |
+
+Set the default to `'error'` for component stories where accessibility is expected. Use `'todo'` for work-in-progress components. Use `'off'` only for stories that intentionally demonstrate inaccessible states (e.g., a "before fix" example).
+
+```typescript
+const meta: Meta<typeof Button> = {
+  component: Button,
+  parameters: {
+    a11y: {
+      test: 'error',
+    },
+  },
+};
+```
+
+Note: axe-core detects structural violations in the rendered DOM (missing labels, contrast issues, ARIA errors). It does not assess cognitive accessibility, meaningful alt text content, or keyboard trap behavior. Deque reports that axe-core detects up to 57% of accessibility issues by volume (Deque, 2023).
 
 ### Step 8: Place the Story File
 
@@ -271,5 +319,7 @@ Report the generated file path and a summary of stories created.
 
 ## Related Skills
 
-- **e-component** (eskill-frontend): Run e-component before this skill to create the components that Storybook stories will document.
-- **e-visual** (eskill-testing): Follow up with e-visual after this skill to add visual regression tests for the new stories.
+- **e-component** (eskill-frontend): Run e-component before this skill to create the components that stories will document and test.
+- **e-visual** (eskill-testing): Follow up with e-visual after this skill to add visual regression tests that capture story baselines. Stories provide the component isolation that visual regression needs.
+- **e-a11y** (eskill-quality): e-a11y scans source code for structural violations; this skill's accessibility addon integration catches rendered-DOM violations via axe-core. The two are complementary, not redundant.
+- **e-tokens** (eskill-frontend): Run e-tokens to verify that components used in stories reference design tokens rather than hardcoded values.
