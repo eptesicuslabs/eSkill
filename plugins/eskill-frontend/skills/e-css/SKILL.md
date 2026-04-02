@@ -1,259 +1,257 @@
 ---
 name: e-css
-description: "Identifies CSS optimization opportunities including unused selectors, redundant properties, specificity conflicts, and missing modern alternatives. Use when cleaning up stylesheets, migrating CSS approaches, or optimizing rendering. Also applies when: 'optimize CSS', 'find unused CSS', 'clean up stylesheets', 'reduce CSS bloat'."
+description: "Architecture-aware CSS audit that identifies unused rules, specificity conflicts, rendering-cost issues, and methodology-specific anti-patterns across Tailwind, CSS Modules, CSS-in-JS, and global CSS/SCSS. Use when cleaning up stylesheets, reviewing CSS architecture, or optimizing rendering performance. Also applies when: 'optimize CSS', 'find unused CSS', 'clean up stylesheets', 'CSS architecture review', 'specificity problems'."
 ---
 
-# CSS Optimization
+# CSS Architecture Audit
 
-This skill identifies optimization opportunities in CSS and SCSS codebases by scanning for unused selectors, redundant declarations, specificity conflicts, unnecessary vendor prefixes, and patterns that have modern CSS replacements. It produces a prioritized list of improvements with concrete refactoring suggestions.
+This skill audits CSS codebases with awareness of the project's styling architecture. It identifies unused rules, redundant declarations, specificity conflicts, rendering-cost issues, and methodology-specific anti-patterns. The audit branches after architecture detection so that the checks applied match the system in use.
+
+## Scope Boundaries
+
+This skill owns CSS code quality and architecture. Adjacent concerns belong to other skills:
+
+| Concern | Owner | Not This Skill |
+|---------|-------|---------------|
+| CSS code quality, specificity, unused rules, architecture anti-patterns | **e-css** | -- |
+| Design token compliance (hardcoded values vs. tokens) | **e-tokens** | Do not duplicate token scanning here |
+| Responsive breakpoint coverage and container queries | **e-responsive** | Do not duplicate breakpoint analysis here |
+| CSS bundle size contribution to load time | **e-bundle** | Report removal counts; leave KB estimates and CWV mapping to e-bundle |
+| Rendered visual correctness | **e-render** | Static analysis only; no browser rendering |
 
 ## Prerequisites
 
-- A frontend project with CSS, SCSS, or CSS-in-JS stylesheets.
+- A frontend project with CSS, SCSS, CSS Modules, Tailwind, or CSS-in-JS stylesheets.
 - Target files or directories to analyze.
 
 ## Workflow
 
-### Step 1: Inventory the Stylesheets
+### Step 1: Detect the CSS Architecture
 
-Use `filesystem` tools (fs_list) to catalog all stylesheet files in the project. Organize by type:
+Use `filesystem` tools (fs_list, fs_read) to classify the project's styling approach. A project may use more than one; record all that apply.
 
-| File Type           | Extensions                  | Processing Notes           |
-|---------------------|-----------------------------|----------------------------|
-| Plain CSS           | `.css`                      | Direct analysis            |
-| SCSS/Sass           | `.scss`, `.sass`            | Resolve imports/partials   |
-| CSS Modules         | `.module.css`, `.module.scss`| Scope analysis per module |
-| CSS-in-JS           | `.ts`, `.tsx` (styled-*)    | Extract template literals  |
-| Tailwind utilities  | Component files             | Check for redundancy in utility classes |
-| PostCSS config      | `postcss.config.*`          | Determines transforms applied |
+| Signal | Architecture | Audit Branch |
+|--------|-------------|-------------|
+| `tailwindcss` in dependencies, `tailwind.config.*` | Tailwind / utility-first | Branch A |
+| `*.module.css` or `*.module.scss` files | CSS Modules | Branch B |
+| `styled-components` or `@emotion/react` in dependencies | CSS-in-JS (runtime) | Branch C |
+| `vanilla-extract` or `@vanilla-extract/css` in dependencies | CSS-in-JS (zero-runtime) | Branch B (treat like CSS Modules) |
+| `.css`, `.scss`, `.sass` files without module or utility patterns | Global CSS / SCSS | Branch D |
 
-Read `postcss.config.js` or `postcss.config.ts` if present to understand what PostCSS plugins run (autoprefixer, cssnano, etc.). This affects which optimizations are already handled automatically.
+Read `postcss.config.*` if present. If autoprefixer is configured, vendor prefix checks (Step 5) can be skipped — the build pipeline handles them.
 
-### Step 2: Detect Unused Selectors
+### Step 2: Detect Unused CSS
 
-Identify CSS selectors that do not match any element in the project's templates or components.
+The detection method depends on the architecture.
 
-**For CSS/SCSS files**:
-Extract all selectors from the stylesheets. For each selector, use `egrep_search` to instantly search component files for matching class names, IDs, or element references via trigram-indexed code search.
+**Branch D (Global CSS/SCSS)**: Extract all selectors from stylesheets. For each selector, use `egrep_search` to search component files for matching class names, IDs, or element references. Build a cross-reference table:
 
-Build a cross-reference:
+| Selector | Defined In | Used In | Status |
+|----------|-----------|---------|--------|
+| `.btn-primary` | src/styles/buttons.css:12 | src/components/Button.tsx | Used |
+| `.btn-outline` | src/styles/buttons.css:24 | (none found) | Unused |
 
-| Selector              | Defined In                  | Used In                    | Status   |
-|-----------------------|-----------------------------|----------------------------|----------|
-| `.btn-primary`        | src/styles/buttons.css:12   | src/components/Button.tsx  | Used     |
-| `.btn-outline`        | src/styles/buttons.css:24   | (none found)               | Unused   |
-| `.legacy-header`      | src/styles/layout.css:8     | (none found)               | Unused   |
+Flag "possibly unused" (not "confirmed unused") when selectors may target dynamically generated class names, pseudo-elements in third-party libraries, or elements injected by JavaScript.
 
-**For CSS Modules**:
-Use `ast_search` from the eMCP AST server to find all `styles.*` or `styles['*']` references in the component file that imports the module. Compare against the classes defined in the `.module.css` file.
+**Branch B (CSS Modules)**: Use `ast_search` to find all `styles.*` or `styles['*']` references in the component that imports the module. Compare against classes defined in the `.module.css` file. Unused module exports are safe to remove because CSS Modules scope prevents external consumers.
 
-**For Tailwind**:
-Tailwind's purge/content configuration handles unused utilities at build time. Instead, check for Tailwind classes in component files that conflict or override each other on the same element (e.g., `text-red-500 text-blue-500`).
+**Branch A (Tailwind)**: Tailwind's content/purge configuration removes unused utilities at build time. Do not scan for unused utility classes. Instead, check for conflicting utilities on the same element (e.g., `text-red-500 text-blue-500` where the last one silently wins).
 
-Note: A selector may appear unused because it targets dynamically generated class names, pseudo-elements in third-party libraries, or elements injected by JavaScript. Flag these as "possibly unused" rather than "confirmed unused."
+**Branch C (CSS-in-JS)**: Static analysis cannot fully detect unused styles in runtime CSS-in-JS because styles are generated at runtime. Flag this limitation. Check for styled components that are defined but never rendered by searching for export names with no import references using `egrep_search`.
 
 ### Step 3: Find Redundant Declarations
 
-Scan for CSS declarations that are overridden, duplicated, or have no visual effect.
+Scan for CSS declarations that are overridden, duplicated, or have no visual effect. This step applies to all architectures.
 
 **Duplicate properties in the same rule**:
 ```css
 .card {
   padding: 16px;
   margin: 8px;
-  padding: 24px; /* Overrides the earlier padding */
+  padding: 24px; /* overrides the earlier padding */
 }
 ```
-The first `padding` has no effect. Flag it for removal.
 
-**Overridden shorthand/longhand conflicts**:
+**Shorthand/longhand conflicts**:
 ```css
 .card {
   margin: 16px;
-  margin-top: 0; /* Intended override, but order matters */
+  margin-top: 0; /* intended override, but a shorthand after this resets it */
 }
 ```
-Check whether shorthand and longhand properties interact correctly. Flag cases where a shorthand after a longhand silently resets the longhand value.
 
-**No-effect declarations**:
-Properties that have no visual effect given the element's display context:
+**No-effect declarations** — properties that have no visual effect given the element's display context. These can only be detected when both the property and the display context appear in the same rule block. Cross-file or inherited display context is beyond static analysis:
 
-| Declaration                | No Effect When                              |
-|----------------------------|---------------------------------------------|
-| `vertical-align`          | Parent is not `table-cell` or `inline`       |
-| `float`                   | Element has `display: flex` or `display: grid` |
-| `clear`                   | No floated siblings                          |
-| `width`/`height` on inline| Element is `display: inline` (non-replaced)  |
-| `margin-top`/`margin-bottom` on inline | Element is `display: inline`     |
-| `overflow` on inline      | Element is `display: inline`                 |
+| Co-occurrence in Same Rule | Why No Effect |
+|---------------------------|--------------|
+| `display: inline` + `width` or `height` | Width/height are ignored on non-replaced inline elements |
+| `display: inline` + `margin-top` or `margin-bottom` | Vertical margins are ignored on inline elements |
+| `display: flex` or `display: grid` + `float` | Float is ignored on flex/grid children by spec |
+| `display: block` + `vertical-align` | vertical-align only applies to inline and table-cell contexts |
 
-Use `ast_search` or `egrep_search` to find these patterns in stylesheet files.
+Use `egrep_search` to find rules containing both the display declaration and the no-effect property. Flag only same-rule co-occurrences; do not attempt cross-file inference.
 
 ### Step 4: Analyze Specificity Conflicts
 
-Scan for specificity issues that make styles difficult to maintain.
+**High specificity selectors**: Flag selectors using ID selectors (`#header`). ID selectors make overrides difficult and indicate a specificity escalation pattern.
 
-**High specificity selectors**:
-Flag selectors with specificity above a threshold. Calculate specificity for each selector:
+**`!important` usage**: Search all stylesheets for `!important`. Categorize:
 
-| Component      | Weight | Examples                        |
-|----------------|--------|---------------------------------|
-| Inline style   | 1000   | `style="..."` attribute         |
-| ID selector    | 100    | `#header`, `#main-nav`          |
-| Class/attr/pseudo-class | 10 | `.btn`, `[type="text"]`, `:hover` |
-| Element/pseudo-element | 1 | `div`, `p`, `::before`          |
+| Context | Assessment |
+|---------|-----------|
+| Utility class override (e.g., `.hidden { display: none !important }`) | Acceptable |
+| Component style | Problematic — indicates specificity conflict |
+| Third-party override | Understandable but should be isolated |
+| Multiple `!important` in same file | Indicates a specificity war |
 
-Flag selectors with specificity above (0, 1, 0, 0) -- that is, any selector using an ID. ID selectors make overrides difficult and indicate a specificity escalation pattern.
+**Cross-file property conflicts**: Flag cases where the same property on the same selector appears in multiple files. The final value depends on stylesheet loading order, which is fragile.
 
-**`!important` usage**:
-Search all stylesheets for `!important` declarations. Each occurrence is a specificity conflict indicator.
+**CSS `@layer` awareness**: If the project uses CSS cascade layers (`@layer`), specificity analysis must account for layer ordering. Within a lower-priority layer, even a high-specificity selector loses to a low-specificity selector in a higher-priority layer. Search for `@layer` declarations using `egrep_search`. If layers are present, report specificity findings within layer context rather than globally.
 
-Categorize `!important` usage:
+This step applies primarily to **Branches B and D**. In Tailwind (Branch A), specificity is managed by the framework. In CSS-in-JS (Branch C), specificity conflicts are rare because styles are scoped to components.
 
-| Context                    | Assessment                                     |
-|----------------------------|-------------------------------------------------|
-| Utility class override     | Acceptable (e.g., `.hidden { display: none !important }`) |
-| Component style            | Problematic; indicates specificity conflict      |
-| Third-party override       | Understandable but should be isolated            |
-| Multiple `!important` in same file | Indicates a specificity war                |
+### Step 5: Architecture-Specific Anti-Patterns
 
-**Cascading order conflicts**:
-Flag cases where the same property on the same selector appears in multiple files. The final value depends on stylesheet loading order, which is fragile.
+Run the checks for the detected architecture(s) from Step 1.
 
-### Step 5: Identify Vendor Prefix Redundancy
+#### Branch A: Tailwind Anti-Patterns
 
-Search for vendor prefixes that are no longer necessary for the project's browser support targets.
+| Anti-Pattern | Detection | Why It Matters |
+|-------------|-----------|---------------|
+| Arbitrary value proliferation | `egrep_search` for `w-[`, `h-[`, `p-[`, `m-[`, `text-[`, `bg-[` patterns across component files. Count occurrences. | Tailwind's docs state arbitrary values are for "occasional, exceptional cases." High counts indicate the design system is being bypassed rather than extended via config. |
+| `@apply` overuse | `egrep_search` for `@apply` in CSS files. Count occurrences. | Tailwind's docs state that using `@apply` for everything "throws away all of the workflow and maintainability advantages Tailwind gives you." The recommended reuse pattern is component abstraction. |
+| Safelist bloat | Read `tailwind.config.*` for `safelist` entries. Count patterns. | The Tailwind team states safelist is "a last resort" and they "never need safelisting in any of their projects." The alternative for dynamic values is CSS custom properties. |
+| Conflicting utilities | Use `ast_search` to extract class strings from JSX `className` attributes. Apply a hardcoded list of known contradictory pairs: `flex`/`inline`, `hidden`/`block`, `static`/`absolute`/`relative`/`fixed`/`sticky` (multiple position utilities), opposing `text-*` color utilities on the same element. | The last utility wins silently with no warning. The tool does not understand Tailwind semantics; the contradiction list must be maintained manually. |
 
-Read the project's browser support configuration:
-- `.browserslistrc` file.
-- `browserslist` key in `package.json`.
-- Default (last 2 versions, >0.5% market share) if not specified.
+#### Branch B: CSS Modules Anti-Patterns
 
-Common vendor prefixes that are unnecessary for modern browsers (2024+):
+| Anti-Pattern | Detection | Why It Matters |
+|-------------|-----------|---------------|
+| `:global()` overuse | `egrep_search` for `:global(` in `.module.css` files. Count occurrences. | `:global()` breaks module scoping. Legitimate uses: third-party library class targeting, browser resets. Anti-pattern: general escape mechanism to avoid scoping. |
+| Multi-file `composes` chains | `egrep_search` for `composes:` with `from` in `.module.css` files. Trace chains across files. | The CSS Modules spec states: "when composing multiple classes from different files, the order of appliance is undefined." Multi-file composition chains produce fragile, order-dependent styles. |
+| Unused module exports | Compare defined classes against `styles.*` references in the importing component (from Step 2). | Unlike global CSS, unused CSS Module classes are guaranteed unreachable because the module scope prevents external access. Safe to remove. |
 
-| Property                    | Prefix               | Supported Unprefixed Since |
-|-----------------------------|----------------------|----------------------------|
-| `display: flex`            | `-webkit-flex`        | All modern browsers        |
-| `transform`                | `-webkit-transform`   | All modern browsers        |
-| `transition`               | `-webkit-transition`  | All modern browsers        |
-| `animation`                | `-webkit-animation`   | All modern browsers        |
-| `border-radius`            | `-webkit-border-radius`| All modern browsers       |
-| `box-shadow`               | `-webkit-box-shadow`  | All modern browsers        |
-| `appearance`               | `-webkit-appearance`  | All modern browsers (with prefix still recommended) |
-| `user-select`              | `-webkit-user-select` | Chrome 54+, Firefox 69+    |
+#### Branch C: CSS-in-JS Anti-Patterns
 
-If autoprefixer is configured in PostCSS, vendor prefixes in source files are fully redundant and should be removed. The build pipeline adds them as needed.
+| Anti-Pattern | Detection | Why It Matters |
+|-------------|-----------|---------------|
+| Styled components inside render | `ast_search` for `styled.*` calls inside function components or class render methods. | styled-components docs: defining inside render "creates a new component identity on every render. React discards and remounts the entire subtree, losing DOM state." |
+| Dynamic interpolation explosion | `ast_search` for styled-components or Emotion template literals with `${props => ...}` interpolations. Count unique interpolation patterns. | Each unique interpolation result generates a new CSS class. At scale this produces hundreds of classes and style recalculation. The alternative is CSS custom properties with a single cached rule. |
+| RSC incompatibility | Check `next.config.*` for app router usage. If present, check whether CSS-in-JS imports appear in files without `'use client'` directive. | Next.js docs: "CSS-in-JS libraries which require runtime JavaScript are not currently supported in Server Components." |
+
+#### Branch D: Global CSS/SCSS Anti-Patterns
+
+| Anti-Pattern | Detection | Why It Matters |
+|-------------|-----------|---------------|
+| Deep nesting (SCSS) | `egrep_search` for patterns with 4+ levels of nesting indentation in `.scss` files. | Deep nesting produces high-specificity selectors that are difficult to override and maintain. |
+| Selector concatenation (`&__`, `&--`) abuse | `egrep_search` for BEM-style concatenation in SCSS. Check for selectors that cannot be found by searching for the full class name. | Concatenated selectors are invisible to `egrep_search` and IDE "find references" because the full class name never appears in the source. |
+| Import order fragility | Check `@import` or `@use` chains in SCSS entry points. Flag files where the same selector is defined in multiple imported partials. | The cascade depends on import order. Reordering imports silently changes which declarations win. |
 
 ### Step 6: Suggest Modern CSS Alternatives
 
-Identify legacy CSS patterns that have cleaner modern alternatives:
+Identify legacy CSS patterns that have cleaner modern replacements:
 
-**Layout patterns**:
+| Legacy Pattern | Modern Alternative |
+|---------------|-------------------|
+| `float` for layout | `display: flex` or `display: grid` |
+| `display: inline-block` for alignment | `display: flex` with `align-items` |
+| Negative margin for gap | `gap` property on flex/grid container |
+| `calc(100% / 3)` for columns | `grid-template-columns: repeat(3, 1fr)` |
+| Clearfix hack (`.clearfix::after`) | Remove; use flex or grid |
+| `position: absolute` + `top: 50%` + `left: 50%` + `transform: translate(-50%, -50%)` centering hack | `place-items: center` on grid |
+| Media query for font size at each breakpoint | `clamp(min, preferred, max)` for fluid typography |
+| `height: 100vh` | `height: 100dvh` |
+| Complex sibling selectors for parent targeting | `:has()` parent selector |
+| Webkit-only scroll styling | `scrollbar-color`, `scrollbar-width` |
 
-| Legacy Pattern                        | Modern Alternative                    |
-|---------------------------------------|---------------------------------------|
-| `float` for layout                    | `display: flex` or `display: grid`    |
-| `display: inline-block` for alignment | `display: flex` with `align-items`    |
-| Negative margin for gap               | `gap` property on flex/grid container |
-| `calc(100% / 3)` for columns          | `grid-template-columns: repeat(3, 1fr)` |
-| Clearfix hack (`.clearfix::after`)    | Remove; use flex or grid              |
-| `position: absolute` centering hack   | `place-items: center` on grid         |
+Use `egrep_search` to search for these patterns across stylesheets.
 
-**Sizing and spacing**:
+### Step 7: Check CSS Rendering Cost
 
-| Legacy Pattern                        | Modern Alternative                    |
-|---------------------------------------|---------------------------------------|
-| `max-width: Xpx; margin: 0 auto`     | `width: min(100%, Xpx); margin-inline: auto` |
-| Media query for font size             | `clamp(min, preferred, max)` for fluid typography |
-| `height: 100vh`                       | `height: 100dvh`                      |
-| `overflow: hidden` on body for modal  | `<dialog>` element with `::backdrop`  |
+Identify CSS patterns that affect rendering performance. This step owns rendering-cost analysis at the CSS level. Bundle-level performance impact (download size, parse cost, Core Web Vitals mapping) belongs to e-bundle.
 
-**Selectors and features**:
+**Rendering cost tiers**: CSS properties divide into three cost tiers based on which stages of the browser's pixel pipeline they trigger:
 
-| Legacy Pattern                        | Modern Alternative                    |
-|---------------------------------------|---------------------------------------|
-| `:nth-child` type hacks               | `:nth-child(n of .selector)` (CSS4)  |
-| Complex sibling selectors             | `:has()` parent selector              |
-| `@media (hover: hover)` only          | Pair with `@media (pointer: fine)`    |
-| Separate dark mode stylesheets        | `@media (prefers-color-scheme: dark)` |
-| Custom scroll styling (webkit-only)   | `scrollbar-color`, `scrollbar-width`  |
+| Tier | Pipeline Stages | Properties | Animation Cost |
+|------|----------------|-----------|---------------|
+| Layout | Style + Layout + Paint + Composite | width, height, margin, padding, display, position, flex, top/left/right/bottom | Expensive — triggers full recalculation |
+| Paint | Style + Paint + Composite | color, background, border, box-shadow, outline | Moderate — skips layout |
+| Composite | Composite only | transform, opacity | Cheap — GPU-accelerated |
 
-Use `egrep_search` to search for these patterns across the stylesheets.
+Flag animations or transitions that animate layout-triggering properties. Suggest `transform` and `opacity` instead where possible.
 
-### Step 7: Check for CSS Performance Issues
+**`will-change` misuse**: Search for `will-change` in stylesheets. MDN documents that `will-change` applied permanently in stylesheets (rather than dynamically via JavaScript before an animation starts) "will result in excessive memory use and will cause more complex rendering." It also creates a new stacking context, which can produce unintended visual layering. Flag `will-change` declarations in static CSS rules as a potential performance anti-pattern.
 
-Identify patterns that affect rendering performance:
+**CSS containment opportunities**: Search for `contain` and `content-visibility` usage. For large, complex pages, `contain: content` on independent subtrees (cards, list items, sections) lets the browser skip layout and paint for off-screen elements. `content-visibility: auto` implicitly applies containment and skips rendering for elements not in the viewport. Flag large repeated elements (list items, grid cards) that lack containment as optimization opportunities.
 
 **Expensive selectors**:
 - Universal selector in descendants: `* { }` or `.parent * { }`.
 - Deep descendant selectors: `.a .b .c .d .e { }` (browsers match right-to-left).
 - Attribute selectors with substring matching: `[class*="btn"]`.
 
-**Paint-triggering properties**:
-Properties that trigger layout recalculation or paint on change:
+### Step 8: Identify Vendor Prefix Redundancy
 
-| Trigger Level | Properties                                      |
-|---------------|-------------------------------------------------|
-| Layout        | width, height, margin, padding, display, position |
-| Paint         | color, background, border, box-shadow, outline   |
-| Composite     | transform, opacity (GPU-accelerated, cheapest)   |
+If autoprefixer is configured (detected in Step 1), skip this step — vendor prefixes in source files are fully redundant.
 
-Flag animations or transitions that animate layout-triggering properties. Suggest using `transform` and `opacity` instead where possible.
+Otherwise, read the project's browserslist configuration (`.browserslistrc` or `browserslist` in `package.json`). Flag vendor prefixes that are unnecessary for the target browser range. Common removals for modern targets:
 
-**Large selector counts**:
-If a single stylesheet contains more than 4000 selectors, older browsers (IE, legacy Edge) may ignore rules beyond that limit. Modern browsers handle this, but it indicates an oversized stylesheet that should be split.
+| Property | Prefix | Unprefixed Since |
+|----------|--------|-----------------|
+| `display: flex` | `-webkit-flex` | All modern browsers |
+| `transform` | `-webkit-transform` | All modern browsers |
+| `transition` | `-webkit-transition` | All modern browsers |
+| `animation` | `-webkit-animation` | All modern browsers |
+| `user-select` | `-webkit-user-select` | Chrome 54+, Firefox 69+ |
 
-### Step 8: Generate the Optimization Report
+### Step 9: Generate the Optimization Report
 
-Compile all findings into a prioritized report:
+Compile all findings into a report organized by impact:
 
 ```
-## CSS Optimization Report
+## CSS Architecture Audit Report
+
+### Architecture: [Tailwind | CSS Modules | CSS-in-JS | Global SCSS | Mixed]
 
 ### Summary
 - Stylesheets analyzed: 24
-- Total selectors: 892
-- Unused selectors: 47 (5.3%)
+- Architecture anti-patterns: 5
+- Unused CSS: 47 selectors
 - Redundant declarations: 12
 - Specificity issues: 8
-- Vendor prefix removals: 31
-- Modern alternatives available: 15
+- Rendering cost issues: 3
+- Modern alternative opportunities: 7
+
+### Architecture Anti-Patterns
+[Findings from Step 5, specific to the detected architecture]
 
 ### High Impact
 | File | Line | Issue | Recommendation |
 |------|------|-------|----------------|
-| styles/layout.css | 45 | Float-based grid | Replace with CSS Grid |
-| styles/buttons.css | 12-18 | 6 unused selectors | Remove .btn-outline, .btn-ghost, ... |
-| components/Modal.module.css | 8 | !important on 3 props | Restructure selector specificity |
 
 ### Medium Impact
 | File | Line | Issue | Recommendation |
 |------|------|-------|----------------|
-| styles/global.css | 22 | Vendor prefix (-webkit-transform) | Remove; autoprefixer handles this |
-| styles/typography.css | 15 | Manual responsive font sizes | Use clamp() for fluid typography |
 
-### Low Impact
-| File | Line | Issue | Recommendation |
-|------|------|-------|----------------|
-| styles/utils.css | 8 | Duplicate padding declaration | Remove first padding: 16px |
-
-### Size Reduction Estimate
-- Unused selector removal: ~2.4 KB
-- Redundant declaration removal: ~0.3 KB
-- Vendor prefix removal: ~1.1 KB
-- Total estimated savings: ~3.8 KB (before gzip)
+### Removal Counts
+- Unused rules: 47 selectors
+- Redundant declarations: 12
+- Use e-bundle to map these removals to download size and Core Web Vitals impact.
 ```
 
 ## Edge Cases
 
-- **CSS-in-JS runtime styles**: Styled-components, Emotion, and similar libraries generate styles at runtime. Static analysis cannot fully detect unused styles in these systems. Flag this limitation in the report.
-- **Dynamic class names**: Class names constructed with template literals or string concatenation (e.g., `btn-${variant}`) cannot be matched statically against stylesheet selectors. Exclude dynamically constructed classes from the unused selector list.
-- **Third-party CSS**: Stylesheets imported from `node_modules` (e.g., normalize.css, library themes) should be analyzed separately. The project cannot modify these files directly, but can evaluate whether they are necessary.
-- **Critical CSS extraction**: If the project uses critical CSS extraction (above-the-fold inlining), some selectors that appear unused in components may be referenced in the critical CSS pipeline. Check the critical CSS configuration before flagging.
-- **Atomic CSS (Tailwind, UnoCSS)**: In atomic CSS projects, traditional unused-selector analysis does not apply. Focus the audit on conflicting utility classes, unnecessary arbitrary values, and Tailwind config bloat instead.
-- **CSS custom property scoping**: Custom properties (CSS variables) defined on `:root` are global. Properties defined on specific selectors are scoped. Do not flag scoped custom properties as duplicates of root-level properties with similar names.
+- **Mixed architectures**: Projects using both Tailwind and CSS Modules (or global CSS alongside CSS-in-JS) require running multiple architecture branches. Report findings grouped by architecture, not interleaved.
+- **Dynamic class names**: Class names constructed with template literals or string concatenation cannot be matched statically. Exclude from unused-selector counts and flag the limitation.
+- **Third-party CSS**: Stylesheets from `node_modules` should be analyzed separately. The project cannot modify them directly but can evaluate whether they are necessary.
+- **Critical CSS extraction**: If the project uses critical CSS inlining, some selectors that appear unused in components may be referenced in the critical CSS pipeline. Check the configuration before flagging.
+- **CSS custom property scoping**: Custom properties on `:root` are global; properties on specific selectors are scoped. Do not flag scoped properties as duplicates of root-level properties with similar names.
+- **PostCSS transforms**: Some CSS patterns that look suboptimal in source files may be transformed by PostCSS plugins at build time (nesting, custom media queries). Check the PostCSS config before flagging these.
 
 ## Related Skills
 
-- **e-tokens** (eskill-frontend): Run e-tokens before this skill to identify CSS patterns that deviate from the design system.
-- **e-bundle** (eskill-frontend): Follow up with e-bundle after this skill to measure the size impact of CSS optimizations.
+- **e-tokens** (eskill-frontend): e-tokens validates design token compliance (hardcoded values vs. tokens). e-css validates CSS code quality and architecture. The two do not overlap: e-tokens checks what values are used, e-css checks how styles are structured. Run e-tokens before e-css.
+- **e-bundle** (eskill-frontend): e-css reports removal counts and architecture findings. e-bundle maps those reductions to download impact and Core Web Vitals risk factors. Run e-css before e-bundle.
+- **e-responsive** (eskill-frontend): e-responsive checks breakpoint coverage and container query usage. e-css checks CSS architecture quality. Run e-responsive alongside e-css.
+- **e-design** (eskill-frontend): e-design produces CSS as part of implementation. Run e-css after e-design to audit the generated CSS for architecture conformance.
+- **e-render** (eskill-frontend): e-css is static analysis. e-render validates rendered output in a browser. Use e-render when static analysis is insufficient to determine correctness.
+- **e-lint** (eskill-quality): e-lint enforces coding standards and formatting rules. e-css audits CSS architecture and optimization. The two are complementary: e-lint catches style violations, e-css catches structural and performance issues.

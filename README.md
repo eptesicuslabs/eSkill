@@ -139,11 +139,11 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 
 | Skill | eMCP Servers | Description |
 |-------|-------------|-------------|
-| e-design | filesystem, ast, lsp, image, browser, fetch | Create production-grade frontend interfaces with high visual craft |
+| e-design | filesystem, ast, lsp, image, browser, fetch | Create frontend interfaces with intentional visual direction and production-grade implementation |
 | e-component | filesystem, ast | Generate UI component scaffolds following project patterns |
 | e-tokens | ast, filesystem, egrep, data-file | Audit UI code for design token compliance with DTCG and hierarchy validation |
 | e-responsive | ast, filesystem, egrep | Analyze CSS and components for responsive issues including container queries |
-| e-css | ast, filesystem | Identify CSS optimization opportunities and specificity conflicts |
+| e-css | ast, filesystem, egrep | Architecture-aware CSS audit across Tailwind, CSS Modules, CSS-in-JS, and global CSS |
 | e-bundle | data-file, filesystem, shell, egrep, ast | Analyze bundle composition, dependency weight, and estimated Core Web Vitals risk factors |
 | e-stories | ast, filesystem, egrep | Generate Storybook stories with interaction tests and accessibility checks |
 | e-render | browser, computer-use, shell, image, filesystem | Render and validate frontend output in a live browser |

@@ -246,3 +246,4 @@ These are sensible defaults. Adjust based on project conventions.
 
 - **e-review** (eskill-coding): Run e-review after this skill to verify that standards violations are addressed before review.
 - **e-refactor** (eskill-coding): Follow up with e-refactor after this skill to systematically fix code standards violations across the codebase.
+- **e-css** (eskill-frontend): e-lint enforces coding standards and formatting rules. e-css audits CSS architecture and optimization (unused rules, specificity, rendering cost, methodology-specific anti-patterns). The two are complementary.
