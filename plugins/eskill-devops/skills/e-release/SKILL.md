@@ -270,6 +270,6 @@ Present the release notes to the user. These can be used when creating a release
 
 ## Related Skills
 
-- **e-changelog** (eskill-coding): Run e-changelog before this skill to prepare release notes from commit history.
+- **e-keeplog** (eskill-meta): Use e-keeplog for standalone changelog generation or maintenance outside the full release workflow.
 - **e-deploy** (eskill-devops): Follow up with e-deploy after this skill to execute the deployment steps for the new release.
 - **e-prune** (eskill-coding): Follow up with e-prune after this skill to remove release branches that are no longer needed.

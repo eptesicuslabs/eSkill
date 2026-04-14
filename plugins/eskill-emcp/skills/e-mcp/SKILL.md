@@ -205,7 +205,7 @@ For full parameter schemas and usage examples for each server, read the referenc
 
 ## Related Skills
 
-- **e-changelog** (eskill-coding): Uses git server tools for commit history
+- **e-keeplog** (eskill-meta): Uses git and markdown server tools to turn commit history into changelog sections
 - **e-scan** (eskill-quality): Uses ast server for vulnerability pattern matching
 - **e-containers** (eskill-system): Uses docker server for container monitoring
 - **e-carto** (eskill-intelligence): Uses filesystem, ast, lsp for architecture mapping

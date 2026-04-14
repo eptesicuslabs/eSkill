@@ -194,4 +194,4 @@ git remote prune origin
 ## Related Skills
 
 - **e-release** (eskill-devops): Run e-release before this skill to finalize releases before cleaning up stale branches.
-- **e-changelog** (eskill-coding): Run e-changelog before this skill to capture branch history before branches are removed.
+- **e-keeplog** (eskill-meta): Run e-keeplog in Generate from git mode before this skill when branch history should be preserved as changelog entries before cleanup.

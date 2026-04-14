@@ -4,6 +4,8 @@
 
 This report assesses all 90 current eSkill skills.
 
+Historical note: this report reflects the portfolio as of 2026-04-02. The later changelog consolidation removed `e-changelog` as a standalone skill and folded that responsibility into `e-keeplog` and `e-release`.
+
 For each skill, it records:
 
 - status: `keep`, `improve`, or `likely redundant`

@@ -2,25 +2,29 @@
 
 eSkill is the skill and workflow layer of the [eAgent](https://github.com/eptesicuslabs/eAgent) platform. It composes [eMCP](https://github.com/eptesicuslabs/eMCP) server tools into higher-level workflows — where eMCP provides primitives (`git_log`, `ast_search`, `sql_query`), eSkill provides orchestration (changelog generation, codebase cartography, deployment checklists).
 
-11 plugins. 90 skills. 3 hooks. Local-only, MIT-licensed.
+11 plugins. 89 skills. 3 hooks. Local-only, MIT-licensed.
 
 ## Architecture
 
 ```
 eMCP (primitives)                       eSkill (orchestration)
 ────────────────────────────────        ────────────────────────────────
-git_log + git_show                   -> e-changelog
+git_log + markdown_read_section     -> e-keeplog
 git_diff + lsp_references + ast      -> e-review
+test_run + lsp_definition + ast      -> e-debug
 ast_search + ast_rewrite + test      -> e-refactor
 pdf_read_text + docx_read_html       -> e-doc
 lsp_symbols + ast_search + diagram   -> e-diagram
 docker_ps + docker_logs + log_*      -> e-containers
 docs_search + think_* + fetch_url    -> e-research
+egrep_search + fs_read + ast_search  -> e-css
 crypto_hash_file + archive_create    -> e-backup
 ast_search + lsp_diagnostics         -> e-scan
 ```
 
-eMCP exposes 31 servers (plus 2 composites) with 174 tools. eSkill's 90 skills call sequences of those tools in deliberate order, handle edge cases, and produce structured output. A skill that composes eMCP tools into a workflow is the intended design. A skill that reimplements what an eMCP server already provides is waste.
+eMCP exposes 31 servers (plus 2 composites) with 174 tools. eSkill's 89 skills call sequences of those tools in deliberate order, handle edge cases, and produce structured output. A skill that composes eMCP tools into a workflow is the intended design. A skill that reimplements what an eMCP server already provides is waste.
+
+Recent portfolio upgrades strengthened debugging, coverage-policy separation, frontend workflow boundaries, architecture-aware CSS analysis, and component/state-level visual testing.
 
 ## Installation
 
@@ -30,7 +34,7 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 
 | Plugin | Domain | Skills |
 |--------|--------|-------:|
-| [eskill-coding](plugins/eskill-coding) | Git workflows, code review, debugging, refactoring, database, performance | 15 |
+| [eskill-coding](plugins/eskill-coding) | Git workflows, code review, debugging, refactoring, database, performance | 14 |
 | [eskill-office](plugins/eskill-office) | Document conversion, data pipelines, diagrams, reports | 9 |
 | [eskill-system](plugins/eskill-system) | Environment setup, Docker, log analysis, system diagnostics, backups | 8 |
 | [eskill-intelligence](plugins/eskill-intelligence) | Codebase exploration, knowledge graphs, research, decisions | 8 |
@@ -48,7 +52,6 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 
 | Skill | eMCP Servers | Description |
 |-------|-------------|-------------|
-| e-changelog | git, markdown | Generate changelogs from commit history between refs |
 | e-review | git, lsp, ast, diff | Prepare code review summaries from diffs with semantic context |
 | e-debug | lsp, ast, test-runner, shell, git, filesystem, egrep, log, system, data-file | Structured debugging from failing test or runtime error to verified fix |
 | e-testgen | lsp, ast, filesystem, data-file | Generate test file scaffolds from code structure analysis |
@@ -176,7 +179,7 @@ eSkill is consumed by the eAgent runtime. Skills are loaded from the `plugins/` 
 | Skill | eMCP Servers | Description |
 |-------|-------------|-------------|
 | e-init | filesystem, data-file, shell, git | Initialize projects with directory structure and toolchain |
-| e-keeplog | git, markdown, filesystem | Maintain CHANGELOG.md in Keep a Changelog format |
+| e-keeplog | git, markdown, filesystem | Generate and maintain CHANGELOG.md in Keep a Changelog format |
 | e-recap | git, test-runner, reasoning, task | Summarize work completed in the current session |
 | e-health | test-runner, lsp, data-file, markdown, git, diagram | Generate project health dashboards with quality scores |
 | e-decompose | reasoning, ast, lsp, task, filesystem | Break complex issues into actionable subtasks |

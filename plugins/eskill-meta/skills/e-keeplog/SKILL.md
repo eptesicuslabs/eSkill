@@ -1,9 +1,9 @@
 ---
 name: e-keeplog
-description: "Maintains an existing CHANGELOG.md by adding entries, cutting releases, and validating format per Keep a Changelog. Use when appending a new change entry, preparing a release section, or initializing a changelog. Also applies when: update the changelog, add to changelog, cut a release, create CHANGELOG.md."
+description: "Generates and maintains CHANGELOG.md from git history or manual entries, cuts releases, and validates Keep a Changelog format. Use when generating a changelog from commits, appending a new change entry, preparing a release section, or initializing a changelog. Also applies when: 'generate changelog', 'release notes from commits', 'update the changelog', 'add to changelog', 'cut a release', 'create CHANGELOG.md'."
 ---
 
-# Changelog Maintain
+# Changelog Management
 
 Manage CHANGELOG.md files following the Keep a Changelog (https://keepachangelog.com) specification. This skill handles initialization, entry addition, release preparation, and automated generation from git history.
 
@@ -246,5 +246,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Related Skills
 
-- **e-changelog** (eskill-coding): Run e-changelog before this skill to produce the entries that will be integrated into the changelog file.
 - **e-release** (eskill-devops): Follow up with e-release after this skill to include the updated changelog in the next release.

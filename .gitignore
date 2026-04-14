@@ -1,0 +1,7 @@
+.claude/
+.vscode/
+.venv/
+CLAUDE.md
+TOKEN_OPTIMIZATION_BRIEF.md
+__pycache__/
+*.pyc

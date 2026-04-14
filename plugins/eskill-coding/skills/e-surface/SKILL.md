@@ -233,7 +233,7 @@ Retrieves a list of users.
 
 ## Notes
 
-- This skill produces a snapshot of the current API surface. It does not track changes over time. Use the e-changelog skill for change tracking.
+- This skill produces a snapshot of the current API surface. It does not track changes over time. Use the e-version skill for API change tracking and breaking-change analysis.
 - For large codebases, the user may request a map of a specific module or directory rather than the entire project.
 - The output format can be adapted: markdown (default), JSON (for tooling consumption), or OpenAPI spec (for HTTP APIs).
 
